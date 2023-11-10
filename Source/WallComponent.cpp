@@ -41,6 +41,7 @@ void WallComponent::paint (juce::Graphics& g)
     g.setFont (14.0f);
     g.drawText ("WallComponent", getLocalBounds(),
                 juce::Justification::centred, true);   // draw some placeholder text
+    
 }
 
 void WallComponent::resized()

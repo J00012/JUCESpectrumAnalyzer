@@ -9,13 +9,14 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
 //==============================================================================
 GraphicsSampleTestAudioProcessorEditor::GraphicsSampleTestAudioProcessorEditor (GraphicsSampleTestAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (500, 500);
 }
 
 GraphicsSampleTestAudioProcessorEditor::~GraphicsSampleTestAudioProcessorEditor()
@@ -25,12 +26,26 @@ GraphicsSampleTestAudioProcessorEditor::~GraphicsSampleTestAudioProcessorEditor(
 //==============================================================================
 void GraphicsSampleTestAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll(juce::Colours::lightblue);
 
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.setColour(juce::Colours::darkblue);
+    g.setFont(20.0f);
+    g.setFont(juce::Font("Times New Roman", 20.0f, juce::Font::italic));
+    g.drawText("Hello, World!", 20, 40, 200, 40, juce::Justification::centred, true);
+    g.setColour(juce::Colours::green);
+    g.drawLine(10, 300, 590, 300, 5);
+
+
+
+    juce::Rectangle<float> house(300, 120, 200, 170);
+    g.fillCheckerBoard(house, 30, 10, juce::Colours::sandybrown, juce::Colours::saddlebrown);
+    g.setColour(juce::Colours::yellow);
+    g.drawEllipse(530, 10, 60, 60, 3);
+
+  
+    
+
+  
 }
 
 void GraphicsSampleTestAudioProcessorEditor::resized()
