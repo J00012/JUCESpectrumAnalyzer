@@ -35,7 +35,7 @@
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="graphicsSampleTest"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="graphicsSampleTest" enablePluginBinaryCopyStep="1"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="graphicsSampleTest"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
