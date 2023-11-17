@@ -1,4 +1,4 @@
-# Plugin for Audacity
+# Waveform Plugin for Audacity
 
 We are developing a plugin for AudacityⓇ that allows the user to map two frequency waveforms on top of each other, in the form of spectral graphs. Additionally, we will include functionality for the user to set the window function of the graph, the frequency/amplitude bounds, and the FFT (Fast Fourier Transform) size of the plot sample. 
 The project will be scalable so that we can build upon it. 
