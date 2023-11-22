@@ -1,4 +1,4 @@
-# Waveform Plugin for Audacity
+# FFT Waveform Comparison
 
 We are developing a plugin for AudacityⓇ that allows the user to map two frequency waveforms on top of each other, in the form of spectral graphs. Additionally, we will include functionality for the user to set the window function of the graph, the frequency/amplitude bounds, and the FFT (Fast Fourier Transform) size of the plot sample. 
 The project will be scalable so that we can build upon it. 
@@ -12,33 +12,15 @@ Our goal is to develop a GUI to make audio analysis more user-friendly.
 
 ## Getting Started
 
-Start by using any git client to download a copy of the [JUCE Repository](https://github.com/juce-framework/JUCE) to your computer ( for this example, we will be using Fork ). 
+Use [ProJucer](https://docs.juce.com/master/tutorial_new_projucer_project.html) open our existing project
+ - Open our .jucer file using the ProJucer application and export to your IDE
+ - Build our solution
+ - Navigate to our solution's file location and go to ``` \Builds\VisualStudio20~\x64\Debug\VST3 ```
+ - Copy the .vst3 file and paste it to your **_Common Files_** folder commonly found in ```C:\Program Files\Common Files```
+ - In Audacity, go to ```Effects->Plugin Manager->Rescan``` and enable our plugin
+ - Our plugin is now available for you to use!
 
-You will also need to download [Audacity](https://www.audacityteam.org/download/).
-
-### For Fork users
- - Download [Fork](https://git-fork.com/) for Windows
-   - In Fork, go to [File->Preferences] and choose a Default Clone Folder Path
- - Copy the git URL from the [JUCE Repository](https://github.com/juce-framework/JUCE), go back to Fork and click on [File->Clone], then paste the git URL into the Repository URL
-
-   ![image](https://github.com/RobertMahin/csusm/assets/113948918/7ce5b0bb-8503-487e-b289-bfe6274c54d8)
- - In Fork, check out the 'develop' branch by scrolling up and double-clicking on the [origin/develop] branch. It will then prompt you to track this remote branch by clicking [Track]
-
-### ProJucer
-
- - Now that you have a copy of JUCE on your computer, navigate to the JUCE folder and go to \extras\Projucer\Builds\VisualStudio20~\Projucer.sln
-   - In Visual Studio, go to [Build->Build Solution]. You can close Visual Studio when the build is completed
- - Navigate to \extras\Projucer\Builds\VisualStudio20~\x64\Debug\App\Projucer.exe
- - If this is your first time using Projucer:
-   - Go to [File->Sign in->Enable GPL Mode] (this requires you to make your project open-source)
-   - Go to [File->Global Paths] and connect the 'Path to JUCE' path to ~\JUCE and the 'User Modules' path to ~\JUCE\modules
-
-After cloning our repository onto your Visual Studio and clicking [Build Solution], navigate to our repository's file location and go to \Builds\VisualStudio20~\x64\Debug\VST3
-
-Then copy the .vst3 file and paste it to your [Common Files] folder commonly found in C:\Program Files\Common Files
-
-In Audacity, go to [Effects->Plugin Manager->Rescan] and enable our plugin. You may need to restart Audacity but our plugin is now available for you to use!
-
+## Extras
 
 Make sure when in the projucer menu to enable plugin copy step
 
