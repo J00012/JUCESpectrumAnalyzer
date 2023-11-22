@@ -12,7 +12,7 @@ Our goal is to develop a GUI to make audio analysis more user-friendly.
 
 ## Getting Started
 
-Use [ProJucer](https://docs.juce.com/master/tutorial_new_projucer_project.html) open our existing project
+Use [ProJucer](https://docs.juce.com/master/tutorial_new_projucer_project.html) to open our existing project
  - Open our .jucer file using the ProJucer application and export to your IDE
  - Build our solution
  - Navigate to our solution's file location and go to ``` \Builds\VisualStudio20~\x64\Debug\VST3 ```
