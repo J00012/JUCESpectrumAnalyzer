@@ -8,7 +8,7 @@ Our goal is to develop a GUI to make audio analysis more user-friendly.
 ## Minimum System Requirements
 
  - __C++ Standard__: 17+
- - __Windows__: Windows 8.1 and Visual Studio 2017
+ - __Windows__: Windows 8.1 and Visual Studio 2022
 
 ## Getting Started
 
