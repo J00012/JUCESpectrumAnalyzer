@@ -9,15 +9,32 @@ Our goal is to develop a GUI to make audio analysis more user-friendly.
 
  - __C++ Standard__: 17+
  - __Windows__: Windows 8.1 and Visual Studio 2022
+ - __Audacity__: Latest version
 
 ## Getting Started
 
-Use [ProJucer](https://docs.juce.com/master/tutorial_new_projucer_project.html) open our existing project
- - Open our .jucer file using the ProJucer application and export to your IDE
- - Build our solution
- - Navigate to our solution's file location and go to ``` \Builds\VisualStudio20~\x64\Debug\VST3 ```
- - Copy the .vst3 file and paste it to your **_Common Files_** folder commonly found in ```C:\Program Files\Common Files```
- - In Audacity, go to ```Effects->Plugin Manager->Rescan``` and enable our plugin
+Setting up JUCE
+ - Download the latest version of [Projucer](https://juce.com/get-juce/) and extract the contents of the .zip folder
+ - Run Projucer.exe
+ - Enable GPL mode by navigating to ```File ‣ Sign in... ‣ Enable GPL Mode```
+ - Set up your Juce global paths by going to ```File ‣ Global Paths...```
+   - Connect **Path to JUCE** with ```~\JUCE```
+   - Connect **JUCE Modules** with ```~\JUCE\modules```
+
+Setting up our existing project
+ - Create a folder in file explorer
+ - Download our .jucer file to your new directory
+ - Open Projucer and go to ```File ‣ Open...``` and select the .jucer file
+ - Click on the **Save and Open in IDE** icon next to *selected exporter* to open the project in Visual Studio
+ - Build our solution in Visual Stuido by going to ```Build ‣ Build Solution```
+
+Adding the plug-in to Audacity
+ - In your new directory, navigate to the solution's file location by going to ```~\Builds\VisualStudio2022\x64\Debug\VST3```
+ - Copy the .vst3 folder and paste it to your VST3 folder within the **Common Files** directory
+   - Can be found by navigating to ```C:\Program Files\Common File\VST3```
+   - If there is no VST3 folder in Common Files, create one
+ - Open Audacity 
+ - In Audacity, go to ```Effects ‣ Plugin Manager ‣ Rescan``` and enable our plugin
  - Our plugin is now available for you to use!
 
 ## Extras
