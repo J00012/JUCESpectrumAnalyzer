@@ -13,15 +13,22 @@
 //==============================================================================
 /**
 */
-class GraphicsSampleTestAudioProcessor  : public juce::AudioProcessor
-                            #if JucePlugin_Enable_ARA
-                             , public juce::AudioProcessorARAExtension
-                            #endif
+class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
 {
+
+    enum
+    {
+        fftOrder = 11,             // [1]
+        fftSize = 1 << fftOrder,  // [2]
+        scopeSize = 512             // [3]	   //this will probably need to change since it is the "SIZE"
+    };
+
+
 public:
     //==============================================================================
-    GraphicsSampleTestAudioProcessor();
-    ~GraphicsSampleTestAudioProcessor() override;
+    FFTSpectrumAnalyzerAudioProcessor();
+    ~FFTSpectrumAnalyzerAudioProcessor() override
+;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -32,6 +39,15 @@ public:
    #endif
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void drawNextFrameOfSpectrum(float* channelData, int numSample);
+    
+
+
+    int getScopeSize() const;
+    const float* getScopeData() const;
+    const double* getArray() const;
+    const float* getFFT() const;
+
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
@@ -56,7 +72,22 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+
+   
+
 private:
+    juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
+    juce::dsp::WindowingFunction<float> window;     // [5]	//HERE IS THE WINDOW DECLARATION
+
+    float fftArray[fftSize];
+    float fftData[2 * fftSize];                    // [7]	//NEED
+
+    int fftArrayIndex = 0;
+   
+    bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
+    float scopeData[scopeSize];                    // [10]	
+    double array[6] = { 0,0,0,0,0,0};
+    
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicsSampleTestAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)
 };
