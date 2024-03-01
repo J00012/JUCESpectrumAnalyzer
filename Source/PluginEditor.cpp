@@ -8,47 +8,117 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include <string>
 
 //==============================================================================
-GraphicsSampleTestAudioProcessorEditor::GraphicsSampleTestAudioProcessorEditor (GraphicsSampleTestAudioProcessor& p)
+FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (500, 500);
+    
+    setOpaque(true);
+    setSize (700, 1000);
+
+    
 }
 
-GraphicsSampleTestAudioProcessorEditor::~GraphicsSampleTestAudioProcessorEditor()
+FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
 {
 }
 
 //==============================================================================
-void GraphicsSampleTestAudioProcessorEditor::paint (juce::Graphics& g)
+
+
+//draws the frame to be displayed using drawLine fucntion from g (other options are available)
+void FFTSpectrumAnalyzerAudioProcessorEditor::drawFrame(juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::lightblue);
+    const int scopeSize = audioProcessor.getScopeSize();
+    const float* scopeData = audioProcessor.getScopeData();
+   
 
-    g.setColour(juce::Colours::darkblue);
-    g.setFont(20.0f);
-    g.setFont(juce::Font("Times New Roman", 20.0f, juce::Font::italic));
-    g.drawText("Hello, World!", 20, 40, 200, 40, juce::Justification::centred, true);
-    g.setColour(juce::Colours::green);
-    g.drawLine(10, 300, 590, 300, 5);
+    for (int i = 1; i < scopeSize; ++i)
+    {
+        auto width = getLocalBounds().getWidth();
+        auto height = getLocalBounds().getHeight();
 
-
-
-    juce::Rectangle<float> house(300, 120, 200, 170);
-    g.fillCheckerBoard(house, 30, 10, juce::Colours::sandybrown, juce::Colours::saddlebrown);
-    g.setColour(juce::Colours::yellow);
-    g.drawEllipse(530, 10, 60, 60, 3);
-
-  
+        g.drawLine({ (float)juce::jmap(i - 1, 0, scopeSize - 1, 0, width),
+                              juce::jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
+                      (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
+                              juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) });
+    }
     
-
-  
 }
 
-void GraphicsSampleTestAudioProcessorEditor::resized()
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
+{
+    // (Our component is opaque, so we must completely fill the background with a solid colour)
+    //g.fillAll(juce::Colours::black);
+
+
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+
+    //g.setColour(juce::Colours::white);
+    //g.setFont(15.0f);
+
+    g.setOpacity(1.0f);
+    g.setColour(juce::Colours::white);
+
+    int lineHeight = 10; // Adjust line height as needed
+    int yPosition = 10; // Start position from the top
+    int xPosition = 10; // Start position from the left
+
+    //g.drawFittedText(str, getLocalBounds(), juce::Justification::centred, 1);
+    const int scopeSize = audioProcessor.getScopeSize();
+    const float* scopeData = audioProcessor.getScopeData();
+    const double* array = audioProcessor.getArray(); 
+    const float* fft = audioProcessor.getFFT();
+
+
+    // Allocate memory for 'ar' as an array of doubles
+    double* ar = new double[scopeSize];
+
+    // Copy the contents of 'array' into 'ar'
+    for (int i = 0; i < scopeSize; ++i)
+    {
+        ar[i] = array[i];
+    }
+
+
+        for (int i = 0; i < 2048; ++i)
+        {
+            
+            // Convert each float value to a string
+            auto valueString = std::to_string(fft[i]); // Change '4' to the desired number of decimal places
+
+            // Draw the string at appropriate positions
+            g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
+        }
+    
+
+    
+    /*
+    auto str1 = std::to_string(scopeData[0]);
+    std::cout << scopeData[0];
+    g.drawText(str1, getLocalBounds(), juce::Justification::centred, true);
+
+    for (int i = 1; i < scopeSize; ++i)
+    {
+        auto width = getLocalBounds().getWidth();
+        auto height = getLocalBounds().getHeight();
+
+        g.drawLine({ (float)juce::jmap(i - 1, 0, scopeSize - 1, 0, width),
+                              juce::jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
+                      (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
+                              juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) });
+    }
+    //drawFrame(g);
+    */
+}
+
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
