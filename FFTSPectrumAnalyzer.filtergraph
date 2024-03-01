@@ -5,7 +5,7 @@
     <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
             manufacturer="JUCE" version="1.0" file="" uniqueId="246006c0"
             isInstrument="0" fileTime="0" infoUpdateTime="0" numInputs="0"
-            numOutputs="8" isShell="0" hasARAExtension="0" uid="246006c0"/>
+            numOutputs="2" isShell="0" hasARAExtension="0" uid="246006c0"/>
     <STATE>0.</STATE>
     <LAYOUT>
       <INPUTS>
@@ -39,7 +39,7 @@
     <STATE>0.</STATE>
     <LAYOUT>
       <INPUTS>
-        <BUS index="0" layout="L R C Lfe Lss Rss Lrs Rrs"/>
+        <BUS index="0" layout="L R"/>
       </INPUTS>
       <OUTPUTS>
         <BUS index="0" layout="disabled"/>
@@ -61,13 +61,13 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="5" x="0.405" y="0.5040322580645161" useARA="0" uiLastX_Normal="1770"
-          uiLastY_Normal="213" uiopen_Normal="0">
-    <PLUGIN name="graphicsSampleTest" format="VST3" category="Fx" manufacturer="yourcompany"
-            version="1.0.0" file="C:\Program Files\Common Files\VST3\graphicsSampleTest.vst3\Contents\x86_64-win\graphicsSampleTest.vst3"
-            uniqueId="f1a5d72b" isInstrument="0" fileTime="18bb6b23f54" infoUpdateTime="18bb6c2b352"
+  <FILTER uid="6" x="0.5475" y="0.4919354838709677" useARA="0" uiLastX_Normal="998"
+          uiLastY_Normal="358" uiopen_Normal="0">
+    <PLUGIN name="FFTSpectrumAnalyzer" format="VST3" category="Fx" manufacturer="yourcompany"
+            version="1.0.0" file="C:\Program Files\Common Files\VST3\FFTSpectrumAnalyzer.vst3\Contents\x86_64-win\FFTSpectrumAnalyzer.vst3"
+            uniqueId="f5a7e7eb" isInstrument="0" fileTime="18db1cf0703" infoUpdateTime="18dd313a1bb"
             numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
-            uid="e9531723"/>
+            uid="e954f1f0"/>
     <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
     <LAYOUT>
       <INPUTS>
@@ -78,6 +78,4 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <CONNECTION srcFilter="5" srcChannel="0" dstFilter="3" dstChannel="0"/>
-  <CONNECTION srcFilter="5" srcChannel="1" dstFilter="3" dstChannel="2"/>
 </FILTERGRAPH>
