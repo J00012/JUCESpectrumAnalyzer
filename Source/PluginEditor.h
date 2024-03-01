@@ -11,24 +11,25 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-
 //==============================================================================
 /**
 */
-class GraphicsSampleTestAudioProcessorEditor  : public juce::AudioProcessorEditor
+class FFTSpectrumAnalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    GraphicsSampleTestAudioProcessorEditor (GraphicsSampleTestAudioProcessor&);
-    ~GraphicsSampleTestAudioProcessorEditor() override;
+    FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor&);
+    ~FFTSpectrumAnalyzerAudioProcessorEditor() override;
 
     //==============================================================================
+    
     void paint (juce::Graphics&) override;
+    void drawFrame(juce::Graphics& g); 
     void resized() override;
 
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    GraphicsSampleTestAudioProcessor& audioProcessor;
+    FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicsSampleTestAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
