@@ -184,136 +184,19 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
         //scopeData[i] = skewedProportionX;
         //scopeData[i] = ;
-        //array[i] = fftDataIndex;
         scopeData[i] = level;                                   // [4]
         //scopeData[i] = 1.234;
     }
 
-
-        /*
-    //mono channel
-    int channel = 0;
-
-    auto* channelData = buffer.getReadPointer(channel);
-    int numSamples = buffer.getNumSamples();
-    int numChannels = buffer.getNumChannels();
-
-    int sampleSizeinBytes = sizeof(float) * numSamples * numChannels;
-
-    memcpy(fftData, channelData, sampleSizeinBytes);
-
-      // first apply a windowing function to our data
-    window.multiplyWithWindowingTable(fftData, fftSize);       // [1]
-
-    // then render our FFT data..
-    forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
-
-    auto mindB = -100.0f;  //minimum decibel level
-    auto maxdB = 0.0f;      //maximum decibel level
-
-    for (int i = 0; i < scopeSize; ++i)                         // [3]
-    {
-        auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
-        auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
-        auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
-            - juce::Decibels::gainToDecibels((float)fftSize)),
-            mindB, maxdB, 0.0f, 1.0f);
-
-        scopeData[i] = level;                                   // [4]
-    }
-
-   
-}
-/*
-    //loop through all the samples in the buffer
-    //sample is a floating point value aka a singe audio sample
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
-    {
-        channelData[sample];
-    }
-
-
-
-
-
-
-
-   //loops through the input channels 
-    //channel represents the index of the channel in the audio buffer
-    //totalNumInputChannels - most likely stereo(2) or mono(1)
-    //how ever this might be bad because we need to process all the data together rather than channel by channel
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-
-
-
-
-
-
-        //buffer.getWritePointer(channel) - returns a pointer to the start of the data for the specified channel with ithe buffer
-        //channelData - is a pointer that will be assigned the memory address of the data for the current channel
-        auto* channelData = buffer.getWritePointer (channel);  
-
-        //This is a sample for loop that just increases the loudness 
-        //buffer.getNumSample - returns number of samples allocated in each of buffer's channels
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {   
-            channelData[sample] *= 2;
-        }
-
-
-
-
-
-
-        //drawNextFrameOfSpectrum(channelData, buffer.getNumSamples()); //THIS COULD ALSO BE THE ISSUE
-
-        // ..do something to the data...
-        
-    } 
-    */
 }
 
 
-
-/*
-//the stuff being put in could be the issue?????????????????????????
-void FFTSpectrumAnalyzerAudioProcessor::drawNextFrameOfSpectrum(float * channelData, int numSample)
-{
-    //THIS COULD BE THE ISSUE???????????????????????
-    //juce::zeromem(fftData, sizeof (fftData)); sets the memory to zero 
-    std::memcpy(fftData, channelData, sizeof (channelData));
-
-    // first apply a windowing function to our data
-    window.multiplyWithWindowingTable(fftData, fftSize);       // [1]
-
-    // then render our FFT data..
-    forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
-    auto mindB = -100.0f;
-    auto maxdB = 0.0f;
-
-    for (int i = 0; i < scopeSize; ++i)                         // [3]
-    {
-        auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
-        auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
-        auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
-            - juce::Decibels::gainToDecibels((float)fftSize)),
-            mindB, maxdB, 0.0f, 1.0f);
-
-        scopeData[i] = level;                                   // [4]
-    }
-}
-
-*/
 
 int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
 {
     return scopeSize;
 }
 
-const double* FFTSpectrumAnalyzerAudioProcessor::getArray() const
-{
-    return array;
-}
 
 const float* FFTSpectrumAnalyzerAudioProcessor::getScopeData() const
 {
