@@ -79,14 +79,14 @@ private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
     juce::dsp::WindowingFunction<float> window;     // [5]	//HERE IS THE WINDOW DECLARATION
 
-    float fftArray[fftSize];
-    float fftData[2 * fftSize];                    // [7]	//NEED
+    float fftArray[fftSize] = {0};
+    float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
 
     int fftArrayIndex = 0;
    
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
-    float scopeData[scopeSize];                    // [10]	
-    double array[6] = { 0,0,0,0,0,0};
+    float scopeData[scopeSize] = { 0 };                    // [10]	
+   // double array[6] = { 0,0,0,0,0,0};
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)
