@@ -33,7 +33,7 @@
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="FFTSpectrumAnalyzer"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="FFTSpectrumAnalyzer" enablePluginBinaryCopyStep="1"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="FFTSpectrumAnalyzer"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
