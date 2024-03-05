@@ -58,13 +58,29 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         {
             
             // Convert each float value to a string
-            auto valueString = std::to_string(scopeData[scopeSize]); // Change '4' to the desired number of decimal places
+            auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
 
             // Draw the string at appropriate positions
             g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
         }
     
+    juce::Path myPath;
+    float offsetX = 50;
+    float offsetY = 500;
+    float scaleX = 10;
+    float scaleY = 100;
+    float sampleSize = 70;
+    
+    myPath.startNewSubPath(offsetX, offsetY + scopeData[0]); //observe closely
+    for (int i = 1; i < sampleSize; i++)
+    {
+        myPath.lineTo(i * scaleX + offsetX, scopeData[i] * scaleY + offsetY);
+    }
 
+ /*   myPath.lineTo(100.0f, 200.0f);
+    myPath.lineTo(200.0f, 300.0f);*/
+
+    g.strokePath(myPath, juce::PathStrokeType(5.0f));
     
     /*
     auto str1 = std::to_string(scopeData[0]);

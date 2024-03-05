@@ -85,7 +85,7 @@ private:
     int fftArrayIndex = 0;
    
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
-    float scopeData[scopeSize] = { 0 };                    // [10]	
+    static float scopeData[scopeSize];                  // [10]	
    // double array[6] = { 0,0,0,0,0,0};
     
     //==============================================================================
