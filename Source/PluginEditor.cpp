@@ -18,7 +18,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // editor's size to whatever you need it to be.
     
     setOpaque(true);
-    setSize (700, 1000);
+    setSize (1600, 1000);
 
     
 }
@@ -69,12 +69,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     float offsetY = 500;
     float scaleX = 10;
     float scaleY = 100;
-    float sampleSize = 70;
-    
+    float sampleSize = 150;
+    float FlipYAxisValue = -1;
+
     myPath.startNewSubPath(offsetX, offsetY + scopeData[0]); //observe closely
     for (int i = 1; i < sampleSize; i++)
     {
-        myPath.lineTo(i * scaleX + offsetX, scopeData[i] * scaleY + offsetY);
+        myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
     }
 
  /*   myPath.lineTo(100.0f, 200.0f);
