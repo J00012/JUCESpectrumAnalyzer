@@ -18,7 +18,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // editor's size to whatever you need it to be.
     
     setOpaque(true);
-    setSize (1600, 1000);
+    setSize (1200, 700);
 
     
 }
@@ -53,7 +53,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     const float* scopeData = audioProcessor.getScopeData();
 
     const float* fft = audioProcessor.getFFT();
-
+    /*
         for (int i = 0; i < scopeSize; ++i)
         {
             
@@ -63,13 +63,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
             // Draw the string at appropriate positions
             g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
         }
-    
+    */
     juce::Path myPath;
-    float offsetX = 50;
-    float offsetY = 500;
-    float scaleX = 10;
-    float scaleY = 100;
-    float sampleSize = 150;
+    float offsetX = 1;
+    float offsetY = 400;
+    float scaleX = 1;
+    float scaleY = 500;
+    float sampleSize = 512;
     float FlipYAxisValue = -1;
 
     myPath.startNewSubPath(offsetX, offsetY + scopeData[0]); //observe closely
@@ -81,7 +81,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
  /*   myPath.lineTo(100.0f, 200.0f);
     myPath.lineTo(200.0f, 300.0f);*/
 
-    g.strokePath(myPath, juce::PathStrokeType(5.0f));
+    g.strokePath(myPath, juce::PathStrokeType(1.0f));
     
     /*
     auto str1 = std::to_string(scopeData[0]);
