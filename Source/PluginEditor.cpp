@@ -20,7 +20,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     
     setOpaque(true);
     setSize (1600, 1000);
-    startTimer(50);
+    startTimer(500);
    
     
    /* juce::Timer timer;

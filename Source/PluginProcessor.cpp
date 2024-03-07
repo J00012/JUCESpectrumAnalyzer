@@ -155,21 +155,23 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-   //loops through the output channels and clears a specified region of all the channels
-    //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        //buffer.clear (i, 0, buffer.getNumSamples());
-
-
-    //TEST CODE !!!!!
 
     //just for mono
     int channel = 0;
+    std::cout << "hello test";
 
     auto* channelData = buffer.getReadPointer(channel);
 
+    //loops through the output channels and clears a specified region of all the channels
+     //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+         //buffer.clear (i, 0, buffer.getNumSamples());
+
+
+     //TEST CODE !!!!!
     /*for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         fftArray[sample] = channelData[sample];
     }*/
+
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
