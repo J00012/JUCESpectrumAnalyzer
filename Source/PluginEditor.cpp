@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 #include <string>
 
+
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
@@ -19,6 +20,15 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     
     setOpaque(true);
     setSize (1600, 1000);
+    startTimer(50);
+   
+    
+   /* juce::Timer timer;
+    void timer.timerCallback() const override
+    {
+        startTimer(int 500);
+        bool procBlockRunning = "False";
+    };*/
 
     
 }
@@ -100,8 +110,28 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     }
     //drawFrame(g);
     */
+
+
+   /* auto valueStringProcBlock = "ProcessBlock has finished running.";
+
+    if (!audioProcessor.getProcBlockIsRunning()) {
+        g.drawText(valueStringProcBlock, xPosition, yPosition, getWidth(), lineHeight, juce::Justification::left);
+    }
+    else {
+        audioProcessor.resetProcBlockIsRunning();
+    }*/
 }
 
+void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
+{
+    if (!audioProcessor.getProcBlockIsRunning()) {
+        std::cout << "ProcessBlock has finished.";
+    }
+    else {
+        audioProcessor.resetProcBlockIsRunning();
+        std::cout << "ProcessBlock has been reset.";
+    }
+}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {

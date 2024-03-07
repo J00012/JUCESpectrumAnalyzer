@@ -38,6 +38,8 @@ public:
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
 
+    bool getProcBlockIsRunning();
+    void resetProcBlockIsRunning();
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void drawNextFrameOfSpectrum(float* channelData, int numSample);
     
@@ -87,6 +89,8 @@ private:
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
     static float scopeData[scopeSize];                  // [10]	
    // double array[6] = { 0,0,0,0,0,0};
+    bool procBlockIsRunning = false;
+    
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)

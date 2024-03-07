@@ -14,7 +14,7 @@
 //==============================================================================
 /**
 */
-class FFTSpectrumAnalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor
+class FFTSpectrumAnalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor, juce::Timer
 {
 public:
     FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor&);
@@ -25,6 +25,7 @@ public:
     void paint (juce::Graphics&) override;
     void drawFrame(juce::Graphics& g); 
     void resized() override;
+    void timerCallback() override;
 
 private:
     // This reference is provided as a quick way for your editor to

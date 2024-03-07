@@ -133,6 +133,16 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
+void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsRunning() 
+{
+    procBlockIsRunning = false;
+}
+
+bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
+{
+    return procBlockIsRunning;
+}
+
 
 //buffer- two dimenstional array where rows represent different channels and columns represent individual samples
 //(A multi-channel buffer containing floating point audio samples)
@@ -163,6 +173,8 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
+
+    procBlockIsRunning = true;
     
     //memcpy(fftData, fftArray, sizeof(fftArray));
 
