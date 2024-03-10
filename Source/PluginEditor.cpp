@@ -10,17 +10,27 @@
 #include "PluginEditor.h"
 #include <string>
 
+
 //==============================================================================
-FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    
-    setOpaque(true);
-    setSize (1200, 700);
 
-    
+    setOpaque(true);
+    setSize(1600, 1000);
+    startTimer(10);
+
+
+    /* juce::Timer timer;
+     void timer.timerCallback() const override
+     {
+         startTimer(int 500);
+         bool procBlockRunning = "False";
+     };*/
+
+
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -30,7 +40,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 //==============================================================================
 
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
+void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     //g.fillAll(juce::Colours::black);
@@ -54,21 +64,22 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 
     const float* fft = audioProcessor.getFFT();
     /*
-        for (int i = 0; i < scopeSize; ++i)
-        {
-            
-            // Convert each float value to a string
-            auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
+    for (int i = 0; i < scopeSize; ++i)
+    {
 
-            // Draw the string at appropriate positions
-            g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
-        }
-    */
+        // Convert each float value to a string
+        auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
+
+        // Draw the string at appropriate positions
+        g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth(), lineHeight, juce::Justification::left);
+    }
+     */
+
     juce::Path myPath;
     float offsetX = 1;
     float offsetY = 400;
-    float scaleX = 1;
-    float scaleY = 500;
+    float scaleX = 10;
+    float scaleY = 200;
     float sampleSize = 512;
     float FlipYAxisValue = -1;
 
@@ -78,11 +89,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
     }
 
- /*   myPath.lineTo(100.0f, 200.0f);
-    myPath.lineTo(200.0f, 300.0f);*/
-
     g.strokePath(myPath, juce::PathStrokeType(1.0f));
-    
+
     /*
     auto str1 = std::to_string(scopeData[0]);
     std::cout << scopeData[0];
@@ -100,8 +108,31 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     }
     //drawFrame(g);
     */
+
+
+    /* auto valueStringProcBlock = "ProcessBlock has finished running.";
+
+     if (!audioProcessor.getProcBlockIsRunning()) {
+         g.drawText(valueStringProcBlock, xPosition, yPosition, getWidth(), lineHeight, juce::Justification::left);
+     }
+     else {
+         audioProcessor.resetProcBlockIsRunning();
+     }*/
 }
 
+void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
+{
+    if (!audioProcessor.getProcBlockIsRunning()) {
+        //ProcessBlock has finished
+    } 
+    
+    else {
+        audioProcessor.resetProcBlockIsRunning();
+        std::cout << "ProcessBlock has been reset.";
+        repaint();
+    }
+    
+}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
