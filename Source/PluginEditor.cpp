@@ -21,8 +21,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     setOpaque(true);
     setSize (1600, 1000);
     startTimer(500);
+  
    
-    
    /* juce::Timer timer;
     void timer.timerCallback() const override
     {

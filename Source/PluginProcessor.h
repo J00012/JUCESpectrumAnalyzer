@@ -77,8 +77,7 @@ public:
 
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
-    juce::dsp::WindowingFunction<float> window;     // [5]	//HERE IS THE WINDOW DECLARATION
-
+  
     float fftArray[fftSize] = {0};
     float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
 

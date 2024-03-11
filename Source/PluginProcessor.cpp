@@ -21,8 +21,7 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-    forwardFFT(fftOrder), // Initialize forwardFFT with fftOrder
-    window(fftSize, juce::dsp::WindowingFunction<float>::hann) // Initialize window
+    forwardFFT(fftOrder) // Initialize forwardFFT with fftOrder
     
 #endif
 {
@@ -158,32 +157,44 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
     //just for mono
     int channel = 0;
-    std::cout << "hello test";
-
+ 
     auto* channelData = buffer.getReadPointer(channel);
 
-    //loops through the output channels and clears a specified region of all the channels
-     //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-         //buffer.clear (i, 0, buffer.getNumSamples());
-
-
      //TEST CODE !!!!!
-    /*for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        fftArray[sample] = channelData[sample];
-    }*/
-
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
+
+
+    //make a new dataType for the enum in JUCE and string for selection
+    struct WindowToName {
+        juce::dsp::WindowingFunction<float>::WindowingMethod window;
+        std::string name;
+    };
+
+    //make an array of window type with the enum value and the string value
+    WindowToName windowToName[] = {
+        {juce::dsp::WindowingFunction<float>::hann,"Hann"},
+        {juce::dsp::WindowingFunction<float>::blackman,"Blackman"},
+        {juce::dsp::WindowingFunction<float>::rectangular,"Rectangular"},
+        {juce::dsp::WindowingFunction<float>::blackmanHarris,"BlackmanHarris"},
+        {juce::dsp::WindowingFunction<float>::hamming,"Hamming"},
+        {juce::dsp::WindowingFunction<float>::triangular,"Triangular"},
+        {juce::dsp::WindowingFunction<float>::flatTop,"FlatTop"},
+        {juce::dsp::WindowingFunction<float>::kaiser,"Kaiser"},
+    };
+
+
+    WindowToName& selectedWindow = windowToName[0];                               //set selectedWindow to a variable Name
+    juce::dsp::WindowingFunction<float> window(fftSize, selectedWindow.window);   //declare the window object
+    window.fillWindowingTables(fftSize, selectedWindow.window);                   //fills the content of the object array with a given windowing method
+    window.multiplyWithWindowingTable(scopeData, fftSize);                        //applies the windowing fucntion to the audio data stored in fftData
+
 
     procBlockIsRunning = true;
     
     //memcpy(fftData, fftArray, sizeof(fftArray));
 
-
-
-    //// first apply a windowing function to our data
-    //window.multiplyWithWindowingTable(fftData, fftSize);       // [1]
 
     //// then render our FFT data..
     //forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
@@ -207,7 +218,9 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
 }
 
+//void FFTSpectrumAnalyzerAudioProcessor::applyWindow() {
 
+//}
 
 int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
 {
