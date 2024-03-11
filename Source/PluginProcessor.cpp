@@ -158,7 +158,6 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
     //just for mono
     int channel = 0;
-    std::cout << "hello test";
 
     auto* channelData = buffer.getReadPointer(channel);
 

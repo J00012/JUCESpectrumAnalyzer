@@ -20,7 +20,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     
     setOpaque(true);
     setSize (1600, 1000);
-    startTimer(500);
+    startTimer(5);
    
     
    /* juce::Timer timer;
@@ -42,6 +42,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 {
+
+    
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     //g.fillAll(juce::Colours::black);
 
@@ -88,44 +90,22 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
     }
 
- /*   myPath.lineTo(100.0f, 200.0f);
-    myPath.lineTo(200.0f, 300.0f);*/
-
     g.strokePath(myPath, juce::PathStrokeType(5.0f));
     
-    /*
-    auto str1 = std::to_string(scopeData[0]);
-    std::cout << scopeData[0];
-    g.drawText(str1, getLocalBounds(), juce::Justification::centred, true);
+    auto message = "default";
 
-    for (int i = 1; i < scopeSize; ++i)
-    {
-        auto width = getLocalBounds().getWidth();
-        auto height = getLocalBounds().getHeight();
-
-        g.drawLine({ (float)juce::jmap(i - 1, 0, scopeSize - 1, 0, width),
-                              juce::jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
-                      (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
-                              juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) });
-    }
-    //drawFrame(g);
-    */
-
-
-   /* auto valueStringProcBlock = "ProcessBlock has finished running.";
-
-    if (!audioProcessor.getProcBlockIsRunning()) {
-        g.drawText(valueStringProcBlock, xPosition, yPosition, getWidth(), lineHeight, juce::Justification::left);
-    }
-    else {
-        audioProcessor.resetProcBlockIsRunning();
-    }*/
+    if (!audioProcessor.getProcBlockIsRunning())
+        message = "Processor block is finished";
+    else
+        message = "process block is being reset.";
+    
+    g.drawText(message, xPosition, yPosition * lineHeight, getWidth(), lineHeight, juce::Justification::left);
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
     if (!audioProcessor.getProcBlockIsRunning()) {
-        std::cout << "ProcessBlock has finished.";
+        repaint(); //will call repaint from within timerCallback
     }
     else {
         audioProcessor.resetProcBlockIsRunning();
