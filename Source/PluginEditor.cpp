@@ -19,16 +19,10 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // editor's size to whatever you need it to be.
     
     setOpaque(true);
-    setSize (1600, 1000);
+    setSize (1200, 1000);
     startTimer(5);
    
-    
-   /* juce::Timer timer;
-    void timer.timerCallback() const override
-    {
-        startTimer(int 500);
-        bool procBlockRunning = "False";
-    };*/
+  
 
     
 }
@@ -42,8 +36,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 {
-
-    
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     //g.fillAll(juce::Colours::black);
 
@@ -61,10 +53,19 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     int xPosition = 10; // Start position from the left
 
     //g.drawFittedText(str, getLocalBounds(), juce::Justification::centred, 1);
+
     const int scopeSize = audioProcessor.getScopeSize();
     const float* scopeData = audioProcessor.getScopeData();
 
     const float* fft = audioProcessor.getFFT();
+
+    auto msg = "default";
+    float offsetX = 70;
+    float offsetY = 500;
+    float scaleX = 10;
+    float scaleY = 100;
+    float sampleSize = 100;
+    float FlipYAxisValue = -1;
 
         for (int i = 0; i < scopeSize; ++i)
         {
@@ -74,15 +75,17 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 
             // Draw the string at appropriate positions
             g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
+
+            if (!audioProcessor.getProcBlockIsRunning())
+                msg = "Process block has finished running";
+            else
+                msg = "Bool processBlockIsRunning is being reset";
+
+            g.drawText(msg, xPosition + offsetX , yPosition + i * lineHeight, getWidth(), lineHeight, juce::Justification::left);
         }
     
     juce::Path myPath;
-    float offsetX = 50;
-    float offsetY = 500;
-    float scaleX = 10;
-    float scaleY = 100;
-    float sampleSize = 150;
-    float FlipYAxisValue = -1;
+    
 
     myPath.startNewSubPath(offsetX, offsetY + scopeData[0]); //observe closely
     for (int i = 1; i < sampleSize; i++)
@@ -90,22 +93,18 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
     }
 
-    g.strokePath(myPath, juce::PathStrokeType(5.0f));
-    
-    auto message = "default";
 
-    if (!audioProcessor.getProcBlockIsRunning())
-        message = "Processor block is finished";
-    else
-        message = "process block is being reset.";
-    
-    g.drawText(message, xPosition, yPosition * lineHeight, getWidth(), lineHeight, juce::Justification::left);
+    g.strokePath(myPath, juce::PathStrokeType(5.0f));
+ 
+   
+
+   
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
     if (!audioProcessor.getProcBlockIsRunning()) {
-        repaint(); //will call repaint from within timerCallback
+        repaint();
     }
     else {
         audioProcessor.resetProcBlockIsRunning();

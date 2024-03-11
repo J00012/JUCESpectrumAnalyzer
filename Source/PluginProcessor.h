@@ -40,9 +40,7 @@ public:
 
     bool getProcBlockIsRunning();
     void resetProcBlockIsRunning();
-    
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-    
     void drawNextFrameOfSpectrum(float* channelData, int numSample);
 
     int getScopeSize() const;
