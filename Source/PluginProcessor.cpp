@@ -186,9 +186,9 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
 
     WindowToName& selectedWindow = windowToName[0];                               //set selectedWindow to a variable Name
-    juce::dsp::WindowingFunction<float> window(fftSize, selectedWindow.window);   //declare the window object
-    window.fillWindowingTables(fftSize, selectedWindow.window);                   //fills the content of the object array with a given windowing method
-    window.multiplyWithWindowingTable(scopeData, fftSize);                        //applies the windowing fucntion to the audio data stored in fftData
+    juce::dsp::WindowingFunction<float> window(scopeSize, selectedWindow.window);   //declare the window object
+    window.fillWindowingTables(scopeSize, selectedWindow.window);                   //fills the content of the object array with a given windowing method
+    window.multiplyWithWindowingTable(scopeData, scopeSize);                        //applies the windowing fucntion to the audio data stored in fftData
 
 
     procBlockIsRunning = true;
