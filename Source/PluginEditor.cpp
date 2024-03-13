@@ -19,7 +19,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // editor's size to whatever you need it to be.
 
     setOpaque(true);
-    setSize(1600, 1000);
+    setSize(900, 500);
     startTimer(10);
 
 

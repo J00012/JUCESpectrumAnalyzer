@@ -1,4 +1,167 @@
-**/Builds
-**/JuceLibraryCode
-**/.DS_Store
-
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/FileContentIndex/37c48b4a-a3ca-4542-9462-19f81d9d6b2e.vsidx
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/.suo
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/Browse.VC.db
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/Browse.VC.db-shm
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/Browse.VC.db-wal
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/Browse.VC.opendb
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/DocumentLayout.json
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/ipch/AutoPCH/37bf359ad6ccf97c/PLUGINPROCESSOR.ipch
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/ipch/AutoPCH/3c96754ade14b1bf/PLUGINEDITOR.ipch
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/Solution.VC.db
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/Solution.VC.db-shm
+/Builds/VisualStudio2022/.vs/FFTSpectrumAnalyzer/v17/Solution.VC.db-wal
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_SharedCode.vcxproj
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_SharedCode.vcxproj.filters
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_StandalonePlugin.vcxproj
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_StandalonePlugin.vcxproj.filters
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_StandalonePlugin.vcxproj.user
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_VST3.vcxproj
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_VST3.vcxproj.filters
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_VST3.vcxproj.user
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_VST3ManifestHelper.vcxproj
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer_VST3ManifestHelper.vcxproj.filters
+/Builds/VisualStudio2022/FFTSpectrumAnalyzer.sln
+/Builds/VisualStudio2022/resources.rc
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpect.AFAFC8B3.tlog/CL.12068.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpect.AFAFC8B3.tlog/CL.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpect.AFAFC8B3.tlog/Cl.items.tlog
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpect.AFAFC8B3.tlog/CL.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpect.AFAFC8B3.tlog/FFTSpectrumAnalyzer_SharedCode.lastbuildstate
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpect.AFAFC8B3.tlog/Lib-link.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpect.AFAFC8B3.tlog/Lib-link.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpect.AFAFC8B3.tlog/Lib.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpectrumAnalyzer_SharedCode.log
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpectrumAnalyzer_SharedCode.vcxproj.FileListAbsolute.txt
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpectrumAnalyzer.Build.CppClean.log
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpectrumAnalyzer.lib
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpectrumAnalyzer.lib.recipe
+/Builds/VisualStudio2022/x64/Debug/Shared Code/FFTSpectrumAnalyzer.pdb
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_audio_basics.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_audio_devices.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_audio_formats.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_audio_plugin_client_ARA.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_audio_processors_ara.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_audio_processors_lv2_libs.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_audio_processors.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_audio_utils.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_core.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_data_structures.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_dsp.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_events.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_graphics.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_gui_basics.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/include_juce_gui_extra.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/PluginEditor.obj
+/Builds/VisualStudio2022/x64/Debug/Shared Code/PluginProcessor.obj
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/CL.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/Cl.items.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/CL.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/CL.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/FFTSpectrumAnalyzer_StandalonePlugin.lastbuildstate
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/link.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/link.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/link.secondary.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/link.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/rc.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/rc.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpect.4478ACBA.tlog/rc.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpectrumAnalyzer_StandalonePlugin.log
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpectrumAnalyzer_StandalonePlugin.vcxproj.FileListAbsolute.txt
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpectrumAnalyzer.Build.CppClean.log
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpectrumAnalyzer.exe
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpectrumAnalyzer.exe.recipe
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpectrumAnalyzer.ilk
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/FFTSpectrumAnalyzer.pdb
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/include_juce_audio_plugin_client_Standalone.obj
+/Builds/VisualStudio2022/x64/Debug/Standalone Plugin/resources.res
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/CL.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/Cl.items.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/CL.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/CL.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/FFTSpectrumAnalyzer_VST3ManifestHelper.lastbuildstate
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/link.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/link.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/link.secondary.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/link.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/rc.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/rc.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpect.8B266A0F.tlog/rc.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpectrumAnalyzer_VST3ManifestHelper.log
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/FFTSpectrumAnalyzer_VST3ManifestHelper.vcxproj.FileListAbsolute.txt
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/juce_vst3_helper.Build.CppClean.log
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/juce_vst3_helper.exe
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/juce_vst3_helper.exe.recipe
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/juce_vst3_helper.ilk
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/juce_vst3_helper.pdb
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/juce_VST3ManifestHelper.obj
+/Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/resources.res
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/CL.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/Cl.items.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/CL.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/CL.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/FFTSpectrumAnalyzer_VST3.lastbuildstate
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/link.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/link.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/link.secondary.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/link.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/rc.command.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/rc.read.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpect.588F6461.tlog/rc.write.1.tlog
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer_VST3.log
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer_VST3.vcxproj.FileListAbsolute.txt
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.Build.CppClean.log
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.dll
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.dll.recipe
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.exp
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.ilk
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.lib
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.pdb
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.vst3/Contents/Resources/moduleinfo.json
+/Builds/VisualStudio2022/x64/Debug/VST3/FFTSpectrumAnalyzer.vst3/Contents/x86_64-win/FFTSpectrumAnalyzer.vst3
+/Builds/VisualStudio2022/x64/Debug/VST3/include_juce_audio_plugin_client_VST3.obj
+/Builds/VisualStudio2022/x64/Debug/VST3/resources.res
+/FFTSpectrumAnalyzer.jucer
+/JuceLibraryCode/include_juce_audio_basics.cpp
+/JuceLibraryCode/include_juce_audio_basics.mm
+/JuceLibraryCode/include_juce_audio_devices.cpp
+/JuceLibraryCode/include_juce_audio_devices.mm
+/JuceLibraryCode/include_juce_audio_formats.cpp
+/JuceLibraryCode/include_juce_audio_formats.mm
+/JuceLibraryCode/include_juce_audio_plugin_client_AAX_utils.cpp
+/JuceLibraryCode/include_juce_audio_plugin_client_AAX.cpp
+/JuceLibraryCode/include_juce_audio_plugin_client_AAX.mm
+/JuceLibraryCode/include_juce_audio_plugin_client_ARA.cpp
+/JuceLibraryCode/include_juce_audio_plugin_client_AU_1.mm
+/JuceLibraryCode/include_juce_audio_plugin_client_AU_2.mm
+/JuceLibraryCode/include_juce_audio_plugin_client_AUv3.mm
+/JuceLibraryCode/include_juce_audio_plugin_client_LV2.cpp
+/JuceLibraryCode/include_juce_audio_plugin_client_LV2.mm
+/JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp
+/JuceLibraryCode/include_juce_audio_plugin_client_Unity.cpp
+/JuceLibraryCode/include_juce_audio_plugin_client_VST2.cpp
+/JuceLibraryCode/include_juce_audio_plugin_client_VST2.mm
+/JuceLibraryCode/include_juce_audio_plugin_client_VST3.cpp
+/JuceLibraryCode/include_juce_audio_plugin_client_VST3.mm
+/JuceLibraryCode/include_juce_audio_processors_ara.cpp
+/JuceLibraryCode/include_juce_audio_processors_lv2_libs.cpp
+/JuceLibraryCode/include_juce_audio_processors.cpp
+/JuceLibraryCode/include_juce_audio_processors.mm
+/JuceLibraryCode/include_juce_audio_utils.cpp
+/JuceLibraryCode/include_juce_audio_utils.mm
+/JuceLibraryCode/include_juce_core.cpp
+/JuceLibraryCode/include_juce_core.mm
+/JuceLibraryCode/include_juce_data_structures.cpp
+/JuceLibraryCode/include_juce_data_structures.mm
+/JuceLibraryCode/include_juce_dsp.cpp
+/JuceLibraryCode/include_juce_dsp.mm
+/JuceLibraryCode/include_juce_events.cpp
+/JuceLibraryCode/include_juce_events.mm
+/JuceLibraryCode/include_juce_graphics.cpp
+/JuceLibraryCode/include_juce_graphics.mm
+/JuceLibraryCode/include_juce_gui_basics.cpp
+/JuceLibraryCode/include_juce_gui_basics.mm
+/JuceLibraryCode/include_juce_gui_extra.cpp
+/JuceLibraryCode/include_juce_gui_extra.mm
+/JuceLibraryCode/JuceHeader.h
+/JuceLibraryCode/JucePluginDefines.h
+/JuceLibraryCode/ReadMe.txt
