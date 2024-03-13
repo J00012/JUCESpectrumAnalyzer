@@ -12,8 +12,6 @@
 #include "PluginProcessor.h"
 
 //==============================================================================
-/**
-*/
 class FFTSpectrumAnalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor, juce::Timer
 {
 public:

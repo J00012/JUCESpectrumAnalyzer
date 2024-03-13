@@ -17,14 +17,9 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    
     setOpaque(true);
     setSize (1200, 1000);
-    startTimer(5);
-   
-  
-
-    
+    startTimer(5); // Timer callback in milliseconds    
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -36,75 +31,56 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    //g.fillAll(juce::Colours::black);
-
-
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-
-    //g.setColour(juce::Colours::white);
-    //g.setFont(15.0f);
-
     g.setOpacity(1.0f);
     g.setColour(juce::Colours::white);
+
+    const int scopeSize = audioProcessor.getScopeSize();
+    const float* scopeData = audioProcessor.getScopeData();
+    const float* fft = audioProcessor.getFFT();
 
     int lineHeight = 10; // Adjust line height as needed
     int yPosition = 10; // Start position from the top
     int xPosition = 10; // Start position from the left
+    float offsetX = 70; // Offset X position
+    float offsetY = 500; // Offset Y position
+    float scaleX = 10; // Scaling X increments
+    float scaleY = 100; // Scaling Y increments
+    float sampleSize = 100; // Adjust the number of samples being displayed as needed
+    float FlipYAxisValue = -1; // Used to flip the graph vertically to the correct orientation
+    auto msg = "default"; // default print message
+    juce::Path myPath; // Used when we print the graph 
 
-    //g.drawFittedText(str, getLocalBounds(), juce::Justification::centred, 1);
-
-    const int scopeSize = audioProcessor.getScopeSize();
-    const float* scopeData = audioProcessor.getScopeData();
-
-    const float* fft = audioProcessor.getFFT();
-
-    auto msg = "default";
-    float offsetX = 70;
-    float offsetY = 500;
-    float scaleX = 10;
-    float scaleY = 100;
-    float sampleSize = 100;
-    float FlipYAxisValue = -1;
-
-        for (int i = 0; i < scopeSize; ++i)
+        for (int i = 0; i < scopeSize; ++i) // Print the value of the samples
         {
-            
             // Convert each float value to a string
             auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
-
             // Draw the string at appropriate positions
             g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
 
+            // Use to write to the gui the status of the processBlock
             if (!audioProcessor.getProcBlockIsRunning())
                 msg = "Process block has finished running";
             else
                 msg = "Bool processBlockIsRunning is being reset";
-
+            // Draws msg value
             g.drawText(msg, xPosition + offsetX , yPosition + i * lineHeight, getWidth(), lineHeight, juce::Justification::left);
         }
     
-    juce::Path myPath;
-    
-
-    myPath.startNewSubPath(offsetX, offsetY + scopeData[0]); //observe closely
+    // Draws the waveform; loops through the samples that have been read in
+    myPath.startNewSubPath(offsetX, offsetY + scopeData[0]);
     for (int i = 1; i < sampleSize; i++)
     {
         myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
     }
-
-
-    g.strokePath(myPath, juce::PathStrokeType(5.0f));
- 
-   
-
-   
+    g.strokePath(myPath, juce::PathStrokeType(5.0f)); 
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
     if (!audioProcessor.getProcBlockIsRunning()) {
-        repaint();
+        FFTSpectrumAnalyzerAudioProcessorEditor::repaint();
+        // stopTimer();
     }
     else {
         audioProcessor.resetProcBlockIsRunning();

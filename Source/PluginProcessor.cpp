@@ -28,6 +28,9 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
 {
 }
 
+// Initializing scopeData to an array of zeroes
+float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
+
 FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor()
 {
 }
@@ -143,18 +146,13 @@ bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
     return procBlockIsRunning;
 }
 
-
-//buffer- two dimenstional array where rows represent different channels and columns represent individual samples
-//(A multi-channel buffer containing floating point audio samples)
-//
-//midiMessages
+// Buffer = two dimenstional array where rows represent different channels and columns represent individual samples
+// ^(A multi-channel buffer containing floating point audio samples)
 void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
 
     //just for mono
     int channel = 0;
@@ -162,19 +160,11 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
     auto* channelData = buffer.getReadPointer(channel);
 
-   
-
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
-
     procBlockIsRunning = true;
-    
-    
-    
 }
-
-
 
 int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
 {
@@ -223,5 +213,3 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new FFTSpectrumAnalyzerAudioProcessor();
 }
-
-float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
