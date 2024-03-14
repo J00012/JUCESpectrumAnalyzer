@@ -19,12 +19,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // editor's size to whatever you need it to be.
     setOpaque(true);
     setSize (1200, 1000);
-    startTimer(5); // Timer callback in milliseconds  
-
-    // Use to make plugin resizeable
-    addAndMakeVisible(resizer = new juce::ResizableCornerComponent(this, &resizeLimits));
-    resizeLimits.setSizeLimits(150, 150, 800, 300);
-    setSize(ownerFilter->lastUIWidth, ownerFilter->lastUIHeight);
+    startTimer(500); // Timer callback in milliseconds  
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -49,7 +44,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     float offsetY = 500; // Offset Y position
     float scaleX = 10; // Scaling X increments
     float scaleY = 50; // Scaling Y increments
-    float sampleSize = 50; // Adjust the number of samples being displayed as needed
+    float sampleSize = 100; // Adjust the number of samples being displayed as needed
     float FlipYAxisValue = -1; // Used to flip the graph vertically to the correct orientation
     auto msg = "default"; // default print message
     juce::Path myPath; // Used when we print the graph 
@@ -63,16 +58,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 
     }
     
-    for (int i = 0; i < scopeSize; ++i)
-    {
-        // Use to write to the gui the status of the processBlock
-        if (!audioProcessor.getProcBlockIsRunning())
-            msg = "Process block has finished running";
-        else
-            msg = "Bool processBlockIsRunning is being reset";
-        // Draws msg value
-        g.drawText(msg, xPosition + offsetX, yPosition + i * lineHeight, getWidth(), lineHeight, juce::Justification::left);
-    }
+ 
+    // Use to write to the gui the status of the processBlock
+    if (!audioProcessor.getProcBlockIsRunning())
+        msg = "Process block has finished running";
+    else
+        msg = "Bool processBlockIsRunning is being reset";
+    // Draws msg value
+    g.drawText(msg, xPosition + offsetX, yPosition * lineHeight, getWidth(), lineHeight, juce::Justification::left);
+    
 
     // Draws the waveform; loops through the samples that have been read in
     myPath.startNewSubPath(offsetX, offsetY + scopeData[0]);
@@ -86,7 +80,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
     if (!audioProcessor.getProcBlockIsRunning()) {
-        FFTSpectrumAnalyzerAudioProcessorEditor::repaint();
+        repaint();
         // stopTimer();
     }
     else {
@@ -99,8 +93,4 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    // Use to make plugin resizeable
-    resizer->setBounds(getWidth() - 16, getHeight() - 16, 16, 16);
-    audioProcessor.lastUIWidth = getWidth();
-    audioProcessor.lastUIHeight = getHeight();
 }

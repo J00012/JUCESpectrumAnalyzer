@@ -65,10 +65,8 @@ public:
     void changeProgramName (int index, const juce::String& newName) override;
 
     //==============================================================================
-    // Use to make plugin resizeable
     void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;  
-    int lastUIWidth, lastUIHeight;
+    void setStateInformation (const void* data, int sizeInBytes) override; 
 
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class

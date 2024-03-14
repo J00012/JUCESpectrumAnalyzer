@@ -29,11 +29,6 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
-    
-    // Use to make plugin resizeable
-    juce::ResizableCornerComponent* resizer;
-    juce::ComponentBoundsConstrainer resizeLimits;
-    FFTSpectrumAnalyzerAudioProcessor* ownerFilter;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
