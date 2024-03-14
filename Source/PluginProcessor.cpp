@@ -22,16 +22,19 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
                      #endif
                        ),
     forwardFFT(fftOrder), // Initialize forwardFFT with fftOrder
-    window(fftSize, juce::dsp::WindowingFunction<float>::hann) // Initialize window
-    
+    window(fftSize, juce::dsp::WindowingFunction<float>::hann), // Initialize window
+    // Use to make plugin resizeable
+    lastUIWidth(400), // Initialize lastUIWidth
+    lastUIHeight(200) // Initialize lastUIHeight
 #endif
 {
+
 }
 
 // Initializing scopeData to an array of zeroes
 float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
 
-FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor()
+FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor() // This is the destructor
 {
 }
 
@@ -199,12 +202,33 @@ void FFTSpectrumAnalyzerAudioProcessor::getStateInformation (juce::MemoryBlock& 
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+    
+    // Use to make plugin resizeable
+    juce::XmlElement xml("MYAPPSETTINGS");
+    xml.setAttribute("uiWidth", lastUIWidth);
+    xml.setAttribute("uiHeight", lastUIHeight);
+
+    copyXmlToBinary(xml, destData); // use for efficient storage and retrieval
+    
+
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+    // Use to make plugin resizeable
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+    if (xmlState != nullptr)
+    {
+        if (xmlState->hasTagName("MYAPPSETTINGS"))
+        {
+            lastUIWidth = xmlState->getIntAttribute("uiWidth", lastUIWidth);
+            lastUIHeight = xmlState->getIntAttribute("uiHeight", lastUIHeight);
+        }
+    }
 }
 
 //==============================================================================

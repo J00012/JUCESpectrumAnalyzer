@@ -19,7 +19,12 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // editor's size to whatever you need it to be.
     setOpaque(true);
     setSize (1200, 1000);
-    startTimer(5); // Timer callback in milliseconds    
+    startTimer(5); // Timer callback in milliseconds  
+
+    // Use to make plugin resizeable
+    addAndMakeVisible(resizer = new juce::ResizableCornerComponent(this, &resizeLimits));
+    resizeLimits.setSizeLimits(150, 150, 800, 300);
+    setSize(ownerFilter->lastUIWidth, ownerFilter->lastUIHeight);
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -27,8 +32,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 }
 
 //==============================================================================
-
-
 void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
@@ -45,28 +48,32 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     float offsetX = 70; // Offset X position
     float offsetY = 500; // Offset Y position
     float scaleX = 10; // Scaling X increments
-    float scaleY = 100; // Scaling Y increments
-    float sampleSize = 100; // Adjust the number of samples being displayed as needed
+    float scaleY = 50; // Scaling Y increments
+    float sampleSize = 50; // Adjust the number of samples being displayed as needed
     float FlipYAxisValue = -1; // Used to flip the graph vertically to the correct orientation
     auto msg = "default"; // default print message
     juce::Path myPath; // Used when we print the graph 
 
-        for (int i = 0; i < scopeSize; ++i) // Print the value of the samples
-        {
-            // Convert each float value to a string
-            auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
-            // Draw the string at appropriate positions
-            g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
+    for (int i = 0; i < scopeSize; ++i) // Print the value of the samples
+    {
+        // Convert each float value to a string
+        auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
+        // Draw the string at appropriate positions
+        g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
 
-            // Use to write to the gui the status of the processBlock
-            if (!audioProcessor.getProcBlockIsRunning())
-                msg = "Process block has finished running";
-            else
-                msg = "Bool processBlockIsRunning is being reset";
-            // Draws msg value
-            g.drawText(msg, xPosition + offsetX , yPosition + i * lineHeight, getWidth(), lineHeight, juce::Justification::left);
-        }
+    }
     
+    for (int i = 0; i < scopeSize; ++i)
+    {
+        // Use to write to the gui the status of the processBlock
+        if (!audioProcessor.getProcBlockIsRunning())
+            msg = "Process block has finished running";
+        else
+            msg = "Bool processBlockIsRunning is being reset";
+        // Draws msg value
+        g.drawText(msg, xPosition + offsetX, yPosition + i * lineHeight, getWidth(), lineHeight, juce::Justification::left);
+    }
+
     // Draws the waveform; loops through the samples that have been read in
     myPath.startNewSubPath(offsetX, offsetY + scopeData[0]);
     for (int i = 1; i < sampleSize; i++)
@@ -92,4 +99,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    // Use to make plugin resizeable
+    resizer->setBounds(getWidth() - 16, getHeight() - 16, 16, 16);
+    audioProcessor.lastUIWidth = getWidth();
+    audioProcessor.lastUIHeight = getHeight();
 }
