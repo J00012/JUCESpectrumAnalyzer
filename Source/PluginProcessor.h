@@ -21,6 +21,13 @@ class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
         fftSize = 1 << fftOrder,  // [2]
         scopeSize = 512           // [3] this will probably need to change since it is the "SIZE"
     };
+    
+    enum RunState
+    {
+        Ready,
+        Running,
+        Finished
+    };
 
 public:
     //==============================================================================
@@ -35,8 +42,12 @@ public:
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
 
-    bool getProcBlockIsRunning();
-    void resetProcBlockIsRunning();
+    RunState getProcBlockRunState();
+    bool IsProcBlockEvents();
+    const std::string getProcBlockEvents();
+    void clearProcBlockEvents();
+
+    void setProcBlockRunState(RunState runState);
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void drawNextFrameOfSpectrum(float* channelData, int numSample);
 
@@ -68,6 +79,9 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override; 
 
+    //==============================================================================
+    RunState procBlockRunState;
+
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
     juce::dsp::WindowingFunction<float> window;     // [5]	//HERE IS THE WINDOW DECLARATION
@@ -79,8 +93,9 @@ private:
    
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
     static float scopeData[scopeSize];                  // [10]	
+    std::string procBlockEvents;
    // double array[6] = { 0,0,0,0,0,0};
-    bool procBlockIsRunning = false;
+    //bool procBlockIsRunning = false;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)

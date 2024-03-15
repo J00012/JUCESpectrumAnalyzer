@@ -60,13 +60,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     
  
     // Use to write to the gui the status of the processBlock
-    if (!audioProcessor.getProcBlockIsRunning())
-        msg = "Process block has finished running";
-    else
-        msg = "Bool processBlockIsRunning is being reset";
-    // Draws msg value
-    g.drawText(msg, xPosition + offsetX, yPosition * lineHeight, getWidth(), lineHeight, juce::Justification::left);
-    
+    if (audioProcessor.IsProcBlockEvents())
+    {
+        g.drawText(audioProcessor.getProcBlockEvents(), xPosition + offsetX, yPosition * lineHeight, getWidth(), lineHeight, juce::Justification::left);
+        //audioProcessor.clearProcBlockEvents();
+    }
 
     // Draws the waveform; loops through the samples that have been read in
     myPath.startNewSubPath(offsetX, offsetY + scopeData[0]);
@@ -79,13 +77,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
-    if (!audioProcessor.getProcBlockIsRunning()) {
+    if (audioProcessor.IsProcBlockEvents())
+    {
         repaint();
         // stopTimer();
-    }
-    else {
-        audioProcessor.resetProcBlockIsRunning();
-        std::cout << "ProcessBlock has been reset.";
     }
 }
 

@@ -25,6 +25,8 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
     window(fftSize, juce::dsp::WindowingFunction<float>::hann) // Initialize window
 #endif
 {
+    procBlockEvents = "";
+    setProcBlockRunState(Ready);
 }
 
 
@@ -133,34 +135,64 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
-void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsRunning() 
+void FFTSpectrumAnalyzerAudioProcessor::setProcBlockRunState(RunState runState) 
 {
-    procBlockIsRunning = false;
+    procBlockRunState = runState;
+    switch (runState)
+    {
+    case Ready:
+        procBlockEvents.append("Ready\n");
+        break;
+    case Running:
+        procBlockEvents.append("Running\n");
+        break;
+    case Finished:
+        procBlockEvents.append("Finished\n");
+        break;
+    }
 }
 
-bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
+FFTSpectrumAnalyzerAudioProcessor::RunState FFTSpectrumAnalyzerAudioProcessor::getProcBlockRunState()
 {
-    return procBlockIsRunning;
+    return procBlockRunState;
 }
+
+bool FFTSpectrumAnalyzerAudioProcessor::IsProcBlockEvents()
+{
+    return procBlockEvents.length() != 0;
+}
+
+const std::string FFTSpectrumAnalyzerAudioProcessor::getProcBlockEvents()
+{
+    return procBlockEvents;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::clearProcBlockEvents()
+{
+    procBlockEvents.clear();
+}
+
+
 
 // Buffer = two dimenstional array where rows represent different channels and columns represent individual samples
 // ^(A multi-channel buffer containing floating point audio samples)
 void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    setProcBlockRunState(Running);
+
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
     //just for mono
     int channel = 0;
-    std::cout << "hello test";
 
     auto* channelData = buffer.getReadPointer(channel);
 
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
-    procBlockIsRunning = true;
+    setProcBlockRunState(Finished);
 }
 
 int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
