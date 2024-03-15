@@ -12,17 +12,20 @@
 
 //default constructor
 template<typename T>
-RingBuffer<T>::RingBuffer() : buffer(0), capacity(0), head(0), tail(0), full(false) {}
+RingBuffer<T>::RingBuffer(size_t capacity) : buffer(capacity), capacity(capacity), head(0), tail(0), full(false) {}
 
 template<typename T>
-void RingBuffer<T>::write(const T& data) {
+void RingBuffer<T>::write(const T* processBuffer, size_t bufferSize) {
+
     if (full)
         throw std::overflow_error("Buffer is full");
 
-    buffer[head] = data;
-    head = (head + 1) % capacity;
-    if (head == tail)
-        full = true;
+    for (size_t sample = 0; sample < bufferSize; ++sample) {
+        buffer[head] = processBuffer[sample];
+        head = (head + 1) % capacity;
+        if (head == tail)
+            full = true;
+    }
 }
 
 template<typename T>
@@ -73,12 +76,8 @@ void RingBuffer<T>::setSize(size_t bufferSize) {
     capacity = bufferSize;
 }
 
-template<typename T>
-void RingBuffer<T>::copyArray(const T* processBuffer, size_t bufferSize) {
 
-    for (size_t sample = 0; sample < bufferSize; ++sample) {
-        buffer[sample] = processBuffer[sample];
-    }
-}
+
+//fix the write to include both functionality you need make write and copy array in the same thing
 
 template class RingBuffer<float>;

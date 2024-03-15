@@ -25,14 +25,13 @@ private:
     bool full;
 
 public:
-    RingBuffer();
+    RingBuffer(size_t capacity);
 
-    void write(const T& data);
+    void write(const T* processBuffer, size_t bufferSize);
     T read();
     bool is_empty() const;
     size_t size() const;
     void copyVector(const std::vector<T>& processBuffer);
-    void copyArray(const T* processBuffer, size_t bufferSize);
     void clear();
     void setSize(size_t bufferSize);
 };

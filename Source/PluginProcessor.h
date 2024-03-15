@@ -49,6 +49,7 @@ public:
     const float* getFFT() const;
 
 
+
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -80,7 +81,7 @@ private:
   
     float fftArray[fftSize] = {0};
     float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
-    RingBuffer<float> ringBuffer;                   //declare the ringBuffer object
+    RingBuffer<float> ringBuffer{2048};                   //declare the ringBuffer object
     int fftArrayIndex = 0;
    
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED

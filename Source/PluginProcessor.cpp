@@ -161,13 +161,17 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
  
     auto* channelData = buffer.getReadPointer(channel);
 
-    ringBuffer.setSize(buffer.getNumSamples());
-    ringBuffer.copyArray(channelData,buffer.getNumSamples());
+    ringBuffer.write(channelData,buffer.getNumSamples());
 
+    //if(ringBuffer.size() < 512)
+    //if(ringBuffer.size() >= 512)
+    /*
      //TEST CODE !!!!!
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
+
+
 
 
     //make a new dataType for the enum in JUCE and string for selection
@@ -194,6 +198,8 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     window.fillWindowingTables(scopeSize, selectedWindow.window);                   //fills the content of the object array with a given windowing method
     window.multiplyWithWindowingTable(scopeData, scopeSize);                        //applies the windowing fucntion to the audio data stored in fftData
 
+    forwardFFT.performFrequencyOnlyForwardTransform(scopeData);
+
 
     procBlockIsRunning = true;
     
@@ -219,8 +225,9 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     //    //scopeData[i] = level;                                   // [4]
     //    //scopeData[i] = 1.234;
     //}
-
+    
 }
+
 
 //void FFTSpectrumAnalyzerAudioProcessor::applyWindow() {
 
