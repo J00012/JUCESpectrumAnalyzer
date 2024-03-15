@@ -161,6 +161,9 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
  
     auto* channelData = buffer.getReadPointer(channel);
 
+    ringBuffer.setSize(buffer.getNumSamples());
+    ringBuffer.copyArray(channelData,buffer.getNumSamples());
+
      //TEST CODE !!!!!
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];

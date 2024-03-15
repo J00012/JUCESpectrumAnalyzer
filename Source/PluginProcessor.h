@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-
+#include "RingBuffer.h"
 //==============================================================================
 /**
 */
@@ -80,7 +80,7 @@ private:
   
     float fftArray[fftSize] = {0};
     float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
-
+    RingBuffer<float> ringBuffer;                   //declare the ringBuffer object
     int fftArrayIndex = 0;
    
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
@@ -88,6 +88,7 @@ private:
    // double array[6] = { 0,0,0,0,0,0};
     bool procBlockIsRunning = false;
     
+
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)

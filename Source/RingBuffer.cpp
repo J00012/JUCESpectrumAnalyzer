@@ -10,8 +10,9 @@
 
 #include "RingBuffer.h"
 
+//default constructor
 template<typename T>
-RingBuffer<T>::RingBuffer(size_t capacity) : buffer(capacity), capacity(capacity), head(0), tail(0), full(false) {}
+RingBuffer<T>::RingBuffer() : buffer(0), capacity(0), head(0), tail(0), full(false) {}
 
 template<typename T>
 void RingBuffer<T>::write(const T& data) {
@@ -54,6 +55,30 @@ void RingBuffer<T>::clear() {
     std::fill(buffer.begin(), buffer.end(), T{}); 
     head = tail = 0;
     full = false;
+}
+
+template<typename T>
+void RingBuffer<T>::copyVector(const std::vector<T>& processBuffer) {
+
+
+    for (int sample = 0; sample < processBuffer.size(); ++sample) {
+        buffer[sample] = processBuffer[sample];
+    }
+}
+
+
+template<typename T>
+void RingBuffer<T>::setSize(size_t bufferSize) {
+    buffer.resize(bufferSize);
+    capacity = bufferSize;
+}
+
+template<typename T>
+void RingBuffer<T>::copyArray(const T* processBuffer, size_t bufferSize) {
+
+    for (size_t sample = 0; sample < bufferSize; ++sample) {
+        buffer[sample] = processBuffer[sample];
+    }
 }
 
 template class RingBuffer<float>;
