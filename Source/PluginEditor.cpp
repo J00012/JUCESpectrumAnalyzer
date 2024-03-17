@@ -19,18 +19,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // editor's size to whatever you need it to be.
 
     setOpaque(true);
-    setSize(900, 500);
-    startTimer(10);
-
-
-    /* juce::Timer timer;
-     void timer.timerCallback() const override
-     {
-         startTimer(int 500);
-         bool procBlockRunning = "False";
-     };*/
-
-
+    setSize(1000, 600);
+    startTimer(50);
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -77,9 +67,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
     juce::Path myPath;
     float offsetX = 1;
-    float offsetY = 400;
+    float offsetY = 300;
     float scaleX = 10;
-    float scaleY = 200;
+    float scaleY = 50;
     float sampleSize = 512;
     float FlipYAxisValue = -1;
 
@@ -90,48 +80,26 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
     }
 
     g.strokePath(myPath, juce::PathStrokeType(1.0f));
-
-    /*
-    auto str1 = std::to_string(scopeData[0]);
-    std::cout << scopeData[0];
-    g.drawText(str1, getLocalBounds(), juce::Justification::centred, true);
-
-    for (int i = 1; i < scopeSize; ++i)
-    {
-        auto width = getLocalBounds().getWidth();
-        auto height = getLocalBounds().getHeight();
-
-        g.drawLine({ (float)juce::jmap(i - 1, 0, scopeSize - 1, 0, width),
-                              juce::jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
-                      (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
-                              juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) });
-    }
-    //drawFrame(g);
-    */
-
-
-    /* auto valueStringProcBlock = "ProcessBlock has finished running.";
-
-     if (!audioProcessor.getProcBlockIsRunning()) {
-         g.drawText(valueStringProcBlock, xPosition, yPosition, getWidth(), lineHeight, juce::Justification::left);
-     }
-     else {
-         audioProcessor.resetProcBlockIsRunning();
-     }*/
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
-    if (!audioProcessor.getProcBlockIsRunning()) {
-        //ProcessBlock has finished
-    } 
-    
-    else {
-        audioProcessor.resetProcBlockIsRunning();
-        std::cout << "ProcessBlock has been reset.";
-        repaint();
+    if (!audioProcessor.getProcBlockIsRunning()) {                  // isRunning: false
+        if (!audioProcessor.getProcBlockIsCalled()) {               // isRunning: false -> procBlockCalled: false
+                                                                    // do nothing // timerCallback recalled later
+        }
+        else {                                                      // isRunning: false -> **procBlockCalled: true**
+            audioProcessor.resetProcBlockIsCalled();                // isRunning: false -> procBlockCalled: true, isRunning: true // timerCallback recalled later
+        }
+    } else {                                                        // **isRunning: true**                                              
+        if (!audioProcessor.getProcBlockIsCalled()) {               // isRunning: true -> procBlockCalled: false
+            audioProcessor.resetProcBlockIsRunning();               // isRunning: true -> procBlockCalled: false, isRunning: false
+            repaint();                                              // block is finished processing, call repaint // timerCallback recalled later
+        }
+        else {                                                      // isRunning: true -> **procBlockCalled: true** // timerCallback recalled later
+                                                                    // do nothing // timerCallback recalled later
+        }
     }
-    
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()

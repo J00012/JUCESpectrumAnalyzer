@@ -40,6 +40,8 @@ public:
 
     bool getProcBlockIsRunning();
     void resetProcBlockIsRunning();
+    void resetProcBlockIsCalled();
+    bool getProcBlockIsCalled();
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void drawNextFrameOfSpectrum(float* channelData, int numSample);
 
@@ -87,7 +89,8 @@ private:
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
     static float scopeData[scopeSize];                  // [10]	
     // double array[6] = { 0,0,0,0,0,0};
-    bool procBlockIsRunning = false;
+    bool procBlockCalled;
+    bool isRunning;
 
 
     //==============================================================================

@@ -26,6 +26,8 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
 
 #endif
 {
+    procBlockCalled = false;        // initialize procBlockIsCalled
+    isRunning = false;              // initialize isRunning
 }
 
 FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor()
@@ -135,14 +137,23 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported(const BusesLayout
 
 void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsRunning()
 {
-    procBlockIsRunning = false;
+    isRunning = false;
 }
 
 bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
 {
-    return procBlockIsRunning;
+    return isRunning;
 }
 
+void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsCalled()
+{
+    procBlockCalled = false;
+}
+
+bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsCalled()
+{
+    return procBlockCalled;
+}
 
 //buffer- two dimenstional array where rows represent different channels and columns represent individual samples
 //(A multi-channel buffer containing floating point audio samples)
@@ -150,6 +161,7 @@ bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
 //midiMessages
 void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    procBlockCalled = true;     // set to true when processBlock is called to run buffer
 
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels = getTotalNumInputChannels();
@@ -157,54 +169,16 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
     //just for mono
     int channel = 0;
-    std::cout << "hello test";
 
     auto* channelData = buffer.getReadPointer(channel);
 
-    //loops through the output channels and clears a specified region of all the channels
-     //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-         //buffer.clear (i, 0, buffer.getNumSamples());
-
-
-     //TEST CODE !!!!!
-    /*for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        fftArray[sample] = channelData[sample];
-    }*/
-
-    procBlockIsRunning = true;
+    isRunning = true;           // set to true when buffer reads in channel data
 
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
 
-    //resetProcBlockIsRunning();
-
-    //memcpy(fftData, fftArray, sizeof(fftArray));
-
-
-
-    //// first apply a windowing function to our data
-    //window.multiplyWithWindowingTable(fftData, fftSize);       // [1]
-
-    //// then render our FFT data..
-    //forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
-
-    //auto mindB = -100.0f;
-    //auto maxdB = 0.0f;
-
-    //for (int i = 0; i < scopeSize; ++i)                         // [3]
-    //{
-    //    auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
-    //    auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
-    //    /*auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
-    //        - juce::Decibels::gainToDecibels((float)fftSize)),
-    //        mindB, maxdB, 0.0f, 1.0f);*/
-
-    //    //scopeData[i] = skewedProportionX;
-    //    //scopeData[i] = ;
-    //    //scopeData[i] = level;                                   // [4]
-    //    //scopeData[i] = 1.234;
-    //}
+    isRunning = false;          // set to false when buffer finishes reading in channel data
 
 }
 
