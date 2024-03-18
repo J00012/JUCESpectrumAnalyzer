@@ -38,6 +38,9 @@ public:
     bool getProcBlockCalled();
     void resetProcBlockCalled();
     void resetScopeDataIndex();
+    void incrementPlotIndex();
+    int getPlotIndex();
+    int getPlotSize();
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void drawNextFrameOfSpectrum(float* channelData, int numSample);
@@ -82,8 +85,10 @@ private:
     bool procBlockCalled = false;
 
     static const int scopeSize = 48000 * 5;
-    static float scopeData[scopeSize];
+    static const int plotSize = 2;
+    static float scopeData[plotSize][scopeSize];
     static int scopeDataIndex;
+    static int plotIndex;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)
