@@ -20,7 +20,7 @@ class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
     {
         fftOrder = 11,             // [1]
         fftSize = 1 << fftOrder,  // [2]
-        scopeSize = 512             // [3]	   //this will probably need to change since it is the "SIZE"
+        //scopeSize = 512             // [3]	   //this will probably need to change since it is the "SIZE"
     };
 
 
@@ -44,16 +44,13 @@ public:
     int getPlotIndex();
     int getPlotSize();
 
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void drawNextFrameOfSpectrum(float* channelData, int numSample);
-    
-
 
     int getScopeSize() const;
     const float* getScopeData() const;
     const double* getArray() const;
     const float* getFFT() const;
-
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;

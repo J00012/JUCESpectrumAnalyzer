@@ -10,6 +10,8 @@
 #include "PluginEditor.h"
 #include <string>
 
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
+
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
@@ -18,8 +20,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // editor's size to whatever you need it to be.
     
     setOpaque(true);
-    setSize (1600, 1000);
-
+    setSize (1600, 950);
     startTimer(500);
 }
 
@@ -31,26 +32,14 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    //g.fillAll(juce::Colours::black);
-
-
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-
-    //g.setColour(juce::Colours::white);
-    //g.setFont(15.0f);
-
     g.setOpacity(1.0f);
     g.setColour(juce::Colours::white);
 
-    int lineHeight = 10; // Adjust line height as needed
-    int yPosition = 10; // Start position from the top
-    int xPosition = 10; // Start position from the left
-
-    //g.drawFittedText(str, getLocalBounds(), juce::Justification::centred, 1);
     const int scopeSize = audioProcessor.getScopeSize();
+    const int plotSize = audioProcessor.getPlotSize();
+    const int plotIndex = audioProcessor.getPlotIndex();
     const float* scopeData = audioProcessor.getScopeData();
-
     const float* fft = audioProcessor.getFFT();
 
     int lineHeight = 10; // Adjust line height as needed
@@ -69,17 +58,26 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
     juce::Path xAxisPlot1;
     juce::Path xAxisPlot2;
     juce::Path xAxisMarkersPlot1;
-    juce::Path xAxisMarkersPlot2;
-juce::PathyAxisPlot1juce::PathyAxisPlot2juce::PathyAxisMarkersUpPlot1    juce::Path yAxisMarkersDownPlot1;juce::PathyAxisMarkersUpPlot2;juce::PathyAxisMarkersDownPlot2Axi variableslengthXAxis1    float lengthYAxis = 200;floatscaleXMarker= 50;floatscaleYMarker = 50intnumXMarkers=20intnumYMarkers = 3
-    myPath.startNewSubPath(offsetX, offsetY + scopeData[0]); //observe closely
-    for (int i = 1; i < sampleSize; i++)
-    {
-        myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
-    }
+    juce::Path xAxisMarkersPlot2; 
+    juce::Path yAxisPlot1; 
+    juce::Path yAxisPlot2;
+    juce::Path yAxisMarkersUpPlot1;
+    juce::Path yAxisMarkersDownPlot1;
+    juce::Path yAxisMarkersUpPlot2;
+    juce::Path yAxisMarkersDownPlot2;
+    
+        
+    // Axis variables
+    float lengthXAxis = 1100;
+    float lengthYAxis = 200;
+    float scaleXMarker = 50;
+    float scaleYMarker = 50;
+    int numXMarkers = 20;
+    int numYMarkers = 3;
 
     // Graph plots
-    plot1.startNewSubPath(offsetX, startYPlot1 + scopeData[0]);
-    plot2.startNewSubPath(offsetX, startYPlot2 + *(scopeData + 1 * scopeSize));
+    plot1.startNewSubPath(offsetX, startYPlot1 + scopeData[0] * scaleY);
+    plot2.startNewSubPath(offsetX, startYPlot2 + *(scopeData + 1 * scopeSize) * scaleY);
     for (int i = 1; i < sampleSize; i++)
     {
         plot1.lineTo(i * scaleX + offsetX, *((scopeData + i) + 0 * scopeSize) * scaleY + startYPlot1);
@@ -92,7 +90,13 @@ juce::PathyAxisPlot1juce::PathyAxisPlot2juce::PathyAxisMarkersUpPlot1    juce::P
     xAxisPlot1.startNewSubPath(offsetX, startYPlot1);
     xAxisPlot1.lineTo(offsetX + lengthXAxis, startYPlot1);
     xAxisPlot2.startNewSubPath(offsetX, startYPlot2);
-    xAxisPlot2.lineTo(offsetX+lengthXAxis, startYPlot2)g.strokePath(xAxisPlot1,juc:PathStrokeType(2.0f));    gstrokePathxAxisPlot2juce:PathStrokeType(2.0f));Ploty-axis    yAxisPlot1.startNewSubPath(offsetX, startYPlot1);    yAxisPlot1.lineTo(offsetX, startYPlot1 + lengthYAxis);  // line drawn up from midpoint
+    xAxisPlot2.lineTo(offsetX + lengthXAxis, startYPlot2);
+    g.strokePath(xAxisPlot1, juce::PathStrokeType(2.0f));
+    g.strokePath(xAxisPlot2, juce::PathStrokeType(2.0f));
+
+    // Plot y-axis
+    yAxisPlot1.startNewSubPath(offsetX, startYPlot1);
+    yAxisPlot1.lineTo(offsetX, startYPlot1 + lengthYAxis);  // line drawn up from midpoint
     yAxisPlot1.lineTo(offsetX, startYPlot1 - lengthYAxis);  // line drawn down from midpoint
     yAxisPlot2.startNewSubPath(offsetX, startYPlot2);
     yAxisPlot2.lineTo(offsetX, startYPlot2 + lengthYAxis);  // line drawn up from midpoint
@@ -111,6 +115,16 @@ juce::PathyAxisPlot1juce::PathyAxisPlot2juce::PathyAxisMarkersUpPlot1    juce::P
     g.strokePath(xAxisMarkersPlot2, juce::PathStrokeType(2.0f));
     
    
+    // Plot X Axis Markers
+    for (int i = 1; i < numXMarkers; i++) {
+        xAxisMarkersPlot1.startNewSubPath(offsetX + scaleXMarker + (i * scaleXMarker), startYPlot1 - 5);
+        xAxisMarkersPlot1.lineTo(offsetX + scaleXMarker + (i * scaleXMarker), startYPlot1 + 5);
+        xAxisMarkersPlot2.startNewSubPath(offsetX + scaleXMarker + (i * scaleXMarker), startYPlot2 - 5);
+        xAxisMarkersPlot2.lineTo(offsetX + scaleXMarker + (i * scaleXMarker), startYPlot2 + 5);
+    }
+    g.strokePath(xAxisMarkersPlot1, juce::PathStrokeType(2.0f));
+    g.strokePath(xAxisMarkersPlot2, juce::PathStrokeType(2.0f));
+
     // Plot Y Axis Markers
     for (int i = 1; i <= numYMarkers; i++) {
         yAxisMarkersUpPlot1.startNewSubPath(offsetX - 5, startYPlot1 - (scaleYMarker * i));

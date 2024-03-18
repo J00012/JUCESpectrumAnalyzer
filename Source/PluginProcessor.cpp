@@ -9,6 +9,9 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+float FFTSpectrumAnalyzerAudioProcessor::scopeData[plotSize][scopeSize] = { 0 };
+int FFTSpectrumAnalyzerAudioProcessor::scopeDataIndex = 0;
+int FFTSpectrumAnalyzerAudioProcessor::plotIndex = 0;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
@@ -156,41 +159,12 @@ int FFTSpectrumAnalyzerAudioProcessor::getPlotIndex()
 int FFTSpectrumAnalyzerAudioProcessor::getPlotSize()
 {
     return plotSize;
-    }*/
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        scopeData[sample] = channelData[sample];
-    }
-    
-    //memcpy(fftData, fftArray, sizeof(fftArray));
-
-
-
-    //// first apply a windowing function to our data
-    //window.multiplyWithWindowingTable(fftData, fftSize);       // [1]
-
-    //// then render our FFT data..
-    //forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
-
-    //auto mindB = -100.0f;
-    //auto maxdB = 0.0f;
-
-    //for (int i = 0; i < scopeSize; ++i)                         // [3]
-    //{
-    //    auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
-    //    auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
-    //    /*auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
-    //        - juce::Decibels::gainToDecibels((float)fftSize)),
-    //        mindB, maxdB, 0.0f, 1.0f);*/
-
-    //    //scopeData[i] = skewedProportionX;
-    //    //scopeData[i] = ;
-    //    //scopeData[i] = level;                                   // [4]
-    //    //scopeData[i] = 1.234;
-    //}
-
 }
 
-
+void FFTSpectrumAnalyzerAudioProcessor::incrementPlotIndex()
+{
+    plotIndex = (plotIndex + 1) % plotSize;
+}
 
 int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
 {
@@ -200,7 +174,29 @@ int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
 
 const float* FFTSpectrumAnalyzerAudioProcessor::getScopeData() const
 {
-    return scopeData;
+    //return (float*) scopeData;
+    return reinterpret_cast<float*>(scopeData);
+}
+
+//==============================================================================
+
+void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+    juce::ScopedNoDenormals noDenormals;
+    auto totalNumInputChannels = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+    //just for mono
+    int channel = 0;
+
+    auto* channelData = buffer.getReadPointer(channel);
+
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample, ++scopeDataIndex)
+    {
+        scopeData[plotIndex][scopeDataIndex] = channelData[sample];
+    }
+
+    procBlockCalled = true;
 }
 
 const float* FFTSpectrumAnalyzerAudioProcessor::getFFT() const
@@ -239,5 +235,3 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new FFTSpectrumAnalyzerAudioProcessor();
 }
-
-float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
