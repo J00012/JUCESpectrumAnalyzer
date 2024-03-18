@@ -29,6 +29,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
+    static bool isRunning;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };

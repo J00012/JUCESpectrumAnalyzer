@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 #include <string>
 
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
@@ -43,9 +44,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     float offsetX = 70; // Offset X position
     float offsetY = 500; // Offset Y position
     float scaleX = 10; // Scaling X increments
-    float scaleY = 50; // Scaling Y increments
+    float scaleY = -50; // Scaling Y increments
     float sampleSize = 100; // Adjust the number of samples being displayed as needed
-    float FlipYAxisValue = -1; // Used to flip the graph vertically to the correct orientation
     auto msg = "default"; // default print message
     juce::Path myPath; // Used when we print the graph 
 
@@ -55,37 +55,27 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
         // Draw the string at appropriate positions
         g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
-
-    }
-    
- 
-    // Use to write to the gui the status of the processBlock
-    if (!audioProcessor.getProcBlockIsRunning())
-        msg = "Process block has finished running";
-    else
-        msg = "Bool processBlockIsRunning is being reset";
-    // Draws msg value
-    g.drawText(msg, xPosition + offsetX, yPosition * lineHeight, getWidth(), lineHeight, juce::Justification::left);
-    
+    }  
 
     // Draws the waveform; loops through the samples that have been read in
     myPath.startNewSubPath(offsetX, offsetY + scopeData[0]);
     for (int i = 1; i < sampleSize; i++)
     {
-        myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
+        myPath.lineTo(i * scaleX + offsetX, scopeData[i] * scaleY + offsetY);
     }
     g.strokePath(myPath, juce::PathStrokeType(5.0f)); 
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
-    if (!audioProcessor.getProcBlockIsRunning()) {
-        repaint();
-        // stopTimer();
+    if (!isRunning && audioProcessor.getProcBlockCalled()){
+        isRunning = true;
+        audioProcessor.resetProcBlockCalled();
     }
-    else {
-        audioProcessor.resetProcBlockIsRunning();
-        std::cout << "ProcessBlock has been reset.";
+    else if (isRunning && !audioProcessor.getProcBlockCalled()){
+        isRunning = false;
+        repaint();
+        audioProcessor.resetScopeDataIndex();
     }
 }
 
@@ -94,3 +84,4 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 }
+

@@ -9,6 +9,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
+int FFTSpectrumAnalyzerAudioProcessor::scopeDataIndex = 0;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
@@ -26,7 +28,6 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
 #endif
 {
 }
-
 
 FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor() // This is the destructor
 {
@@ -133,14 +134,19 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
-void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsRunning() 
+void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
 {
-    procBlockIsRunning = false;
+    procBlockCalled = false;
 }
 
-bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
+bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
 {
-    return procBlockIsRunning;
+    return procBlockCalled;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::resetScopeDataIndex()
+{
+    scopeDataIndex = 0;
 }
 
 // Buffer = two dimenstional array where rows represent different channels and columns represent individual samples
@@ -153,14 +159,14 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
     //just for mono
     int channel = 0;
-    std::cout << "hello test";
 
     auto* channelData = buffer.getReadPointer(channel);
 
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        scopeData[sample] = channelData[sample];
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample, ++scopeDataIndex) {
+        scopeData[scopeDataIndex] = channelData[sample];
     }
-    procBlockIsRunning = true;
+
+    procBlockCalled = true;
 }
 
 int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
@@ -211,6 +217,3 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new FFTSpectrumAnalyzerAudioProcessor();
 }
 
-
-// Initializing scopeData to an array of zeroes
-float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };

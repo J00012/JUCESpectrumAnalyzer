@@ -18,9 +18,9 @@ class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
     enum
     {
         fftOrder = 11,            // [1]
-        fftSize = 1 << fftOrder,  // [2]
-        scopeSize = 512           // [3] this will probably need to change since it is the "SIZE"
+        fftSize = 1 << fftOrder,  // [2]          
     };
+    
 
 public:
     //==============================================================================
@@ -35,8 +35,10 @@ public:
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
 
-    bool getProcBlockIsRunning();
-    void resetProcBlockIsRunning();
+    bool getProcBlockCalled();
+    void resetProcBlockCalled();
+    void resetScopeDataIndex();
+
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void drawNextFrameOfSpectrum(float* channelData, int numSample);
 
@@ -73,14 +75,15 @@ private:
     juce::dsp::WindowingFunction<float> window;     // [5]	//HERE IS THE WINDOW DECLARATION
 
     float fftArray[fftSize] = {0};
-    float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
-
+    float fftData[2 * fftSize] = { 0 };                 
     int fftArrayIndex = 0;
    
-    bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
-    static float scopeData[scopeSize];                  // [10]	
-   // double array[6] = { 0,0,0,0,0,0};
-    bool procBlockIsRunning = false;
+    bool nextFFTBlockReady = false;    
+    bool procBlockCalled = false;
+
+    static const int scopeSize = 48000 * 5;
+    static float scopeData[scopeSize];
+    static int scopeDataIndex;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)
