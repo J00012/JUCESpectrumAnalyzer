@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 #include <string>
 
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
@@ -20,7 +21,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 
     setOpaque(true);
     setSize(1000, 600);
-    startTimer(50);
+    startTimer(500);
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -28,7 +29,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 }
 
 //==============================================================================
-
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 {
@@ -64,12 +64,69 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
         g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth(), lineHeight, juce::Justification::left);
     }
      */
+    
+    juce::Path graph;
 
+    //x-axis variables
+    float graphOffsetX_xAxis = 20;
+    float graphXOffsetY_xAxis = 300;
+    float graphXLength_xAxis = 950;
+
+    //y-axis variables
+    float graphOffsetX_yAxis = 20;
+    float graphXOffsetY_yAxis = 10;
+    float graphXLength_yAxis = 291;
+    float graphMidpoint_yAxis = graphXOffsetY_yAxis + graphXLength_yAxis;
+
+    //x-axis markers
+    float graphOffscaleY_xMarker = 100;
+
+    //y-axis markers
+    float graphOffscaleY_yMarker = 100;
+
+    // graph x-axis
+    graph.startNewSubPath(graphOffsetX_xAxis, graphXOffsetY_xAxis);
+    graph.lineTo(graphOffsetX_xAxis + graphXLength_xAxis, graphXOffsetY_xAxis);
+    g.strokePath(graph, juce::PathStrokeType(2.0f));
+
+    // graph y-axis
+    graph.startNewSubPath(graphOffsetX_yAxis, graphXOffsetY_yAxis);
+    graph.lineTo(graphOffsetX_yAxis, graphXOffsetY_yAxis + graphXLength_yAxis);
+    graph.lineTo(graphOffsetX_yAxis, graphMidpoint_yAxis + graphXLength_yAxis);
+    g.strokePath(graph, juce::PathStrokeType(2.0f));
+
+    // graph x-axis marker
+    graph.startNewSubPath(graphOffsetX_xAxis + graphOffscaleY_xMarker, graphXOffsetY_xAxis - 5);
+    graph.lineTo(graphOffsetX_xAxis + graphOffscaleY_xMarker, graphXOffsetY_xAxis + 5);
+    g.strokePath(graph, juce::PathStrokeType(2.0f));
+
+    for (int i = 1; i < 13; i++) {
+        graph.startNewSubPath(graphOffsetX_xAxis + graphOffscaleY_xMarker + (i * graphOffscaleY_xMarker), graphXOffsetY_xAxis - 5);
+        graph.lineTo(graphOffsetX_xAxis + graphOffscaleY_xMarker + (i * graphOffscaleY_xMarker), graphXOffsetY_xAxis + 5);
+    }
+    g.strokePath(graph, juce::PathStrokeType(2.0f));
+
+    // graph y-axis marker
+    for (int i = 1; i < 3; i++) {
+        graph.startNewSubPath(graphOffsetX_yAxis - 5, graphXOffsetY_xAxis - graphOffscaleY_yMarker * i);
+        graph.lineTo(graphOffsetX_xAxis + 5, graphXOffsetY_xAxis - graphOffscaleY_yMarker * i);
+    }
+    g.strokePath(graph, juce::PathStrokeType(2.0f));
+
+    for (int i = 1; i < 3; i++) {
+        graph.startNewSubPath(graphOffsetX_yAxis - 5, graphXOffsetY_xAxis + graphOffscaleY_yMarker * i);
+        graph.lineTo(graphOffsetX_xAxis + 5, graphXOffsetY_xAxis + graphOffscaleY_yMarker * i);
+    }
+    g.strokePath(graph, juce::PathStrokeType(2.0f));
+
+
+
+    ///*
     juce::Path myPath;
-    float offsetX = 1;
+    float offsetX = 20;
     float offsetY = 300;
     float scaleX = 10;
-    float scaleY = 50;
+    float scaleY = 100;
     float sampleSize = 512;
     float FlipYAxisValue = -1;
 
@@ -80,24 +137,18 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
     }
 
     g.strokePath(myPath, juce::PathStrokeType(1.0f));
+    //*/
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
-    if (!audioProcessor.getProcBlockIsRunning()) {                  // isRunning: false
-        if (!audioProcessor.getProcBlockIsCalled()) {               // isRunning: false -> procBlockCalled: false
-                                                                    // do nothing // timerCallback recalled later
-        }
-        else {                                                      // isRunning: false -> **procBlockCalled: true**
-            audioProcessor.resetProcBlockIsCalled();                // isRunning: false -> procBlockCalled: true, isRunning: true // timerCallback recalled later
-        }
+    if (!isRunning && audioProcessor.getProcBlockIsCalled()) {      // isRunning: false, procBlockCalled: true -> procBlockCalled: false, isRunning: true
+        audioProcessor.resetProcBlockIsCalled();
+        isRunning = true;
     } else {                                                        // **isRunning: true**                                              
-        if (!audioProcessor.getProcBlockIsCalled()) {               // isRunning: true -> procBlockCalled: false
-            audioProcessor.resetProcBlockIsRunning();               // isRunning: true -> procBlockCalled: false, isRunning: false
+        if (!audioProcessor.getProcBlockIsCalled()) {               // isRunning: true -> procBlockCalled: false, isRunning: false
+            isRunning = false;
             repaint();                                              // block is finished processing, call repaint // timerCallback recalled later
-        }
-        else {                                                      // isRunning: true -> **procBlockCalled: true** // timerCallback recalled later
-                                                                    // do nothing // timerCallback recalled later
         }
     }
 }
