@@ -83,8 +83,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     }
 
     // Graph plots
-    plot1.startNewSubPath(offsetX, startYPlot1 + scopeData[0]);
-    plot2.startNewSubPath(offsetX, startYPlot2 + *(scopeData + 1 * scopeSize));
+    plot1.startNewSubPath(offsetX, startYPlot1 + scopeData[0] * scaleY);
+    plot2.startNewSubPath(offsetX, startYPlot2 + *(scopeData + 1 * scopeSize) * scaleY);
     for (int i = 1; i < sampleSize; i++)
     {
         plot1.lineTo(i * scaleX + offsetX, *((scopeData + i) + 0 * scopeSize) * scaleY + startYPlot1);
