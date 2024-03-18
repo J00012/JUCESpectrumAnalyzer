@@ -37,11 +37,8 @@ public:
 #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
 #endif
-
-    bool getProcBlockIsRunning();
-    void resetProcBlockIsRunning();
-    void resetProcBlockIsCalled();
     bool getProcBlockIsCalled();
+    void resetProcBlockIsCalled();
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void drawNextFrameOfSpectrum(float* channelData, int numSample);
 
@@ -90,7 +87,6 @@ private:
     static float scopeData[scopeSize];                  // [10]	
     // double array[6] = { 0,0,0,0,0,0};
     bool procBlockCalled;
-    bool isRunning;
 
 
     //==============================================================================

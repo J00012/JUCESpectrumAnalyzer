@@ -27,7 +27,6 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
 #endif
 {
     procBlockCalled = false;        // initialize procBlockIsCalled
-    isRunning = false;              // initialize isRunning
 }
 
 FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor()
@@ -135,15 +134,6 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported(const BusesLayout
 }
 #endif
 
-void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsRunning()
-{
-    isRunning = false;
-}
-
-bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
-{
-    return isRunning;
-}
 
 void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsCalled()
 {
@@ -172,14 +162,10 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
     auto* channelData = buffer.getReadPointer(channel);
 
-    isRunning = true;           // set to true when buffer reads in channel data
 
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
-
-    isRunning = false;          // set to false when buffer finishes reading in channel data
-
 }
 
 
