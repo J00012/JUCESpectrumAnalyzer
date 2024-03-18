@@ -9,8 +9,10 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
+float FFTSpectrumAnalyzerAudioProcessor::scopeData[plotSize][scopeSize] = { 0 };
 int FFTSpectrumAnalyzerAudioProcessor::scopeDataIndex = 0;
+int FFTSpectrumAnalyzerAudioProcessor::plotIndex = 0;
+
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
@@ -134,6 +136,7 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
+//============================================================================== // Getters and Setters
 void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
 {
     procBlockCalled = false;
@@ -149,6 +152,36 @@ void FFTSpectrumAnalyzerAudioProcessor::resetScopeDataIndex()
     scopeDataIndex = 0;
 }
 
+int FFTSpectrumAnalyzerAudioProcessor::getPlotIndex()
+{
+    return plotIndex;
+}
+
+int FFTSpectrumAnalyzerAudioProcessor::getPlotSize()
+{
+    return plotSize;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::incrementPlotIndex()
+{
+    plotIndex = (plotIndex + 1) % plotSize;
+}
+
+
+int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
+{
+    return scopeSize;
+}
+
+
+const float* FFTSpectrumAnalyzerAudioProcessor::getScopeData() const
+{
+    //return (float*) scopeData;
+    return reinterpret_cast<float*>(scopeData);
+}
+
+//==============================================================================
+
 // Buffer = two dimenstional array where rows represent different channels and columns represent individual samples
 // ^(A multi-channel buffer containing floating point audio samples)
 void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -162,22 +195,12 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
     auto* channelData = buffer.getReadPointer(channel);
 
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample, ++scopeDataIndex) {
-        scopeData[scopeDataIndex] = channelData[sample];
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample, ++scopeDataIndex) 
+    {
+        scopeData[plotIndex][scopeDataIndex] = channelData[sample];
     }
 
     procBlockCalled = true;
-}
-
-int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
-{
-    return scopeSize;
-}
-
-
-const float* FFTSpectrumAnalyzerAudioProcessor::getScopeData() const
-{
-    return scopeData;
 }
 
 const float* FFTSpectrumAnalyzerAudioProcessor::getFFT() const

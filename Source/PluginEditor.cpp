@@ -35,35 +35,45 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colours::white);
 
     const int scopeSize = audioProcessor.getScopeSize();
+    const int plotSize = audioProcessor.getPlotSize();
+    const int plotIndex = audioProcessor.getPlotIndex();
     const float* scopeData = audioProcessor.getScopeData();
     const float* fft = audioProcessor.getFFT();
 
     int lineHeight = 10; // Adjust line height as needed
     int yPosition = 10; // Start position from the top
     int xPosition = 10; // Start position from the left
+    int textOffset = 100;
+    int graph1StartY = 200;
+    int graph2StartY = 600;
     float offsetX = 70; // Offset X position
-    float offsetY = 500; // Offset Y position
     float scaleX = 10; // Scaling X increments
     float scaleY = -50; // Scaling Y increments
     float sampleSize = 100; // Adjust the number of samples being displayed as needed
-    auto msg = "default"; // default print message
-    juce::Path myPath; // Used when we print the graph 
-
-    for (int i = 0; i < scopeSize; ++i) // Print the value of the samples
+    juce::Path myPath1;
+    juce::Path myPath2;
+    
+    for (int j = 0; j < scopeSize; ++j) // Print the value of the samples
     {
         // Convert each float value to a string
-        auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
+        auto row1 = std::to_string(*((scopeData + j) + 0 * scopeSize));
+        auto row2 = std::to_string(*((scopeData + j) + 1 * scopeSize));
         // Draw the string at appropriate positions
-        g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
-    }  
+        g.drawText(row1, xPosition, yPosition + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);
+        g.drawText(row2, xPosition + textOffset, yPosition + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);
+    }
+    
 
     // Draws the waveform; loops through the samples that have been read in
-    myPath.startNewSubPath(offsetX, offsetY + scopeData[0]);
+    myPath1.startNewSubPath(offsetX, graph1StartY + scopeData[0]);
+    myPath2.startNewSubPath(offsetX, graph2StartY + *(scopeData + 1 * scopeSize));
     for (int i = 1; i < sampleSize; i++)
     {
-        myPath.lineTo(i * scaleX + offsetX, scopeData[i] * scaleY + offsetY);
+        myPath1.lineTo(i * scaleX + offsetX, *((scopeData + i) + 0 * scopeSize) * scaleY + graph1StartY);
+        myPath2.lineTo(i * scaleX + offsetX, *((scopeData + i) + 1 * scopeSize) * scaleY + graph2StartY);
     }
-    g.strokePath(myPath, juce::PathStrokeType(5.0f)); 
+    g.strokePath(myPath1, juce::PathStrokeType(5.0f)); 
+    g.strokePath(myPath2, juce::PathStrokeType(5.0f)); 
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
@@ -76,6 +86,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
         isRunning = false;
         repaint();
         audioProcessor.resetScopeDataIndex();
+        audioProcessor.incrementPlotIndex();
     }
 }
 
