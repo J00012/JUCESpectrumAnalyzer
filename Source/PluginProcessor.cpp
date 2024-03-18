@@ -9,6 +9,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
+int FFTSpectrumAnalyzerAudioProcessor::scopeDataIndex = 0;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
@@ -23,12 +25,11 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
                        ),
     forwardFFT(fftOrder), // Initialize forwardFFT with fftOrder
     window(fftSize, juce::dsp::WindowingFunction<float>::hann) // Initialize window
-    
 #endif
 {
 }
 
-FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor()
+FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor() // This is the destructor
 {
 }
 
@@ -133,81 +134,40 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
-void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsRunning() 
+void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
 {
-    procBlockIsRunning = false;
+    procBlockCalled = false;
 }
 
-bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
+bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
 {
-    return procBlockIsRunning;
+    return procBlockCalled;
 }
 
+void FFTSpectrumAnalyzerAudioProcessor::resetScopeDataIndex()
+{
+    scopeDataIndex = 0;
+}
 
-//buffer- two dimenstional array where rows represent different channels and columns represent individual samples
-//(A multi-channel buffer containing floating point audio samples)
-//
-//midiMessages
+// Buffer = two dimenstional array where rows represent different channels and columns represent individual samples
+// ^(A multi-channel buffer containing floating point audio samples)
 void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-
     //just for mono
     int channel = 0;
-    std::cout << "hello test";
 
     auto* channelData = buffer.getReadPointer(channel);
 
-    //loops through the output channels and clears a specified region of all the channels
-     //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-         //buffer.clear (i, 0, buffer.getNumSamples());
-
-
-     //TEST CODE !!!!!
-    /*for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        fftArray[sample] = channelData[sample];
-    }*/
-
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        scopeData[sample] = channelData[sample];
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample, ++scopeDataIndex) {
+        scopeData[scopeDataIndex] = channelData[sample];
     }
 
-    procBlockIsRunning = true;
-    
-    //memcpy(fftData, fftArray, sizeof(fftArray));
-
-
-
-    //// first apply a windowing function to our data
-    //window.multiplyWithWindowingTable(fftData, fftSize);       // [1]
-
-    //// then render our FFT data..
-    //forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
-
-    //auto mindB = -100.0f;
-    //auto maxdB = 0.0f;
-
-    //for (int i = 0; i < scopeSize; ++i)                         // [3]
-    //{
-    //    auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
-    //    auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
-    //    /*auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
-    //        - juce::Decibels::gainToDecibels((float)fftSize)),
-    //        mindB, maxdB, 0.0f, 1.0f);*/
-
-    //    //scopeData[i] = skewedProportionX;
-    //    //scopeData[i] = ;
-    //    //scopeData[i] = level;                                   // [4]
-    //    //scopeData[i] = 1.234;
-    //}
-
+    procBlockCalled = true;
 }
-
-
 
 int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
 {
@@ -241,7 +201,7 @@ void FFTSpectrumAnalyzerAudioProcessor::getStateInformation (juce::MemoryBlock& 
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    // as intermediaries to make it easy to save and load complex data. 
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
@@ -257,4 +217,3 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new FFTSpectrumAnalyzerAudioProcessor();
 }
 
-float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
