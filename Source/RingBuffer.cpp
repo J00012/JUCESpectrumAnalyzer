@@ -32,14 +32,23 @@ void RingBuffer<T>::write(const T* processBuffer, size_t bufferSize) {
 }
 
 template<typename T>
-T RingBuffer<T>::read() {
+void RingBuffer<T>::read(T* processBuffer, size_t bufferSize) {
     if (is_empty())
         throw std::underflow_error("Buffer is empty");
 
-    T data = buffer[tail];
-    tail = (tail + 1) % capacity;
-    full = false;
-    return data;
+    for (size_t i = 0; i < bufferSize; ++i) {
+        if (is_empty())
+            throw std::underflow_error("Buffer is empty");
+
+        processBuffer[i] = buffer[tail];
+        tail = (tail + 1) % capacity;
+        full = false;
+
+    }
+    //T data = buffer[tail];
+    //tail = (tail + 1) % capacity;
+    //full = false;
+    //return data;
 }
 
 template<typename T>
@@ -63,24 +72,11 @@ void RingBuffer<T>::clear() {
     full = false;
 }
 
-template<typename T>
-void RingBuffer<T>::copyVector(const std::vector<T>& processBuffer) {
-
-
-    for (int sample = 0; sample < processBuffer.size(); ++sample) {
-        buffer[sample] = processBuffer[sample];
-    }
-}
-
 
 template<typename T>
 void RingBuffer<T>::setSize(size_t bufferSize) {
     buffer.resize(bufferSize);
     capacity = bufferSize;
 }
-
-
-
-//fix the write to include both functionality you need make write and copy array in the same thing
 
 template class RingBuffer<float>;

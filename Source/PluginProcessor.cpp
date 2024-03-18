@@ -156,6 +156,9 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
 
+    //write the nested for loop for the channels and add them to 
+
+
     //just for mono
     int channel = 0;
  
@@ -163,16 +166,25 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
     ringBuffer.write(channelData,buffer.getNumSamples());
 
+    ringBuffer.read(ringTest, buffer.getNumSamples());
+
+    //!modify the buffer so it outputs on the audacity window! (optional apply gain)
+    
+    
+
+
     //if(ringBuffer.size() < 512)
     //if(ringBuffer.size() >= 512)
-    /*
+    
+
+        /*
      //TEST CODE !!!!!
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         scopeData[sample] = channelData[sample];
     }
 
 
-
+    */
 
     //make a new dataType for the enum in JUCE and string for selection
     struct WindowToName {
@@ -196,9 +208,12 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     WindowToName& selectedWindow = windowToName[0];                               //set selectedWindow to a variable Name
     juce::dsp::WindowingFunction<float> window(scopeSize, selectedWindow.window);   //declare the window object
     window.fillWindowingTables(scopeSize, selectedWindow.window);                   //fills the content of the object array with a given windowing method
-    window.multiplyWithWindowingTable(scopeData, scopeSize);                        //applies the windowing fucntion to the audio data stored in fftData
+    window.multiplyWithWindowingTable(ringTest, scopeSize);                        //applies the windowing fucntion to the audio data stored in fftData
 
-    forwardFFT.performFrequencyOnlyForwardTransform(scopeData);
+
+    //!modify the buffer so it outputs on the audacity window! (optional apply gain)
+    
+    //forwardFFT.performFrequencyOnlyForwardTransform(scopeData);
 
 
     procBlockIsRunning = true;
@@ -249,6 +264,11 @@ const float* FFTSpectrumAnalyzerAudioProcessor::getFFT() const
     return fftData;
 }
 
+const float* FFTSpectrumAnalyzerAudioProcessor::getRingTest() const
+{
+    return ringTest;
+}
+
 //==============================================================================
 bool FFTSpectrumAnalyzerAudioProcessor::hasEditor() const
 {
@@ -280,5 +300,6 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new FFTSpectrumAnalyzerAudioProcessor();
 }
+float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
 
 float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };

@@ -47,6 +47,7 @@ public:
     const float* getScopeData() const;
     const double* getArray() const;
     const float* getFFT() const;
+    const float* getRingTest() const;
 
 
 
@@ -81,7 +82,8 @@ private:
   
     float fftArray[fftSize] = {0};
     float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
-    RingBuffer<float> ringBuffer{2048};                   //declare the ringBuffer object
+    static float ringTest[scopeSize];
+    RingBuffer<float> ringBuffer{10000};                   //declare the ringBuffer object
     int fftArrayIndex = 0;
    
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED

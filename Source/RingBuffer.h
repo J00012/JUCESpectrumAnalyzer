@@ -28,10 +28,9 @@ public:
     RingBuffer(size_t capacity);
 
     void write(const T* processBuffer, size_t bufferSize);
-    T read();
+    void read(T* processBuffer, size_t bufferSize);
     bool is_empty() const;
     size_t size() const;
-    void copyVector(const std::vector<T>& processBuffer);
     void clear();
     void setSize(size_t bufferSize);
 };

@@ -60,7 +60,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 
     //g.drawFittedText(str, getLocalBounds(), juce::Justification::centred, 1);
     const int scopeSize = audioProcessor.getScopeSize();
-    const float* scopeData = audioProcessor.getScopeData();
+    const float* scopeData = audioProcessor.getRingTest();
 
     const float* fft = audioProcessor.getFFT();
 
