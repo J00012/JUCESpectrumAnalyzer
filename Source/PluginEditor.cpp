@@ -53,10 +53,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     const float* scopeData = audioProcessor.getScopeData();
     const float* fft = audioProcessor.getFFT();
 
-    int startXPlot = 100;  // Offset X position
-    int startYPlot = 450;
-    int scaleX = 10;  // Scaling X increments
-    int scaleY = -50;  // Scaling Y increments + vertical flip
+    int xStartPlot = 100;  // Offset X position
+    int yStartPlot = 450;
     int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
     // Axis variables
@@ -65,9 +63,20 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     int scaleXMarker = 50;
     int scaleYMarker = 50;
     int numXMarkers = 20;
-    int numYMarkers = 15;
+    int numYMarkers = 15;   
     int yStartXAxis = 850;
     int yStartYAxis = 850;
+
+    int xMin = 0;  // min bounds for samples shown
+    int xMax = 50;  // max bounds for samples shown
+    int scaleX = lengthXAxis / (xMax - xMin);  // Scaling X increments; pixels shown per sample
+    int xShift = -xMin * scaleX;
+
+    int scaleY = -50;
+    //int yMin = 0;  // min bounds for samples shown
+    //int yMax = 100;  // max bounds for samples shown
+    //int scaleY = -lengthYAxis / (xMax - xMin);  // Scaling X increments; pixels shown per sample
+    //int yShift = -yMin * scaleY;
 
     juce::Path plot1;
     juce::Path plot2;
@@ -79,12 +88,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     //juce::Path yAxisMarkersDown;
 
     // Graph plots
-    plot1.startNewSubPath(startXPlot, startYPlot + scopeData[0] * scaleY);
-    plot2.startNewSubPath(startXPlot, startYPlot + *(scopeData + 1 * scopeSize) * scaleY);
+    plot1.startNewSubPath(xStartPlot + xShift, yStartPlot + scopeData[0] * scaleY);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
+    plot2.startNewSubPath(xStartPlot + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY);
     for (int i = 1; i < sampleSize; i++)
     {
-        plot1.lineTo(i * scaleX + startXPlot, *((scopeData + i) + 0 * scopeSize) * scaleY + startYPlot);
-        plot2.lineTo(i * scaleX + startXPlot, *((scopeData + i) + 1 * scopeSize) * scaleY + startYPlot);
+        plot1.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + yStartPlot);
+        plot2.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + yStartPlot);
     }
     g.setColour(juce::Colours::yellow);
     g.strokePath(plot1, juce::PathStrokeType(5.0f));
@@ -92,26 +101,26 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     g.strokePath(plot2, juce::PathStrokeType(5.0f));
 
     // Plot x-axis
-    xAxis.startNewSubPath(startXPlot, yStartXAxis);
-    xAxis.lineTo(startXPlot + lengthXAxis, yStartXAxis);
+    xAxis.startNewSubPath(xStartPlot, yStartXAxis);
+    xAxis.lineTo(xStartPlot + lengthXAxis, yStartXAxis);
     g.setColour(juce::Colours::white);
     g.strokePath(xAxis, juce::PathStrokeType(2.0f));
 
     // Plot y-axis
-    yAxis.startNewSubPath(startXPlot, yStartYAxis);
-    yAxis.lineTo(startXPlot, yStartYAxis - lengthYAxis);
+    yAxis.startNewSubPath(xStartPlot, yStartYAxis);
+    yAxis.lineTo(xStartPlot, yStartYAxis - lengthYAxis);
     g.setColour(juce::Colours::white);
     g.strokePath(yAxis, juce::PathStrokeType(2.0f));
 
     //Plot zero on Y-axis
-    zeroTick.startNewSubPath(startXPlot - 15, startYPlot);
-    zeroTick.lineTo(startXPlot + 15, startYPlot);
+    zeroTick.startNewSubPath(xStartPlot - 15, yStartPlot);
+    zeroTick.lineTo(xStartPlot + 15, yStartPlot);
     g.strokePath(zeroTick, juce::PathStrokeType(4.0f));
 
     // Plot X Axis Markers
     for (int i = 1; i < numXMarkers; i++) {
-        xAxisMarkers.startNewSubPath(startXPlot + (i * scaleXMarker), yStartXAxis - 5);
-        xAxisMarkers.lineTo(startXPlot + (i * scaleXMarker), yStartXAxis + 5);
+        xAxisMarkers.startNewSubPath(xStartPlot + (i * scaleXMarker), yStartXAxis - 5);
+        xAxisMarkers.lineTo(xStartPlot + (i * scaleXMarker), yStartXAxis + 5);
     }
     g.setColour(juce::Colours::white);
     g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
@@ -119,8 +128,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
    
     // Plot Y Axis Markers
     for (int i = 1; i <= numYMarkers; i++) {
-        yAxisMarkersUp.startNewSubPath(startXPlot - 5, yStartYAxis - (scaleYMarker * i));
-        yAxisMarkersUp.lineTo(startXPlot + 5, yStartYAxis - (scaleYMarker * i));  // drawing line markers moving up from midpoint
+        yAxisMarkersUp.startNewSubPath(xStartPlot - 5, yStartYAxis - (scaleYMarker * i));
+        yAxisMarkersUp.lineTo(xStartPlot + 5, yStartYAxis - (scaleYMarker * i));  // drawing line markers moving up from midpoint
     }
     g.setColour(juce::Colours::white);
     g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
