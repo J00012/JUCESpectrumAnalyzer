@@ -19,8 +19,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setOpaque(true);
-    setSize (1300, 1000);
-    startTimer(500); // Timer callback in milliseconds  
+    setSize (1200, 950);
+    startTimer(500);
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
