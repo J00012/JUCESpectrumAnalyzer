@@ -19,7 +19,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setOpaque(true);
-    setSize (1200, 950);
+    setSize (1200, 1100);
     startTimer(500);
 
     addAndMakeVisible(input);
@@ -45,11 +45,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     const float* scopeData = audioProcessor.getScopeData();
     const float* fft = audioProcessor.getFFT();
 
-    int lineHeight = 10;  // Adjust line height as needed
-    int startXText = 10;  // Start position from the left
-    int startYText = 10;  // Start position from the top
-    int textOffset = 100;  // Space between lines
-    int startXPlot = 250;  // Offset X position
+    int startXPlot = 100;  // Offset X position
     int startYPlot1 = 450;
     int startYPlot2 = 450;
     int scaleX = 10;  // Scaling X increments
@@ -73,18 +69,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     juce::Path yAxis;
     juce::Path yAxisMarkersUp;
     //juce::Path yAxisMarkersDown;
-
-    /*
-    for (int j = 0; j < scopeSize; ++j) // Print the value of the samples
-    {
-        // Convert each float value to a string
-        auto row1 = std::to_string(*((scopeData + j) + 0 * scopeSize));
-        auto row2 = std::to_string(*((scopeData + j) + 1 * scopeSize));
-        // Draw the string at appropriate positions
-        g.drawText(row1, startXText, startYText + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);
-        g.drawText(row2, startXText + textOffset, startYText + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);
-    }
-    */
 
     // Graph plots
     plot1.startNewSubPath(startXPlot, startYPlot1 + scopeData[0] * scaleY);
