@@ -16,15 +16,23 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
     setOpaque(true);
-    setSize (1200, 1100);
     startTimer(500);
+    setSize (1200, 1100);
 
-    addAndMakeVisible(input);
-    input.setEditable(true);
-    input.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+
+    addAndMakeVisible(inputXmin);
+    inputXmin.setEditable(true);
+    inputXmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    addAndMakeVisible(inputXmax);
+    inputXmax.setEditable(true);
+    inputXmax.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    addAndMakeVisible(inputYmin);
+    inputYmin.setEditable(true);
+    inputYmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    addAndMakeVisible(inputYmax);
+    inputYmax.setEditable(true);
+    inputYmax.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 
 }
 
@@ -46,8 +54,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     const float* fft = audioProcessor.getFFT();
 
     int startXPlot = 100;  // Offset X position
-    int startYPlot1 = 450;
-    int startYPlot2 = 450;
+    int startYPlot = 450;
     int scaleX = 10;  // Scaling X increments
     int scaleY = -50;  // Scaling Y increments + vertical flip
     int sampleSize = 100;  // Adjust the number of samples being displayed as needed
@@ -68,15 +75,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     juce::Path xAxisMarkers;
     juce::Path yAxis;
     juce::Path yAxisMarkersUp;
+    juce::Path zeroTick;
     //juce::Path yAxisMarkersDown;
 
     // Graph plots
-    plot1.startNewSubPath(startXPlot, startYPlot1 + scopeData[0] * scaleY);
-    plot2.startNewSubPath(startXPlot, startYPlot2 + *(scopeData + 1 * scopeSize) * scaleY);
+    plot1.startNewSubPath(startXPlot, startYPlot + scopeData[0] * scaleY);
+    plot2.startNewSubPath(startXPlot, startYPlot + *(scopeData + 1 * scopeSize) * scaleY);
     for (int i = 1; i < sampleSize; i++)
     {
-        plot1.lineTo(i * scaleX + startXPlot, *((scopeData + i) + 0 * scopeSize) * scaleY + startYPlot1);
-        plot2.lineTo(i * scaleX + startXPlot, *((scopeData + i) + 1 * scopeSize) * scaleY + startYPlot2);
+        plot1.lineTo(i * scaleX + startXPlot, *((scopeData + i) + 0 * scopeSize) * scaleY + startYPlot);
+        plot2.lineTo(i * scaleX + startXPlot, *((scopeData + i) + 1 * scopeSize) * scaleY + startYPlot);
     }
     g.setColour(juce::Colours::yellow);
     g.strokePath(plot1, juce::PathStrokeType(5.0f));
@@ -94,6 +102,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     yAxis.lineTo(startXPlot, yStartYAxis - lengthYAxis);
     g.setColour(juce::Colours::white);
     g.strokePath(yAxis, juce::PathStrokeType(2.0f));
+
+    //Plot zero on Y-axis
+    zeroTick.startNewSubPath(startXPlot - 15, startYPlot);
+    zeroTick.lineTo(startXPlot + 15, startYPlot);
+    g.strokePath(zeroTick, juce::PathStrokeType(4.0f));
 
     // Plot X Axis Markers
     for (int i = 1; i < numXMarkers; i++) {
@@ -132,6 +145,22 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 
-    input.setBounds(800, 200, 120, 20);
+
+    int leftMarginXmin = 100;
+    int leftMarginXmax = 1045;
+    int leftMarginYmin = 20;
+    int leftMarginYmax = 20;
+    int topMarginXmin = 870;
+    int topMarginXmax = 870;
+    int topMarginYmin = 820;
+    int topMarginYmax = 45;
+
+    int textEntryWidth = 60;
+    int textEntryHeight = 24;
+
+    inputXmin.setBounds(leftMarginXmin, topMarginXmin, textEntryWidth, textEntryHeight);
+    inputXmax.setBounds(leftMarginXmax, topMarginXmax, textEntryWidth, textEntryHeight);
+    inputYmin.setBounds(leftMarginYmin, topMarginYmin, textEntryWidth, textEntryHeight);
+    inputYmax.setBounds(leftMarginYmax, topMarginYmax, textEntryWidth, textEntryHeight);
 }
 

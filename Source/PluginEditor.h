@@ -31,7 +31,10 @@ private:
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
 
-    juce::Label input;
+    juce::Label inputXmin;
+    juce::Label inputXmax;
+    juce::Label inputYmin;
+    juce::Label inputYmax;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
