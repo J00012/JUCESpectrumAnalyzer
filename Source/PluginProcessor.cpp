@@ -148,45 +148,49 @@ bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
 //(A multi-channel buffer containing floating point audio samples)
 //
 //midiMessages
-void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    //!modify the buffer so it outputs on the audacity window! (optional apply gain)
+    //! 
+    //! apply window on the full buffer on both
+    //! apply a window everytime then add to a seperate buffer using the right and the left together
+    //two 1024 window buffers (each 512)
+    //add the result of the right and left 
+    //make final result a scope variable and will be used to modify the buffer info
 
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-
-    //write the nested for loop for the channels and add them to 
 
 
     //just for mono
     int channel = 0;
- 
-    auto* channelData = buffer.getReadPointer(channel);
 
-    ringBuffer.write(channelData,buffer.getNumSamples());
+    //change this back to Read if you dont want to modify the data
+    auto* channelData = buffer.getWritePointer(channel);
 
-    ringBuffer.read(ringTest, buffer.getNumSamples());
-
-    //!modify the buffer so it outputs on the audacity window! (optional apply gain)
-    
-    
-
-
+    //ringBuffer.write(channelData, buffer.getNumSamples());
+    //ringBuffer.read(ringTest, buffer.getNumSamples());
     //if(ringBuffer.size() < 512)
     //if(ringBuffer.size() >= 512)
-    
 
-        /*
-     //TEST CODE !!!!!
+
+   //scuffed looping to shift the data over
+    for (int sample = 512; sample < buffer.getNumSamples(); ++sample) {
+        windowBufferLeft[sample + 512] = windowBufferLeft[sample];
+    }
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        scopeData[sample] = channelData[sample];
+        windowBufferLeft[sample] = windowBufferRight[sample + 512];
+    }
+    for (int sample = 512; sample < buffer.getNumSamples(); ++sample) {
+        windowBufferRight[sample + 512] = windowBufferRight[sample];
+    }
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+        windowBufferRight[sample] = channelData[sample];
     }
 
-
-    */
-
-    //make a new dataType for the enum in JUCE and string for selection
+    //apply windowing
+      //make a new dataType for the enum in JUCE and string for selection
     struct WindowToName {
         juce::dsp::WindowingFunction<float>::WindowingMethod window;
         std::string name;
@@ -206,41 +210,49 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 
 
     WindowToName& selectedWindow = windowToName[0];                               //set selectedWindow to a variable Name
-    juce::dsp::WindowingFunction<float> window(scopeSize, selectedWindow.window);   //declare the window object
-    window.fillWindowingTables(scopeSize, selectedWindow.window);                   //fills the content of the object array with a given windowing method
-    window.multiplyWithWindowingTable(ringTest, scopeSize);                        //applies the windowing fucntion to the audio data stored in fftData
+    juce::dsp::WindowingFunction<float> window(1024, selectedWindow.window);   //declare the window object
+    window.fillWindowingTables(1024, selectedWindow.window);                   //fills the content of the object array with a given windowing method
+    //window.multiplyWithWindowingTable(ringTest, scopeSize);                        //applies the windowing fucntion to the audio data stored in fftData
 
 
-    //!modify the buffer so it outputs on the audacity window! (optional apply gain)
+    window.multiplyWithWindowingTable(windowBufferRight, 1024);
+    window.multiplyWithWindowingTable(windowBufferLeft, 1024);
+
+    //add the right and the left of the two buffer together and add them to the selection
+    for (int i = 0; i < buffer.getNumSamples(); ++i) {
+        channelData[i] = windowBufferRight[i + 512] + windowBufferLeft[i];
+    }
     
     //forwardFFT.performFrequencyOnlyForwardTransform(scopeData);
 
 
+/*
     procBlockIsRunning = true;
     
-    //memcpy(fftData, fftArray, sizeof(fftArray));
+    memcpy(fftData, fftArray, sizeof(fftArray));
 
 
-    //// then render our FFT data..
-    //forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
+    // then render our FFT data..
+    forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
 
-    //auto mindB = -100.0f;
-    //auto maxdB = 0.0f;
+    auto mindB = -100.0f;
+    auto maxdB = 0.0f;
 
-    //for (int i = 0; i < scopeSize; ++i)                         // [3]
-    //{
-    //    auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
-    //    auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
-    //    /*auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
-    //        - juce::Decibels::gainToDecibels((float)fftSize)),
-    //        mindB, maxdB, 0.0f, 1.0f);*/
+    for (int i = 0; i < scopeSize; ++i)                         // [3]
+    {
+        auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
+        auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
+        /*auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
+            - juce::Decibels::gainToDecibels((float)fftSize)),
+            mindB, maxdB, 0.0f, 1.0f);*/
 
-    //    //scopeData[i] = skewedProportionX;
-    //    //scopeData[i] = ;
-    //    //scopeData[i] = level;                                   // [4]
-    //    //scopeData[i] = 1.234;
-    //}
+        //scopeData[i] = skewedProportionX;
+        //scopeData[i] = ;
+        //scopeData[i] = level;                                   // [4]
+        //scopeData[i] = 1.234;
+   // }
     
+   
 }
 
 
@@ -303,3 +315,7 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
 
 float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
+
+float FFTSpectrumAnalyzerAudioProcessor::windowBufferRight[] = { 0 };
+float FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft[] = { 0 };
+float FFTSpectrumAnalyzerAudioProcessor::windowBufferResult[] = { 0 };

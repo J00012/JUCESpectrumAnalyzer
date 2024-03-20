@@ -48,6 +48,7 @@ public:
     const double* getArray() const;
     const float* getFFT() const;
     const float* getRingTest() const;
+   
 
 
 
@@ -79,7 +80,12 @@ public:
 
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
-  
+    
+
+    static float windowBufferRight[1024];
+    static float windowBufferLeft[1024];
+    static float windowBufferResult[512];
+
     float fftArray[fftSize] = {0};
     float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
     static float ringTest[scopeSize];
