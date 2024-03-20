@@ -11,6 +11,7 @@
 #include <string>
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
+int FFTSpectrumAnalyzerAudioProcessorEditor::x_min = 0;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
@@ -19,13 +20,13 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setOpaque(true);
-    setSize (1200, 950);
+    setSize (1600, 950);
     startTimer(500);
 
     addAndMakeVisible(input);
     input.setEditable(true);
     input.setColour(juce::Label::backgroundColourId, juce::Colours::black);
-
+    input.onTextChange = [this] { getXMin(); }; 
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -81,11 +82,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         auto row1 = std::to_string(*((scopeData + j) + 0 * scopeSize));
         auto row2 = std::to_string(*((scopeData + j) + 1 * scopeSize));
         // Draw the string at appropriate positions
-        g.drawText(row1, startXText, startYText + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);
+        g.drawText(row1, startXText, startYText + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);v
         g.drawText(row2, startXText + textOffset, startYText + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);
     }
     */
-
+    
     // Graph plots
     plot1.startNewSubPath(startXPlot, startYPlot1 + scopeData[0] * scaleY);
     plot2.startNewSubPath(startXPlot, startYPlot2 + *(scopeData + 1 * scopeSize) * scaleY);
@@ -145,6 +146,21 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
         audioProcessor.incrementPlotIndex();
     }
 }
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::getXMin() {
+    juce::String temp = input.getText(false);
+    bool isValid = true;
+
+    for (int i = 0; i < temp.length(); i++) {
+        if (temp[i] < '0' || temp[i] > '9') {
+            isValid = false;
+        }
+    }
+
+    if (isValid == true) {
+        x_min = temp.getIntValue();
+    }
+} 
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {

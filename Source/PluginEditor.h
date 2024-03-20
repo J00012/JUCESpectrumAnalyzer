@@ -24,6 +24,7 @@ public:
     void drawFrame(juce::Graphics& g); 
     void resized() override;
     void timerCallback() override;
+    void getXMin();
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -32,6 +33,7 @@ private:
     static bool isRunning;
 
     juce::Label input;
+    static int x_min;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
