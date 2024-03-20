@@ -58,8 +58,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     int scaleYMarker = 50;
     int numXMarkers = 20;
     int numYMarkers = 15;
-    int startXAxis = 850;
-    int startYAxis = 850;
+    int yStartXAxis = 850;
+    int yStartYAxis = 850;
 
     juce::Path plot1;
     juce::Path plot2;
@@ -93,21 +93,21 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     g.strokePath(plot2, juce::PathStrokeType(5.0f));
 
     // Plot x-axis
-    xAxis.startNewSubPath(startXPlot, startXAxis);
-    xAxis.lineTo(startXPlot + lengthXAxis, startXAxis);
+    xAxis.startNewSubPath(startXPlot, yStartXAxis);
+    xAxis.lineTo(startXPlot + lengthXAxis, yStartXAxis);
     g.setColour(juce::Colours::white);
     g.strokePath(xAxis, juce::PathStrokeType(2.0f));
 
     // Plot y-axis
-    yAxis.startNewSubPath(startXPlot, startYAxis);
-    yAxis.lineTo(startXPlot, startYAxis - lengthYAxis);
+    yAxis.startNewSubPath(startXPlot, yStartYAxis);
+    yAxis.lineTo(startXPlot, yStartYAxis - lengthYAxis);
     g.setColour(juce::Colours::white);
     g.strokePath(yAxis, juce::PathStrokeType(2.0f));
 
     // Plot X Axis Markers
     for (int i = 1; i < numXMarkers; i++) {
-        xAxisMarkers.startNewSubPath(startXPlot + scaleXMarker + (i * scaleXMarker), startXAxis - 5);
-        xAxisMarkers.lineTo(startXPlot + scaleXMarker + (i * scaleXMarker), startXAxis + 5);
+        xAxisMarkers.startNewSubPath(startXPlot + (i * scaleXMarker), yStartXAxis - 5);
+        xAxisMarkers.lineTo(startXPlot + (i * scaleXMarker), yStartXAxis + 5);
     }
     g.setColour(juce::Colours::white);
     g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
@@ -115,8 +115,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
    
     // Plot Y Axis Markers
     for (int i = 1; i <= numYMarkers; i++) {
-        yAxisMarkersUp.startNewSubPath(startXPlot - 5, startYAxis - (scaleYMarker * i));
-        yAxisMarkersUp.lineTo(startXPlot + 5, startYAxis - (scaleYMarker * i));  // drawing line markers moving up from midpoint
+        yAxisMarkersUp.startNewSubPath(startXPlot - 5, yStartYAxis - (scaleYMarker * i));
+        yAxisMarkersUp.lineTo(startXPlot + 5, yStartYAxis - (scaleYMarker * i));  // drawing line markers moving up from midpoint
         //yAxisMarkersDownPlot1.startNewSubPath(offsetX - 5, startYAxis1 + (scaleYMarker * i));
         //yAxisMarkersDownPlot1.lineTo(offsetX + 5, startYAxis1 + (scaleYMarker * i));  // drawing line markers moving down from midpoint
     }
