@@ -117,12 +117,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     for (int i = 1; i <= numYMarkers; i++) {
         yAxisMarkersUp.startNewSubPath(startXPlot - 5, yStartYAxis - (scaleYMarker * i));
         yAxisMarkersUp.lineTo(startXPlot + 5, yStartYAxis - (scaleYMarker * i));  // drawing line markers moving up from midpoint
-        //yAxisMarkersDownPlot1.startNewSubPath(offsetX - 5, startYAxis1 + (scaleYMarker * i));
-        //yAxisMarkersDownPlot1.lineTo(offsetX + 5, startYAxis1 + (scaleYMarker * i));  // drawing line markers moving down from midpoint
     }
     g.setColour(juce::Colours::white);
     g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
-    //g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
