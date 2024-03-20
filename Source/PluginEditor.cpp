@@ -19,8 +19,13 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setOpaque(true);
-    setSize (1300, 1000);
-    startTimer(500); // Timer callback in milliseconds  
+    setSize (1200, 950);
+    startTimer(500);
+
+    addAndMakeVisible(input);
+    input.setEditable(true);
+    input.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -69,6 +74,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     juce::Path yAxisMarkersUp;
     //juce::Path yAxisMarkersDown;
 
+    /*
     for (int j = 0; j < scopeSize; ++j) // Print the value of the samples
     {
         // Convert each float value to a string
@@ -78,6 +84,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         g.drawText(row1, startXText, startYText + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);
         g.drawText(row2, startXText + textOffset, startYText + j * lineHeight, getWidth(), lineHeight, juce::Justification::left);
     }
+    */
 
     // Graph plots
     plot1.startNewSubPath(startXPlot, startYPlot1 + scopeData[0] * scaleY);
@@ -140,5 +147,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+
+    input.setBounds(800, 200, 120, 20);
 }
 
