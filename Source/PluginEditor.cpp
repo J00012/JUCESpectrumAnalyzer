@@ -21,6 +21,29 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
     
     setOpaque(true);
     setSize (1600, 950);
+
+    //addAndMakeVisible(button);
+    //button.setButtonText("Zoom");
+    //button.addListener(this);
+
+    // text box test; input
+    addAndMakeVisible(inputText);
+    inputText.setEditable(true);
+    inputText.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+
+    inputText.onTextChange = [this] { outputText.setText(inputText.getText().toUpperCase(), juce::dontSendNotification); };
+
+    //textbox test; output
+    addAndMakeVisible(outputText);
+    outputText.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+
+    /*
+    addAndMakeVisible(menu);
+    menu.addItem("Option 1", 1);
+    menu.addItem("Option 2", 2);
+    menu.addItem("Option 3", 3);
+    */
+
     startTimer(500);
 }
 
@@ -66,7 +89,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
     juce::Path yAxisMarkersUpPlot2;
     juce::Path yAxisMarkersDownPlot2;
     
-        
     // Axis variables
     float lengthXAxis = 1100;
     float lengthYAxis = 200;
@@ -83,8 +105,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
         plot1.lineTo(i * scaleX + offsetX, *((scopeData + i) + 0 * scopeSize) * scaleY + startYPlot1);
         plot2.lineTo(i * scaleX + offsetX, *((scopeData + i) + 1 * scopeSize) * scaleY + startYPlot2);
     }
-    g.strokePath(plot1, juce::PathStrokeType(5.0f));
-    g.strokePath(plot2, juce::PathStrokeType(5.0f));
+    g.strokePath(plot1, juce::PathStrokeType(2.0f));
+    g.strokePath(plot2, juce::PathStrokeType(2.0f));
 
     // Plot x-axis
     xAxisPlot1.startNewSubPath(offsetX, startYPlot1);
@@ -157,8 +179,25 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
     }
 }
 
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::buttonClicked(juce::Button* button)
+{
+    //juce::Component::setBoundsRelative(0.2f, 0.2f, .5, .5);
+    //juce::Component::createComponentSnapshot(juce::Rectangle<int>(800, 225), true, 3.0f);
+    
+}
+
+
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    
+    //button.setBounds(800,450,80,40);
+
+    inputText.setBounds(800, 450, 110, 20);
+   
+    outputText.setBounds(800, 480, 110, 20);
+
+    //menu.setBounds(900,450,110,40);
 }
