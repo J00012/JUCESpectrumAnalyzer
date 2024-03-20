@@ -176,13 +176,13 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
 
    //scuffed looping to shift the data over
-    for (int sample = 512; sample < buffer.getNumSamples(); ++sample) {
+    for (int sample = 0; sample < 512; ++sample) {
         windowBufferLeft[sample + 512] = windowBufferLeft[sample];
     }
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+    for (int sample = 0; sample < 512; ++sample) {
         windowBufferLeft[sample] = windowBufferRight[sample + 512];
     }
-    for (int sample = 512; sample < buffer.getNumSamples(); ++sample) {
+    for (int sample = 0; sample < 512; ++sample) {
         windowBufferRight[sample + 512] = windowBufferRight[sample];
     }
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
