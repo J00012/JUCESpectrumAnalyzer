@@ -82,6 +82,9 @@ private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
     
 
+    static float bufferRight[1024];
+    static float bufferLeft[1024];
+
     static float windowBufferRight[1024];
     static float windowBufferLeft[1024];
     static float windowBufferResult[512];

@@ -174,20 +174,28 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     //if(ringBuffer.size() < 512)
     //if(ringBuffer.size() >= 512)
 
+    //buffer that is start at 0 (loop backwards) for loop that counts down ) 512 from the end 3*512
+    //do the window for the first 1024
+    //do the window on the first 1024 (copy over in another buffer) (copy second in another buffer)  and the last 1024
+    //memcpy
 
    //scuffed looping to shift the data over
     for (int sample = 0; sample < 512; ++sample) {
-        windowBufferLeft[sample + 512] = windowBufferLeft[sample];
+        bufferLeft[sample + 512] = bufferLeft[sample];
     }
     for (int sample = 0; sample < 512; ++sample) {
-        windowBufferLeft[sample] = windowBufferRight[sample + 512];
+        bufferLeft[sample] = bufferRight[sample + 512];
     }
     for (int sample = 0; sample < 512; ++sample) {
-        windowBufferRight[sample + 512] = windowBufferRight[sample];
+        bufferRight[sample + 512] = bufferRight[sample];
     }
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        windowBufferRight[sample] = channelData[sample];
+        bufferRight[sample] = channelData[sample];
     }
+
+    memcpy(windowBufferRight, bufferRight, 1024*sizeof(float));
+    memcpy(windowBufferLeft, bufferLeft, 1024 * sizeof(float));
+
 
     //apply windowing
       //make a new dataType for the enum in JUCE and string for selection
@@ -316,6 +324,8 @@ float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
 
 float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
 
+float FFTSpectrumAnalyzerAudioProcessor::bufferRight[] = { 0 };
+float FFTSpectrumAnalyzerAudioProcessor::bufferLeft[] = { 0 };
 float FFTSpectrumAnalyzerAudioProcessor::windowBufferRight[] = { 0 };
 float FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft[] = { 0 };
 float FFTSpectrumAnalyzerAudioProcessor::windowBufferResult[] = { 0 };
