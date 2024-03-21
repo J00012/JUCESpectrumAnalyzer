@@ -193,8 +193,13 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
         bufferRight[sample] = channelData[sample];
     }
 
-    memcpy(windowBufferRight, bufferRight, 1024*sizeof(float));
-    memcpy(windowBufferLeft, bufferLeft, 1024 * sizeof(float));
+    for (int sample = 0; sample < 1024; ++sample) {
+        windowBufferRight[sample] = bufferRight[sample];
+    }
+    for (int sample = 0; sample < 1024; ++sample) {
+        windowBufferLeft[sample] = bufferLeft[sample];
+    }
+    
 
 
     //apply windowing
