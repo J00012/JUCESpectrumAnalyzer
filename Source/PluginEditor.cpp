@@ -15,10 +15,10 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = 0; 
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 10;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 10;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -1; 
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 1;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
@@ -26,7 +26,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 {
     setOpaque(true);
     startTimer(500);
-    setSize (1200, 1100);
+    setSize (1200, 900);
 
 
     addAndMakeVisible(inputXmin);
@@ -72,19 +72,21 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     int xStartPlot = 100;  // Offset X position
     int yStartPlot = 450;
     int sampleSize = 100;  // Adjust the number of samples being displayed as needed
+    int yBottom = -1;  // Setting for when the sine wave goes from 1 to -1
 
     // Axis variables
-    int lengthXAxis = 1000;
-    int lengthYAxis = 800;
+    int lengthXAxis = 1000;  //pixels = unit
+    int lengthYAxis = 800;  //pixels = unit
     int scaleXMarker = 50;
     int scaleYMarker = 50;
     int numXMarkers = 20;
     int numYMarkers = 15;   
     int yStartXAxis = 850;
     int yStartYAxis = 850;
+    int yAxisMidpoint = 450;
 
-    int xDiff = xMax - xMin;
-    if (xDiff == 0)  // handles divide by zero errors
+    float xDiff = xMax - xMin;
+    if (xDiff <= 0 )  // handles divide by zero errors
     {          
         xMax = xMaxPrev;
         xMin = xMinPrev;
@@ -97,11 +99,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         xMaxPrev = xMax;
         xMinPrev = xMin;
     }
-    int scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
-    int xShift = -xMin * scaleX;
+    float scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
+    float xShift = -xMin * scaleX;
 
-    int yDiff = yMax - yMin;
-    if (yDiff == 0)  // handles divide by zero errors
+    float yDiff = yMax - yMin;
+    if (yDiff <= 0)  // handles divide by zero errors
     {
         yMax = yMaxPrev;
         yMin = yMinPrev;
@@ -114,8 +116,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
         yMaxPrev = yMax;
         yMinPrev = yMin;
     }
-    int scaleY = -lengthYAxis / yDiff;  // Scaling X increments; pixels shown per sample
-    int yShift = -yMin * scaleY; 
+    float scaleY = -lengthYAxis / yDiff;  // Scaling X increments; pixels shown per sample
+    float yShift = (yDiff - 2.0f * yMax) * scaleY/2.0f;
 
     juce::Path plot1;
     juce::Path plot2;
@@ -166,8 +168,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     g.strokePath(yAxis, juce::PathStrokeType(2.0f));
 
     //Plot zero on Y-axis
-    zeroTick.startNewSubPath(xStartPlot - 15, yStartPlot);
-    zeroTick.lineTo(xStartPlot + 15, yStartPlot);
+    zeroTick.startNewSubPath(xStartPlot - 15, yAxisMidpoint);
+    zeroTick.lineTo(xStartPlot + 15, yAxisMidpoint);
     g.strokePath(zeroTick, juce::PathStrokeType(4.0f));
 
     // Plot X Axis Markers
@@ -260,13 +262,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getYMin()
     bool isValid = true;
 
     juce::String temp = inputYmin.getText(false);
-    for (int i = 0; i < temp.length(); i++) {
-        if (temp[i] < '0' || temp[i] > '9') {
-            isValid = false;
-        }
-    }
+    int val = std::atoi(temp.toStdString().c_str());
+    //for (int i = 0; i < temp.length(); i++) {
+        //if (temp[i] < '0' || temp[i] > '9') {
+        //    isValid = false;
+        //}
+    //}
+    isValid = val >= -10 && val <= 10;
     if (isValid == true) {
-        yMin = temp.getIntValue();
+        yMin = val;
         repaint();
     }
 }
