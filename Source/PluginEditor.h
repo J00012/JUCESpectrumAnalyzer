@@ -24,7 +24,10 @@ public:
     void drawFrame(juce::Graphics& g); 
     void resized() override;
     void timerCallback() override;
-    void getXMin();
+    void getXmin();
+    void getXmax();
+    void getYmin();
+    void getYmax();
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -37,9 +40,13 @@ private:
     juce::Label inputYmin;
     juce::Label inputYmax;
 
+    static int xMinPrev;
     static int x_min;
+    static int xMaxPrev;
     static int x_max;
+    static int yMinPrev;
     static int y_min;
+    static int yMaxPrev;
     static int y_max;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
