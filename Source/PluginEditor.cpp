@@ -11,6 +11,14 @@
 #include <string>
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = 0; 
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 10;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 10;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor& p)
@@ -23,16 +31,24 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 
     addAndMakeVisible(inputXmin);
     inputXmin.setEditable(true);
+    inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
     inputXmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    inputXmin.onTextChange = [this] { getXMin(); };
     addAndMakeVisible(inputXmax);
     inputXmax.setEditable(true);
+    inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
     inputXmax.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    inputXmax.onTextChange = [this] { getXMax(); };
     addAndMakeVisible(inputYmin);
     inputYmin.setEditable(true);
+    inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
     inputYmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    inputYmin.onTextChange = [this] { getYMin(); };
     addAndMakeVisible(inputYmax);
     inputYmax.setEditable(true);
+    inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
     inputYmax.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    inputYmax.onTextChange = [this] { getYMax(); };
 
 }
 
@@ -67,16 +83,39 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     int yStartXAxis = 850;
     int yStartYAxis = 850;
 
-    int xMin = 0;  // min bounds for samples shown
-    int xMax = 50;  // max bounds for samples shown
-    int scaleX = lengthXAxis / (xMax - xMin);  // Scaling X increments; pixels shown per sample
+    int xDiff = xMax - xMin;
+    if (xDiff == 0)  // handles divide by zero errors
+    {          
+        xMax = xMaxPrev;
+        xMin = xMinPrev;
+        xDiff = xMaxPrev - xMinPrev;
+        inputXmin.setText(std::to_string(xMinPrev), juce::dontSendNotification);
+        inputXmax.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
+    }
+    else
+    {
+        xMaxPrev = xMax;
+        xMinPrev = xMin;
+    }
+    int scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
     int xShift = -xMin * scaleX;
 
-    int scaleY = -50;
-    //int yMin = 0;  // min bounds for samples shown
-    //int yMax = 100;  // max bounds for samples shown
-    //int scaleY = -lengthYAxis / (xMax - xMin);  // Scaling X increments; pixels shown per sample
-    //int yShift = -yMin * scaleY;
+    int yDiff = yMax - yMin;
+    if (yDiff == 0)  // handles divide by zero errors
+    {
+        yMax = yMaxPrev;
+        yMin = yMinPrev;
+        yDiff = yMaxPrev - yMinPrev;
+        inputYmin.setText(std::to_string(yMinPrev), juce::dontSendNotification);
+        inputYmax.setText(std::to_string(yMaxPrev), juce::dontSendNotification);
+    }
+    else
+    {
+        yMaxPrev = yMax;
+        yMinPrev = yMin;
+    }
+    int scaleY = -lengthYAxis / yDiff;  // Scaling X increments; pixels shown per sample
+    int yShift = -yMin * scaleY; 
 
     juce::Path plot1;
     juce::Path plot2;
@@ -85,20 +124,34 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     juce::Path yAxis;
     juce::Path yAxisMarkersUp;
     juce::Path zeroTick;
-    //juce::Path yAxisMarkersDown;
 
     // Graph plots
-    plot1.startNewSubPath(xStartPlot + xShift, yStartPlot + scopeData[0] * scaleY);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
-    plot2.startNewSubPath(xStartPlot + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY);
+    plot1.startNewSubPath(xStartPlot + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
+    plot2.startNewSubPath(xStartPlot + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
     for (int i = 1; i < sampleSize; i++)
     {
-        plot1.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + yStartPlot);
-        plot2.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + yStartPlot);
+        plot1.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + yStartPlot + yShift);
+        plot2.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + yStartPlot + yShift);
     }
     g.setColour(juce::Colours::yellow);
     g.strokePath(plot1, juce::PathStrokeType(5.0f));
     g.setColour(juce::Colours::red);
     g.strokePath(plot2, juce::PathStrokeType(5.0f));
+
+    // Draw boxes
+    //box 1
+    g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    g.fillRect(0, 0, 100, 950);
+    //box 2
+    g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    g.fillRect(1100, 0, 600, 950);
+    //box 3
+    g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    g.fillRect(0, 0, 1200, 50);
+    //box 4
+    g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    g.fillRect(0, 850, 1200, 100);
+
 
     // Plot x-axis
     xAxis.startNewSubPath(xStartPlot, yStartXAxis);
@@ -125,7 +178,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colours::white);
     g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
     
-   
     // Plot Y Axis Markers
     for (int i = 1; i <= numYMarkers; i++) {
         yAxisMarkersUp.startNewSubPath(xStartPlot - 5, yStartYAxis - (scaleYMarker * i));
@@ -172,4 +224,67 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
     inputYmin.setBounds(leftMarginYmin, topMarginYmin, textEntryWidth, textEntryHeight);
     inputYmax.setBounds(leftMarginYmax, topMarginYmax, textEntryWidth, textEntryHeight);
 }
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::getXMin()
+{
+    bool isValid = true;
+
+    juce::String temp = inputXmin.getText(false);
+    for (int i = 0; i < temp.length(); i++) {
+        if (temp[i] < '0' || temp[i] > '9') {
+            isValid = false;
+        }
+    }
+    if (isValid == true) {
+        xMin = temp.getIntValue();
+        repaint();
+    }
+}
+void FFTSpectrumAnalyzerAudioProcessorEditor::getXMax()
+{
+    bool isValid = true;
+
+    juce::String temp = inputXmax.getText(false);
+    for (int i = 0; i < temp.length(); i++) {
+        if (temp[i] < '0' || temp[i] > '9') {
+            isValid = false;
+        }
+    }
+    if (isValid == true) {
+        xMax = temp.getIntValue();
+        repaint();
+    }
+}
+void FFTSpectrumAnalyzerAudioProcessorEditor::getYMin()
+{
+    bool isValid = true;
+
+    juce::String temp = inputYmin.getText(false);
+    for (int i = 0; i < temp.length(); i++) {
+        if (temp[i] < '0' || temp[i] > '9') {
+            isValid = false;
+        }
+    }
+    if (isValid == true) {
+        yMin = temp.getIntValue();
+        repaint();
+    }
+}
+void FFTSpectrumAnalyzerAudioProcessorEditor::getYMax()
+{
+    bool isValid = true;
+
+    juce::String temp = inputYmax.getText(false);
+    for (int i = 0; i < temp.length(); i++) {
+        if (temp[i] < '0' || temp[i] > '9') {
+            isValid = false;
+        }
+    }
+    if (isValid == true) {
+        yMax = temp.getIntValue();
+        repaint();
+    }
+}
+
+
 
