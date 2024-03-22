@@ -28,6 +28,7 @@ public:
     void setPlotIndex(int plotIndex);
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
+    void mouseDown(const juce::MouseEvent &event) override;
 
 
 private:
@@ -36,10 +37,12 @@ private:
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
 
+    juce::Label cursor; //mouse
     juce::Label inputXmin;
     juce::Label inputXmax;
     juce::Label inputYmin;
     juce::Label inputYmax;
+    juce::Label cursorLabel; //mouse
     juce::Label labelPlot1{ "Plot 1" };
     juce::Label labelPlot2{ "Plot 2" };
     juce::TextButton buttonPlot1{ "Selected" };
@@ -48,6 +51,8 @@ private:
     juce::ToggleButton toggleButtonPlot2;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
+    static int cursorX; //mouse
+    static int cursorY; //mouse
     static int xMinPrev;
     static int xMin;
     static int xMaxPrev;

@@ -10,6 +10,8 @@
 #include "PluginEditor.h"
 #include <string>
 
+int FFTSpectrumAnalyzerAudioProcessorEditor::cursorX = 0; //mouse
+int FFTSpectrumAnalyzerAudioProcessorEditor::cursorY = 0; //mouse
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
@@ -62,24 +64,31 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	toggleButtonPlot2.onClick = [this] { updateToggleState(2); };
 	toggleButtonPlot2.setClickingTogglesState(true);
 
+	addAndMakeVisible(cursor); //mouse
+	addAndMakeVisible(cursorLabel); //mouse
 	addAndMakeVisible(inputXmin);
 	addAndMakeVisible(inputXmax);
 	addAndMakeVisible(inputYmin);
 	addAndMakeVisible(inputYmax);
 	addAndMakeVisible(labelPlot1);
 	addAndMakeVisible(labelPlot2);
+	cursor.setEditable(false); //mouse
+	cursorLabel.setEditable(false); //mouse
 	inputXmin.setEditable(true);
 	inputXmax.setEditable(true);
 	inputYmin.setEditable(true);
 	inputYmax.setEditable(true);
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
+	cursor.setText(std::to_string(cursorX) + ", " + std::to_string(cursorY), juce::dontSendNotification); //mouse
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
 	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
 	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
+	cursorLabel.setText("Cursor:", juce::dontSendNotification); //mouse
 	labelPlot1.setText("Plot 1", juce::dontSendNotification);
 	labelPlot2.setText("Plot 2", juce::dontSendNotification);
+	cursor.setColour(juce::Label::backgroundColourId, juce::Colours::black); //mouse
 	inputXmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 	inputXmax.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 	inputYmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
@@ -284,6 +293,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int topMarginButton1 = topMarginControlWidget;
 	int topMarginButton2 = topMarginControlWidget + heightButton + widgetOffsetVertical;
 
+	cursor.setBounds(500, 870, 60, 24);	//mouse
+	cursorLabel.setBounds(440, 870, 60, 24); //mouse
 	inputXmin.setBounds(leftMarginXmin, topMarginXmin, widthLabel, heightControlWidget);
 	inputXmax.setBounds(leftMarginXmax, topMarginXmax, widthLabel, heightControlWidget);
 	inputYmin.setBounds(leftMarginYmin, topMarginYmin, widthLabel, heightControlWidget);
@@ -398,5 +409,23 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
 			isVisiblePlot2 = false;
 		}
 	}
+}
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::mouseDown(const juce::MouseEvent& event)
+{
+	cursorX = event.juce::MouseEvent::getMouseDownX();
+	cursorY = event.juce::MouseEvent::getMouseDownY();
+	cursorX -= 100;
+	cursorY -= 450;
+	cursorY *= -1;
+	cursorX /= 10;
+	cursorY /= 40;
+	//invalid bounds
+	if (cursorX < 0 || cursorX > 1000 || cursorY < -400 || cursorY > 400) {
+		cursorX = 0;
+		cursorY = 0;
+	}
+	cursor.setText(std::to_string(cursorX) + ", " + std::to_string(cursorY), juce::dontSendNotification);
+	repaint();
 }
 
