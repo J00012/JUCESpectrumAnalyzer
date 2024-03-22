@@ -24,10 +24,8 @@ public:
     void drawFrame(juce::Graphics& g); 
     void resized() override;
     void timerCallback() override;
-    void getXMin();
-    void getXMax();
-    void getYMin();
-    void getYMax();
+    void getBounds();
+    void setPlotIndex(int plotIndex);
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -39,6 +37,8 @@ private:
     juce::Label inputXmax;
     juce::Label inputYmin;
     juce::Label inputYmax;
+    juce::TextButton buttonPlot1{ "Plot 1 Selected" };
+    juce::TextButton buttonPlot2{ "Select Plot 2" };
     static int xMinPrev;
     static int xMin;
     static int xMaxPrev;
@@ -47,6 +47,7 @@ private:
     static int yMin;
     static int yMaxPrev;
     static int yMax;
+    static int plotIndexSelection;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
