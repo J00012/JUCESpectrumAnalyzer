@@ -12,26 +12,23 @@
 #include "PluginProcessor.h"
 
 //==============================================================================
-class FFTSpectrumAnalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor, juce::Timer
+class FFTSpectrumAnalyzerAudioProcessorEditor : public juce::AudioProcessorEditor, juce::Timer
 {
 public:
-    FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor&);
+    FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor&);
     ~FFTSpectrumAnalyzerAudioProcessorEditor() override;
 
     //==============================================================================
-    
-    void paint (juce::Graphics&) override;
-    void drawFrame(juce::Graphics& g); 
+
+    void paint(juce::Graphics&) override;
+    void drawFrame(juce::Graphics& g);
     void resized() override;
     void timerCallback() override;
-    void getXmin();
-    void getXmax();
-    void getYmin();
-    void getYmax();
-    void updateToggleStatePlot1(juce::Button* button, juce::String name);
-    void setVisibilityPlot1();
-    void updateToggleStatePlot2(juce::Button* button, juce::String name);
-    void setVisibilityPlot2();
+    void getBounds();
+    void setPlotIndex(int plotIndex);
+    void updateToggleState(int plotId);
+    void setVisibility(int plotId);
+
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -43,20 +40,23 @@ private:
     juce::Label inputXmax;
     juce::Label inputYmin;
     juce::Label inputYmax;
-
-    juce::ToggleButton graphVisibility_p1{ "Plot 1" };
-    juce::ToggleButton graphVisibility_p2{ "Plot 2" };
-    static bool isVisible_p1;
-    static bool isVisible_p2;
-
+    juce::Label labelPlot1{ "Plot 1" };
+    juce::Label labelPlot2{ "Plot 2" };
+    juce::TextButton buttonPlot1{ "Selected" };
+    juce::TextButton buttonPlot2{ "Select" };
+    juce::ToggleButton toggleButtonPlot1;
+    juce::ToggleButton toggleButtonPlot2;
+    static bool isVisiblePlot1;
+    static bool isVisiblePlot2;
     static int xMinPrev;
-    static int x_min;
+    static int xMin;
     static int xMaxPrev;
-    static int x_max;
+    static int xMax;
     static int yMinPrev;
-    static int y_min;
+    static int yMin;
     static int yMaxPrev;
-    static int y_max;
+    static int yMax;
+    static int plotIndexSelection;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
 };

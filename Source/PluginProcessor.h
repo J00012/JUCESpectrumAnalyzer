@@ -13,14 +13,12 @@
 //==============================================================================
 /**
 */
-class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
+class FFTSpectrumAnalyzerAudioProcessor : public juce::AudioProcessor
 {
-
     enum
     {
-        fftOrder = 11,             // [1]
-        fftSize = 1 << fftOrder,  // [2]
-        //scopeSize = 512             // [3]	   //this will probably need to change since it is the "SIZE"
+        fftOrder = 11,            // [1]
+        fftSize = 1 << fftOrder,  // [2]          
     };
 
 
@@ -30,17 +28,17 @@ public:
     ~FFTSpectrumAnalyzerAudioProcessor() override;
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+#ifndef JucePlugin_PreferredChannelConfigurations
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+#endif
 
     bool getProcBlockCalled();
     void resetProcBlockCalled();
     void resetScopeDataIndex();
-    void incrementPlotIndex();
+    void setPlotIndex(int rowIndex);
     int getPlotIndex();
     int getPlotSize();
 
@@ -67,24 +65,23 @@ public:
     //==============================================================================
     int getNumPrograms() override;
     int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    void setCurrentProgram(int index) override;
+    const juce::String getProgramName(int index) override;
+    void changeProgramName(int index, const juce::String& newName) override;
 
     //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override; 
+    void getStateInformation(juce::MemoryBlock& destData) override;
+    void setStateInformation(const void* data, int sizeInBytes) override;
 
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
     juce::dsp::WindowingFunction<float> window;     // [5]	//HERE IS THE WINDOW DECLARATION
 
-    float fftArray[fftSize] = {0};
-    float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
-
+    float fftArray[fftSize] = { 0 };
+    float fftData[2 * fftSize] = { 0 };
     int fftArrayIndex = 0;
-   
-    bool nextFFTBlockReady = false;    
+
+    bool nextFFTBlockReady = false;
     bool procBlockCalled = false;
 
     static const int scopeSize = 48000 * 5;
@@ -92,7 +89,7 @@ private:
     static float scopeData[plotSize][scopeSize];
     static int scopeDataIndex;
     static int plotIndex;
-    
+
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessor)
 };
