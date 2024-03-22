@@ -38,7 +38,7 @@ public:
     bool getProcBlockCalled();
     void resetProcBlockCalled();
     void resetScopeDataIndex();
-    void incrementPlotIndex();
+    void setPlotIndex(int rowIndex);
     int getPlotIndex();
     int getPlotSize();
 
