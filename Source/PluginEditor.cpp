@@ -20,6 +20,8 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -10;
 int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 10;
 int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 10;
 int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
@@ -42,18 +44,42 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 			setPlotIndex(1);
 		};
 
+	// toggle button for plot 1
+	addAndMakeVisible(toggleButtonPlot1);
+	if (isVisiblePlot1 == true) 
+	{
+		toggleButtonPlot1.setToggleState(true, true);
+	}
+	toggleButtonPlot1.onClick = [this] { updateToggleState(1); };
+	toggleButtonPlot1.setClickingTogglesState(true);
+
+	// toggle button for plot 2
+	addAndMakeVisible(toggleButtonPlot2);
+	if (isVisiblePlot2 == true) 
+	{
+		toggleButtonPlot2.setToggleState(true, true);
+	}
+	toggleButtonPlot2.onClick = [this] { updateToggleState(2); };
+	toggleButtonPlot2.setClickingTogglesState(true);
+
 	addAndMakeVisible(inputXmin);
 	addAndMakeVisible(inputXmax);
 	addAndMakeVisible(inputYmin);
 	addAndMakeVisible(inputYmax);
+	addAndMakeVisible(labelPlot1);
+	addAndMakeVisible(labelPlot2);
 	inputXmin.setEditable(true);
 	inputXmax.setEditable(true);
 	inputYmin.setEditable(true);
 	inputYmax.setEditable(true);
+	labelPlot1.setEditable(false);
+	labelPlot2.setEditable(false);
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
 	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
 	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
+	labelPlot1.setText("Plot 1", juce::dontSendNotification);
+	labelPlot2.setText("Plot 2", juce::dontSendNotification);
 	inputXmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 	inputXmax.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 	inputYmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
@@ -144,16 +170,19 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	plot1.startNewSubPath(xStartPlot + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
 	for (int i = 1; i < sampleSize; i++)
 	{
-		plot2.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + yStartPlot + yShift);
-		plot1.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + yStartPlot + yShift);
+		if (isVisiblePlot2 == true) {
+			plot2.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + yStartPlot + yShift);
+		}
+		if (isVisiblePlot1 == true) {
+			plot1.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + yStartPlot + yShift);
+		}
 	}
+	
 	g.setColour(juce::Colours::maroon);
 	g.strokePath(plot2, juce::PathStrokeType(5.0f));
 	g.setColour(juce::Colours::cornflowerblue);
 	g.strokePath(plot1, juce::PathStrokeType(5.0f));
 	
-
-
 	// Draw boxes
 	//box 1
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
@@ -220,6 +249,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
 	// This is generally where you'll want to lay out the positions of any
 	// subcomponents in your editor..
+
 	int leftMarginXmin = 100;
 	int leftMarginXmax = 1045;
 	int leftMarginYmin = 20;
@@ -229,20 +259,41 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int topMarginYmin = 820;
 	int topMarginYmax = 45;
 
-	int widgetWidthLabel = 60;
-	int widgetHeightLabel = 24;
-	int leftMarginButton = 1100;
-	int topMarginButton = 100;
-	int buttonOffsetVertical = 10;
-	int widgetWidthButton = 150;
-	int widgetHeightButton = 40;
+	int widgetOffsetVertical = 10;
+	int widgetOffsetHorizontal = 10;
 
-	inputXmin.setBounds(leftMarginXmin, topMarginXmin, widgetWidthLabel, widgetHeightLabel);
-	inputXmax.setBounds(leftMarginXmax, topMarginXmax, widgetWidthLabel, widgetHeightLabel);
-	inputYmin.setBounds(leftMarginYmin, topMarginYmin, widgetWidthLabel, widgetHeightLabel);
-	inputYmax.setBounds(leftMarginYmax, topMarginYmax, widgetWidthLabel, widgetHeightLabel);
-	buttonPlot1.setBounds(leftMarginButton, topMarginButton, widgetWidthButton, widgetHeightButton);
-	buttonPlot2.setBounds(leftMarginButton, topMarginButton + widgetHeightButton + buttonOffsetVertical, widgetWidthButton, widgetHeightButton);
+	int widthLabel = 60;
+	int widthPlotLabel = 50;
+	int widthToggleButton = 30;
+	int widthButton = 90;
+
+	int heightControlWidget = 24;
+	int heightPlotLabel = heightControlWidget;
+	int heightToggleButton = heightControlWidget;
+	int heightButton = heightControlWidget;
+
+	int leftMarginToggleButton = 1100;
+	int leftMarginPlotLabel = leftMarginToggleButton + widthToggleButton + widgetOffsetHorizontal;
+	int leftMarginButton = leftMarginPlotLabel + widthPlotLabel + widgetOffsetHorizontal;
+	
+	int topMarginControlWidget = 100;
+	int topMarginToggleButton1 = topMarginControlWidget;
+	int topMarginToggleButton2 = topMarginControlWidget + heightToggleButton + widgetOffsetVertical;
+	int topMarginPlot1Label = topMarginControlWidget;
+	int topMarginPlot2Label = topMarginControlWidget + heightPlotLabel + widgetOffsetVertical;
+	int topMarginButton1 = topMarginControlWidget;
+	int topMarginButton2 = topMarginControlWidget + heightButton + widgetOffsetVertical;
+
+	inputXmin.setBounds(leftMarginXmin, topMarginXmin, widthLabel, heightControlWidget);
+	inputXmax.setBounds(leftMarginXmax, topMarginXmax, widthLabel, heightControlWidget);
+	inputYmin.setBounds(leftMarginYmin, topMarginYmin, widthLabel, heightControlWidget);
+	inputYmax.setBounds(leftMarginYmax, topMarginYmax, widthLabel, heightControlWidget);
+	labelPlot1.setBounds(leftMarginPlotLabel, topMarginPlot1Label, widthPlotLabel, heightPlotLabel);
+	labelPlot2.setBounds(leftMarginPlotLabel, topMarginPlot2Label, widthPlotLabel, heightPlotLabel);
+	toggleButtonPlot1.setBounds(leftMarginToggleButton, topMarginToggleButton1, widthToggleButton, heightToggleButton);
+	toggleButtonPlot2.setBounds(leftMarginToggleButton, topMarginToggleButton2, widthToggleButton, heightToggleButton);
+	buttonPlot1.setBounds(leftMarginButton, topMarginButton1, widthButton, heightButton);
+	buttonPlot2.setBounds(leftMarginButton, topMarginButton2, widthButton, heightButton);
 }
 
 
@@ -303,17 +354,49 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 	audioProcessor.setPlotIndex(plotIndexSelection);
 	if (plotIndex == 0)
 	{
-		buttonPlot1.setButtonText("Plot 1 Selected");
-		buttonPlot2.setButtonText("Select Plot 2");
+		buttonPlot1.setButtonText("Selected");
+		buttonPlot2.setButtonText("Select");
 
 	}
 	else if (plotIndex == 1)
 	{
-		buttonPlot2.setButtonText("Plot 2 Selected");
-		buttonPlot1.setButtonText("Select Plot 1");
+		buttonPlot2.setButtonText("Selected");
+		buttonPlot1.setButtonText("Select");
 	}
 
 }
 
+void FFTSpectrumAnalyzerAudioProcessorEditor::updateToggleState(int plotId)
+{
+	if (plotId == 1)
+	{
+		setVisibility(1);
+	}
+	else
+		setVisibility(2);
+	repaint();
+}
 
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
+{
+	if (plotId == 1)
+	{
+		if (isVisiblePlot1 == false) {
+			isVisiblePlot1 = true;
+		}
+		else if (isVisiblePlot1 == true) {
+			isVisiblePlot1 = false;
+		}
+	}
+	else
+	{
+		if (isVisiblePlot2 == false) {
+			isVisiblePlot2 = true;
+		}
+		else if (isVisiblePlot2 == true) {
+			isVisiblePlot2 = false;
+		}
+	}
+}
 

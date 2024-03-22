@@ -26,6 +26,9 @@ public:
     void timerCallback() override;
     void getBounds();
     void setPlotIndex(int plotIndex);
+    void updateToggleState(int plotId);
+    void setVisibility(int plotId);
+
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -37,8 +40,14 @@ private:
     juce::Label inputXmax;
     juce::Label inputYmin;
     juce::Label inputYmax;
-    juce::TextButton buttonPlot1{ "Plot 1 Selected" };
-    juce::TextButton buttonPlot2{ "Select Plot 2" };
+    juce::Label labelPlot1{ "Plot 1" };
+    juce::Label labelPlot2{ "Plot 2" };
+    juce::TextButton buttonPlot1{ "Selected" };
+    juce::TextButton buttonPlot2{ "Select" };   
+    juce::ToggleButton toggleButtonPlot1;
+    juce::ToggleButton toggleButtonPlot2;
+    static bool isVisiblePlot1;
+    static bool isVisiblePlot2;
     static int xMinPrev;
     static int xMin;
     static int xMaxPrev;
