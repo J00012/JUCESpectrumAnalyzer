@@ -162,9 +162,9 @@ int FFTSpectrumAnalyzerAudioProcessor::getPlotSize()
     return plotSize;
 }
 
-void FFTSpectrumAnalyzerAudioProcessor::incrementPlotIndex()
+void FFTSpectrumAnalyzerAudioProcessor::setPlotIndex(int rowIndex)
 {
-    plotIndex = (plotIndex + 1) % plotSize;
+    plotIndex = rowIndex;
 }
 
 
