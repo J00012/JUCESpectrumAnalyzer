@@ -150,6 +150,26 @@ bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
 //midiMessages
 void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    //apply windowing
+  //make a new dataType for the enum in JUCE and string for selection
+    struct WindowToName {
+        juce::dsp::WindowingFunction<float>::WindowingMethod window;
+        std::string name;
+    };
+
+    //make an array of window type with the enum value and the string value
+    WindowToName windowToName[] = {
+        {juce::dsp::WindowingFunction<float>::hann,"Hann"},
+        {juce::dsp::WindowingFunction<float>::blackman,"Blackman"},
+        {juce::dsp::WindowingFunction<float>::rectangular,"Rectangular"},
+        {juce::dsp::WindowingFunction<float>::blackmanHarris,"BlackmanHarris"},
+        {juce::dsp::WindowingFunction<float>::hamming,"Hamming"},
+        {juce::dsp::WindowingFunction<float>::triangular,"Triangular"},
+        {juce::dsp::WindowingFunction<float>::flatTop,"FlatTop"},
+        {juce::dsp::WindowingFunction<float>::kaiser,"Kaiser"},
+    };
+
+
     //!modify the buffer so it outputs on the audacity window! (optional apply gain)
     //! 
     //! apply window on the full buffer on both
@@ -169,58 +189,10 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     //change this back to Read if you dont want to modify the data
     auto* channelData = buffer.getWritePointer(channel);
 
-    //ringBuffer.write(channelData, buffer.getNumSamples());
-    //ringBuffer.read(ringTest, buffer.getNumSamples());
+    ringBuffer.write(channelData, buffer.getNumSamples());
+    ringBuffer.read(ringTest, buffer.getNumSamples());
     //if(ringBuffer.size() < 512)
     //if(ringBuffer.size() >= 512)
-
-    //buffer that is start at 0 (loop backwards) for loop that counts down ) 512 from the end 3*512
-    //do the window for the first 1024
-    //do the window on the first 1024 (copy over in another buffer) (copy second in another buffer)  and the last 1024
-    //memcpy
-
-   //scuffed looping to shift the data over
-    for (int sample = 0; sample < 512; ++sample) {
-        bufferLeft[sample + 512] = bufferLeft[sample];
-    }
-    for (int sample = 0; sample < 512; ++sample) {
-        bufferLeft[sample] = bufferRight[sample + 512];
-    }
-    for (int sample = 0; sample < 512; ++sample) {
-        bufferRight[sample + 512] = bufferRight[sample];
-    }
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        bufferRight[sample] = channelData[sample];
-    }
-
-    for (int sample = 0; sample < 1024; ++sample) {
-        windowBufferRight[sample] = bufferRight[sample];
-    }
-    for (int sample = 0; sample < 1024; ++sample) {
-        windowBufferLeft[sample] = bufferLeft[sample];
-    }
-    
-
-
-    //apply windowing
-      //make a new dataType for the enum in JUCE and string for selection
-    struct WindowToName {
-        juce::dsp::WindowingFunction<float>::WindowingMethod window;
-        std::string name;
-    };
-
-    //make an array of window type with the enum value and the string value
-    WindowToName windowToName[] = {
-        {juce::dsp::WindowingFunction<float>::hann,"Hann"},
-        {juce::dsp::WindowingFunction<float>::blackman,"Blackman"},
-        {juce::dsp::WindowingFunction<float>::rectangular,"Rectangular"},
-        {juce::dsp::WindowingFunction<float>::blackmanHarris,"BlackmanHarris"},
-        {juce::dsp::WindowingFunction<float>::hamming,"Hamming"},
-        {juce::dsp::WindowingFunction<float>::triangular,"Triangular"},
-        {juce::dsp::WindowingFunction<float>::flatTop,"FlatTop"},
-        {juce::dsp::WindowingFunction<float>::kaiser,"Kaiser"},
-    };
-
 
     WindowToName& selectedWindow = windowToName[0];                               //set selectedWindow to a variable Name
     juce::dsp::WindowingFunction<float> window(1024, selectedWindow.window);   //declare the window object
@@ -228,13 +200,57 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     //window.multiplyWithWindowingTable(ringTest, scopeSize);                        //applies the windowing fucntion to the audio data stored in fftData
 
 
-    window.multiplyWithWindowingTable(windowBufferRight, 1024);
-    window.multiplyWithWindowingTable(windowBufferLeft, 1024);
+    //buffer that is start at 0 (loop backwards) for loop that counts down ) 512 from the end 3*512
+    //do the window for the first 1024
+    //do the window on the first 1024 (copy over in another buffer) (copy second in another buffer)  and the last 1024
+    //memcpy
 
-    //add the right and the left of the two buffer together and add them to the selection
-    for (int i = 0; i < buffer.getNumSamples(); ++i) {
-        channelData[i] = windowBufferRight[i + 512] + windowBufferLeft[i];
-    }
+    int bufferSize = buffer.getNumSamples();
+    int numBuffers = bufferSize / 512;
+    int rSamples = bufferSize % 512;
+
+    int rtotal = bufferSize - rSamples;
+
+	int counter = 0;
+    int count = 0;
+
+
+	for (int buffers = 0; buffers < numBuffers; buffers++) {
+
+		for (int sample = 0; sample < 512; ++sample) {
+			bufferLeft[sample + 512] = bufferLeft[sample];
+		}
+		for (int sample = 0; sample < 512; ++sample) {
+			bufferLeft[sample] = bufferRight[sample + 512];
+		}
+		for (int sample = 0; sample < 512; ++sample) {
+			bufferRight[sample + 512] = bufferRight[sample];
+		}
+		for (int sample = 0; sample < 512 && rSamples < buffer.getNumSamples() - count; ++sample) {
+			bufferRight[sample] = ringTest[count];
+			count++;
+		}
+
+		//copy for windowing
+		for (int sample = 0; sample < 1024; ++sample) {
+			windowBufferRight[sample] = bufferRight[sample];
+		}
+		for (int sample = 0; sample < 1024; ++sample) {
+			windowBufferLeft[sample] = bufferLeft[sample];
+		}
+
+		window.multiplyWithWindowingTable(windowBufferRight, 1024);
+
+		window.multiplyWithWindowingTable(windowBufferLeft, 1024);
+
+        forwardFFT.performFrequencyOnlyForwardTransform(windowBufferRight,true);
+
+        for (int i = 0; i < 512 && counter < rtotal; ++i) {    
+            channelData[counter] = windowBufferRight[i + 512] + windowBufferLeft[i];
+            counter++;
+        }
+	}
+
     
     //forwardFFT.performFrequencyOnlyForwardTransform(scopeData);
 

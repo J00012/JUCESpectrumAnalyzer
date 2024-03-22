@@ -80,7 +80,6 @@ public:
 
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
-    
 
     static float bufferRight[1024];
     static float bufferLeft[1024];
@@ -91,7 +90,7 @@ private:
 
     float fftArray[fftSize] = {0};
     float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
-    static float ringTest[scopeSize];
+    static float ringTest[10000];
     RingBuffer<float> ringBuffer{10000};                   //declare the ringBuffer object
     int fftArrayIndex = 0;
    
