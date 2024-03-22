@@ -12,9 +12,7 @@
 #include "PluginProcessor.h"
 
 //==============================================================================
-/**
-*/
-class FFTSpectrumAnalyzerAudioProcessorEditor : public juce::AudioProcessorEditor, juce::Timer, juce::Button::Listener
+class FFTSpectrumAnalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor, juce::Timer
 {
 public:
     FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor&);
@@ -26,7 +24,14 @@ public:
     void drawFrame(juce::Graphics& g); 
     void resized() override;
     void timerCallback() override;
-    void buttonClicked(juce::Button* button);
+    void getXmin();
+    void getXmax();
+    void getYmin();
+    void getYmax();
+    void updateToggleStatePlot1(juce::Button* button, juce::String name);
+    void setVisibilityPlot1();
+    void updateToggleStatePlot2(juce::Button* button, juce::String name);
+    void setVisibilityPlot2();
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -34,11 +39,24 @@ private:
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
 
-    //juce::TextButton button;
-    juce::Label inputText;
-    juce::Label outputText;
+    juce::Label inputXmin;
+    juce::Label inputXmax;
+    juce::Label inputYmin;
+    juce::Label inputYmax;
 
-    juce::ComboBox menu;
+    juce::ToggleButton graphVisibility_p1{ "Plot 1" };
+    juce::ToggleButton graphVisibility_p2{ "Plot 2" };
+    static bool isVisible_p1;
+    static bool isVisible_p2;
+
+    static int xMinPrev;
+    static int x_min;
+    static int xMaxPrev;
+    static int x_max;
+    static int yMinPrev;
+    static int y_min;
+    static int yMaxPrev;
+    static int y_max;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
