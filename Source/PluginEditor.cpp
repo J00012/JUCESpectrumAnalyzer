@@ -154,7 +154,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		yMaxPrev = yMax;
 		yMinPrev = yMin;
 	}
-	float scaleY = -lengthYAxis / yDiff;  // Scaling X increments; pixels shown per sample
+	float scaleY = -lengthYAxis / yDiff;  // Scaling Y increments; pixels shown per sample
 	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
 
 	juce::Path plot1;
@@ -178,7 +178,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		}
 	}
 	
-	g.setColour(juce::Colours::maroon);
+	g.setColour(juce::Colours::lightgreen);
 	g.strokePath(plot2, juce::PathStrokeType(5.0f));
 	g.setColour(juce::Colours::cornflowerblue);
 	g.strokePath(plot1, juce::PathStrokeType(5.0f));
