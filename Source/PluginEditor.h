@@ -57,7 +57,7 @@ private:
     static int cursorX1; //mouse
     static float cursorY1; //mouse
     static int cursorX2; //mouse
-    static int cursorY2; //mouse
+    static float cursorY2; //mouse
     static int xMinPrev;
     static int xMin;
     static int xMaxPrev;
