@@ -29,7 +29,7 @@ public:
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
     void mouseDown(const juce::MouseEvent &event) override;
-
+    std::string floatToStringPrecision(float f);
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -37,12 +37,15 @@ private:
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
 
-    juce::Label cursor; //mouse
+    juce::Label cursorPlot1; //mouse
+    juce::Label cursorPlot2; //mouse
+    juce::Label cursorLabel0; //mouse
+    juce::Label cursorLabel1; //mouse
+    juce::Label cursorLabel2; //mouse
     juce::Label inputXmin;
     juce::Label inputXmax;
     juce::Label inputYmin;
     juce::Label inputYmax;
-    juce::Label cursorLabel; //mouse
     juce::Label labelPlot1{ "Plot 1" };
     juce::Label labelPlot2{ "Plot 2" };
     juce::TextButton buttonPlot1{ "Selected" };
@@ -51,8 +54,10 @@ private:
     juce::ToggleButton toggleButtonPlot2;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
-    static int cursorX; //mouse
-    static int cursorY; //mouse
+    static int cursorX1; //mouse
+    static float cursorY1; //mouse
+    static int cursorX2; //mouse
+    static int cursorY2; //mouse
     static int xMinPrev;
     static int xMin;
     static int xMaxPrev;
