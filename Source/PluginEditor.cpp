@@ -449,8 +449,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseDown(const juce::MouseEvent& 
 	}
 	//plot 2
 	else {
-		const float* scopeData = audioProcessor.getScopeData();
-		cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(scopeData[cursorX2]) + ")", juce::dontSendNotification);
+		const float* scopeData2 = audioProcessor.getScopeData() + audioProcessor.getScopeSize();
+		cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(scopeData2[cursorX2]) + ")", juce::dontSendNotification);
 		repaint();
 	}
 }
