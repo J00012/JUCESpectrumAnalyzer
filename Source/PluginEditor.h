@@ -58,5 +58,15 @@ private:
     static int yMax;
     static int plotIndexSelection;
 
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth;
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight;
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis;  //pixels = unit
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis;  //pixels = unit
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis;
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis;
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer;
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer;
+   static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };

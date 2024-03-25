@@ -23,13 +23,23 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
 
+int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 1300;
+int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 1000+2;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer = 30;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer = 30;
+int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis = 900;  //pixels = unit
+int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis = 900;  //pixels = unit
+int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis = yBuffer + lengthYAxis;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis = 100;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot = yBuffer + lengthYAxis / 2;
+
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
 	: AudioProcessorEditor(&p), audioProcessor(p)
 {
 	setOpaque(true);
 	startTimer(500);
-	setSize(1300, 1000);
+	setSize(windowWidth, windowHeight);
 
 	addAndMakeVisible(buttonPlot1);
 	buttonPlot1.setClickingTogglesState(true);
@@ -107,21 +117,19 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	const float* scopeData = audioProcessor.getScopeData();
 	const float* fft = audioProcessor.getFFT();
 
-	int xStartPlot = 100;  // Offset X position
-	int yStartPlot = 450;
-	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
-	int yBottom = -1;  // Setting for when the sine wave goes from 1 to -1
+	juce::Path plot1;
+	juce::Path plot2;
+	juce::Path xAxis;
+	juce::Path xAxisMarkers;
+	juce::Path yAxis;
+	juce::Path yAxisMarkersUp;
+	juce::Path yAxisMarkersDown;
+	juce::Path zeroTick;
 
-	// Axis variables
-	int lengthXAxis = 1000;  //pixels = unit
-	int lengthYAxis = 800;  //pixels = unit
-	int scaleXMarker = 50;
-	int scaleYMarker = 50;
-	int numXMarkers = 20;
-	int numYMarkers = 15;
-	int yStartXAxis = 850;
-	int yStartYAxis = 850;
-	int yAxisMidpoint = 450;
+
+	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
+
+
 
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors
@@ -157,79 +165,81 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float scaleY = -lengthYAxis / yDiff;  // Scaling Y increments; pixels shown per sample
 	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
 
-	juce::Path plot1;
-	juce::Path plot2;
-	juce::Path xAxis;
-	juce::Path xAxisMarkers;
-	juce::Path yAxis;
-	juce::Path yAxisMarkersUp;
-	juce::Path zeroTick;
-
+	float plotYShift = yStartPlot + yShift;
 	// Graph plots
-	plot2.startNewSubPath(xStartPlot + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
-	plot1.startNewSubPath(xStartPlot + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
+	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
+	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
 	for (int i = 1; i < sampleSize; i++)
 	{
 		if (isVisiblePlot2 == true) {
-			plot2.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + yStartPlot + yShift);
+			plot2.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + plotYShift);
 		}
 		if (isVisiblePlot1 == true) {
-			plot1.lineTo(i * scaleX + xStartPlot + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + yStartPlot + yShift);
+			plot1.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + plotYShift);
 		}
 	}
 	
 	g.setColour(juce::Colours::lightgreen);
-	g.strokePath(plot2, juce::PathStrokeType(5.0f));
+	g.strokePath(plot2, juce::PathStrokeType(3.0f));
 	g.setColour(juce::Colours::cornflowerblue);
-	g.strokePath(plot1, juce::PathStrokeType(5.0f));
-	
-	// Draw boxes
-	//box 1
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, 0, 100, 950);
-	//box 2
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(1100, 0, 600, 950);
-	//box 3
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, 0, 1200, 50);
-	//box 4
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, 850, 1200, 400);
+	g.strokePath(plot1, juce::PathStrokeType(3.0f));
 
 
-	// Plot x-axis
-	xAxis.startNewSubPath(xStartPlot, yStartXAxis);
-	xAxis.lineTo(xStartPlot + lengthXAxis, yStartXAxis);
-	g.setColour(juce::Colours::white);
-	g.strokePath(xAxis, juce::PathStrokeType(2.0f));
-
-	// Plot y-axis
-	yAxis.startNewSubPath(xStartPlot, yStartYAxis);
-	yAxis.lineTo(xStartPlot, yStartYAxis - lengthYAxis);
-	g.setColour(juce::Colours::white);
-	g.strokePath(yAxis, juce::PathStrokeType(2.0f));
-
-	//Plot zero on Y-axis
-	zeroTick.startNewSubPath(xStartPlot - 15, yAxisMidpoint);
-	zeroTick.lineTo(xStartPlot + 15, yAxisMidpoint);
-	g.strokePath(zeroTick, juce::PathStrokeType(4.0f));
+	// Axis variables
+	int numXMarkers = xDiff;
+	int numYMarkers = yDiff;
 
 	// Plot X Axis Markers
-	for (int i = 1; i < numXMarkers; i++) {
-		xAxisMarkers.startNewSubPath(xStartPlot + (i * scaleXMarker), yStartXAxis - 5);
-		xAxisMarkers.lineTo(xStartPlot + (i * scaleXMarker), yStartXAxis + 5);
+	for (int i = 1; i <= numXMarkers; i++) {
+		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - 5);
+		xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + 5);
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
 
 	// Plot Y Axis Markers
 	for (int i = 1; i <= numYMarkers; i++) {
-		yAxisMarkersUp.startNewSubPath(xStartPlot - 5, yStartYAxis - (scaleYMarker * i));
-		yAxisMarkersUp.lineTo(xStartPlot + 5, yStartYAxis - (scaleYMarker * i));  // drawing line markers moving up from midpoint
+		yAxisMarkersUp.startNewSubPath(xStartXYAxis - 5, yStartPlot + (scaleY * i) + yShift);
+		yAxisMarkersUp.lineTo(xStartXYAxis + 5, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+		yAxisMarkersDown.startNewSubPath(xStartXYAxis - 5, yStartPlot - (scaleY * i) + yShift);
+		yAxisMarkersDown.lineTo(xStartXYAxis + 5, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
+	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
+
+
+	//Plot zero on Y-axis
+	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
+	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
+	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
+	
+	// Draw background boxes
+	//box 1
+	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+	g.fillRect(0, 0, 100, 950);
+	//box 2
+	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+	g.fillRect(xBuffer + lengthXAxis, 0, 600, 950);
+	//box 3
+	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+	g.fillRect(0, 0, 1200, 50);
+	//box 4
+	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+	g.fillRect(0, yBuffer + lengthYAxis, 1200, 400);
+
+	// Plot x-axis
+	xAxis.startNewSubPath(xStartXYAxis, yStartXYAxis);
+	xAxis.lineTo(xStartXYAxis + lengthXAxis, yStartXYAxis);
+	g.setColour(juce::Colours::white);
+	g.strokePath(xAxis, juce::PathStrokeType(2.0f));
+
+	// Plot y-axis
+	yAxis.startNewSubPath(xStartXYAxis, yStartXYAxis);
+	yAxis.lineTo(xStartXYAxis, yStartXYAxis - lengthYAxis);
+	g.setColour(juce::Colours::white);
+	g.strokePath(yAxis, juce::PathStrokeType(2.0f));
+
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
@@ -249,34 +259,32 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
 	// This is generally where you'll want to lay out the positions of any
 	// subcomponents in your editor..
-
-	int leftMarginXmin = 100;
-	int leftMarginXmax = 1045;
-	int leftMarginYmin = 20;
-	int leftMarginYmax = 20;
-	int topMarginXmin = 870;
-	int topMarginXmax = 870;
-	int topMarginYmin = 820;
-	int topMarginYmax = 45;
-
 	int widgetOffsetVertical = 10;
 	int widgetOffsetHorizontal = 10;
 
-	int widthLabel = 60;
+	int widthLabel = 50;
 	int widthPlotLabel = 50;
 	int widthToggleButton = 30;
 	int widthButton = 90;
+
+	int leftMarginXmin = xStartXYAxis;
+	int leftMarginXmax = lengthXAxis + widthLabel;
+	int leftMarginYmin = xBuffer;
+	int leftMarginYmax = xBuffer;
+	int topMarginXMinMax = lengthYAxis + yBuffer * 2;
+	int topMarginYmin = lengthYAxis + yBuffer;
+	int topMarginYmax = yBuffer;
 
 	int heightControlWidget = 24;
 	int heightPlotLabel = heightControlWidget;
 	int heightToggleButton = heightControlWidget;
 	int heightButton = heightControlWidget;
 
-	int leftMarginToggleButton = 1100;
+	int leftMarginToggleButton = xBuffer * 4 + lengthXAxis;
 	int leftMarginPlotLabel = leftMarginToggleButton + widthToggleButton + widgetOffsetHorizontal;
 	int leftMarginButton = leftMarginPlotLabel + widthPlotLabel + widgetOffsetHorizontal;
 	
-	int topMarginControlWidget = 100;
+	int topMarginControlWidget = yBuffer * 2;
 	int topMarginToggleButton1 = topMarginControlWidget;
 	int topMarginToggleButton2 = topMarginControlWidget + heightToggleButton + widgetOffsetVertical;
 	int topMarginPlot1Label = topMarginControlWidget;
@@ -284,8 +292,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int topMarginButton1 = topMarginControlWidget;
 	int topMarginButton2 = topMarginControlWidget + heightButton + widgetOffsetVertical;
 
-	inputXmin.setBounds(leftMarginXmin, topMarginXmin, widthLabel, heightControlWidget);
-	inputXmax.setBounds(leftMarginXmax, topMarginXmax, widthLabel, heightControlWidget);
+	inputXmin.setBounds(leftMarginXmin, topMarginXMinMax, widthLabel, heightControlWidget);
+	inputXmax.setBounds(leftMarginXmax, topMarginXMinMax, widthLabel, heightControlWidget);
 	inputYmin.setBounds(leftMarginYmin, topMarginYmin, widthLabel, heightControlWidget);
 	inputYmax.setBounds(leftMarginYmax, topMarginYmax, widthLabel, heightControlWidget);
 	labelPlot1.setBounds(leftMarginPlotLabel, topMarginPlot1Label, widthPlotLabel, heightPlotLabel);
@@ -307,10 +315,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		xMin = val;
 	}
-	else
-	{
-		inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
-	}
+	else{inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);}
 
 	temp = inputXmax.getText(false);
 	val = std::atoi(temp.toStdString().c_str());
@@ -318,10 +323,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		xMax = val;
 	}
-	else
-	{
-		inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
-	}
+	else{inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);}
 
 	temp = inputYmin.getText(false);
 	val = std::atoi(temp.toStdString().c_str());
@@ -329,10 +331,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		yMin = val;
 	}
-	else
-	{
-		inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
-	}
+	else{inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);}
 
 	temp = inputYmax.getText(false);
 	val = std::atoi(temp.toStdString().c_str());
@@ -340,10 +339,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		yMax = val;
 	}
-	else
-	{
-		inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
-	}
+	else{inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);}
 	repaint();
 }
 
@@ -356,14 +352,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 	{
 		buttonPlot1.setButtonText("Selected");
 		buttonPlot2.setButtonText("Select");
-
 	}
 	else if (plotIndex == 1)
 	{
 		buttonPlot2.setButtonText("Selected");
 		buttonPlot1.setButtonText("Select");
 	}
-
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::updateToggleState(int plotId)
