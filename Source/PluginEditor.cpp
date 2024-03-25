@@ -25,7 +25,7 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 1300;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 1000+2;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer = 30;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer = 50;
 int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer = 30;
 int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis = 900;  //pixels = unit
 int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis = 900;  //pixels = unit
@@ -220,10 +220,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillRect(0, 0, 100, 950);
 	//box 2
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(xBuffer + lengthXAxis, 0, 600, 950);
+	g.fillRect(xBuffer * 1.5 + lengthXAxis, 0, 600, 950);
 	//box 3
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, 0, 1200, 50);
+	g.fillRect(0, 0, 1200, 30);
 	//box 4
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 	g.fillRect(0, yBuffer + lengthYAxis, 1200, 400);
