@@ -28,7 +28,9 @@ public:
     void setPlotIndex(int plotIndex);
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
-    void mouseDown(const juce::MouseEvent &event) override;
+    //void mouseDown(const juce::MouseEvent &event) override;
+    void mouseEnter(const juce::MouseEvent& event) override;
+    void mouseExit(const juce::MouseEvent& event) override;
     std::string floatToStringPrecision(float f);
 
 private:
@@ -36,6 +38,7 @@ private:
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
+    static bool isEntered;
 
     juce::Label cursorPlot1; //mouse
     juce::Label cursorPlot2; //mouse
