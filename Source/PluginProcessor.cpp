@@ -213,7 +213,11 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
 	int counter = 0;
     int count = 0;
+   
 
+   /* for (int i = 0; i < numBins; i++) {
+        freqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
+    }*/
 
 	for (int buffers = 0; buffers < numBuffers; buffers++) {
 
@@ -243,16 +247,23 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
 		window.multiplyWithWindowingTable(windowBufferLeft, 1024);
 
-        forwardFFT.performFrequencyOnlyForwardTransform(windowBufferRight,true);
+		forwardFFT.performRealOnlyForwardTransform(windowBufferRight,true);
 
-        for (int i = 0; i < 512 && counter < rtotal; ++i) {    
+		channelData[counter] = sqrt(pow(windowBufferRight[counter], 2)) / numFreqBins;
+		counter++;
+
+		for (int i = 1; i < numBins; i++) {
+			channelData[counter] = sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+			counter++;
+		}
+
+
+        /*for (int i = 0; i < 512 && counter < rtotal; ++i) {
             channelData[counter] = windowBufferRight[i + 512] + windowBufferLeft[i];
             counter++;
-        }
+        }*/
 	}
 
-    
-    //forwardFFT.performFrequencyOnlyForwardTransform(scopeData);
 
 
 /*

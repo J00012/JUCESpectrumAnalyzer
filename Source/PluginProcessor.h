@@ -18,9 +18,11 @@ class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
 
     enum
     {
-        fftOrder = 11,             // [1]
+        fftOrder = 10,             // [1]
         fftSize = 1 << fftOrder,  // [2]
-        scopeSize = 512             // [3]	   //this will probably need to change since it is the "SIZE"
+        scopeSize = 512,            // [3]	   //this will probably need to change since it is the "SIZE"
+        numBins = fftSize / 2 +1,
+        numFreqBins = fftSize / 2
     };
 
 
@@ -81,12 +83,12 @@ public:
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
 
-    static float bufferRight[1024];
-    static float bufferLeft[1024];
+    static float bufferRight[fftSize];
+    static float bufferLeft[fftSize];
 
-    static float windowBufferRight[1024];
-    static float windowBufferLeft[1024];
-    static float windowBufferResult[512];
+    static float windowBufferRight[fftSize*2];
+    static float windowBufferLeft[fftSize];
+    static float windowBufferResult[scopeSize];
 
     float fftArray[fftSize] = {0};
     float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
@@ -96,7 +98,6 @@ private:
    
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
     static float scopeData[scopeSize];                  // [10]	
-   // double array[6] = { 0,0,0,0,0,0};
     bool procBlockIsRunning = false;
     
 
