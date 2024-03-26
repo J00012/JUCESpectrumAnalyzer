@@ -94,8 +94,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	cursorLabel0.setText("Cursor:", juce::dontSendNotification); //mouse
 	cursorLabel1.setText("Plot 1", juce::dontSendNotification); //mouse
 	cursorLabel2.setText("Plot 2", juce::dontSendNotification); //mouse
-	//cursorPlot1.setColour(juce::Label::backgroundColourId, juce::Colours::black); //mouse
-	//cursorPlot2.setColour(juce::Label::backgroundColourId, juce::Colours::black); //mouse
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
 	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
@@ -426,12 +424,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
 		}
 	}
 }
-/*
-void FFTSpectrumAnalyzerAudioProcessorEditor::mouseDown(const juce::MouseEvent& event)
-{
 
-	cursorX1 = event.juce::MouseEvent::getMouseDownX();
-	cursorY1 = event.juce::MouseEvent::getMouseDownY();
+void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
+{
+	cursorX1 = event.getMouseDownX();
+	cursorY1 = event.getMouseDownY();
 	cursorX1 -= 100;
 	cursorX1 /= 10;
 	cursorX2 = cursorX1;
@@ -441,71 +438,25 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseDown(const juce::MouseEvent& 
 		cursorY1 = cursorY2 = 0.00;
 		cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(cursorY1) + ")", juce::dontSendNotification); //mouse
 		cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(cursorY2) + ")", juce::dontSendNotification); //mouse
-		repaint();
-	}
-	//plot 1
-	else if (audioProcessor.getPlotIndex() == 0) {
+	} 
+	else {
+		//plot 1
+		if (audioProcessor.getPlotIndex() == 0) {
 		const float* scopeData = audioProcessor.getScopeData();
 		cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(scopeData[cursorX1]) + ")", juce::dontSendNotification);
-		repaint();
-	}
-	//plot 2
-	else {
+		}
+		//plot 2
+		else {
 		const float* scopeData2 = audioProcessor.getScopeData() + audioProcessor.getScopeSize();
 		cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(scopeData2[cursorX2]) + ")", juce::dontSendNotification);
-		repaint();
+		}
 	}
-} */
+	repaint();
+}
 
 std::string FFTSpectrumAnalyzerAudioProcessorEditor::floatToStringPrecision(float f)
 {
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(2) << f;
 	return oss.str();
-}
-
-void FFTSpectrumAnalyzerAudioProcessorEditor::mouseEnter(const juce::MouseEvent& event)
-{
-	isEntered = true;
-	while (isEntered) {
-		cursorX1 = event.juce::MouseEvent::getScreenX();
-		cursorY1 = event.juce::MouseEvent::getScreenY();
-
-		//invalid bounds
-		if (cursorX1 < 100 || cursorX1 > 1100 || cursorY1 < 50 || cursorY1 > 850) {
-			cursorX1 = cursorX2 = 0;
-			cursorY1 = cursorY2 = 0.00;
-			cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(cursorY1) + ")", juce::dontSendNotification); //mouse
-			cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(cursorY2) + ")", juce::dontSendNotification); //mouse
-		}
-		//plot 1
-		else if (audioProcessor.getPlotIndex() == 0) {
-			//offset X coord
-			cursorX1 -= 100;
-			cursorX1 /= 10;
-			cursorX2 = cursorX1;
-			const float* scopeData = audioProcessor.getScopeData();
-			cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(scopeData[cursorX1]) + ")", juce::dontSendNotification);
-		}
-		//plot 2
-		else {
-			//offset X coord
-			cursorX1 -= 100;
-			cursorX1 /= 10;
-			cursorX2 = cursorX1;
-			const float* scopeData2 = audioProcessor.getScopeData() + audioProcessor.getScopeSize();
-			cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(scopeData2[cursorX2]) + ")", juce::dontSendNotification);
-		}
-		repaint();
-	}
-}
-
-void FFTSpectrumAnalyzerAudioProcessorEditor::mouseExit(const juce::MouseEvent& event)
-{
-	isEntered = false;
-	cursorX1 = cursorX2 = 0;
-	cursorY1 = cursorY2 = 0.00;
-	cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(cursorY1) + ")", juce::dontSendNotification); //mouse
-	cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(cursorY2) + ")", juce::dontSendNotification); //mouse
-	repaint();
 }

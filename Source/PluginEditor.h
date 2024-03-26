@@ -28,9 +28,7 @@ public:
     void setPlotIndex(int plotIndex);
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
-    //void mouseDown(const juce::MouseEvent &event) override;
-    void mouseEnter(const juce::MouseEvent& event) override;
-    void mouseExit(const juce::MouseEvent& event) override;
+    void mouseMove(const juce::MouseEvent& event) override;
     std::string floatToStringPrecision(float f);
 
 private:
