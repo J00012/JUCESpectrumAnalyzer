@@ -46,16 +46,20 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	startTimer(500);
 	setSize(windowWidth, windowHeight);
 
+	setPlotIndex(plotIndexSelection);
+
 	addAndMakeVisible(buttonPlot1);
 	buttonPlot1.setClickingTogglesState(true);
 	buttonPlot1.onClick = [&]()
 		{
+			plotIndexSelection = 0;
 			setPlotIndex(0);
 		};
 	addAndMakeVisible(buttonPlot2);
 	buttonPlot2.setClickingTogglesState(true);
 	buttonPlot2.onClick = [&]()
 		{
+			plotIndexSelection = 1; 
 			setPlotIndex(1);
 		};
 
@@ -146,10 +150,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Path yAxisMarkersDown;
 	juce::Path zeroTick;
 
-
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
-
-
 
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors
