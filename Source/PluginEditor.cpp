@@ -429,17 +429,22 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 {
 	cursorX1 = event.getMouseDownX();
 	cursorY1 = event.getMouseDownY();
-	cursorX1 -= 100;
-	cursorX1 /= 10;
-	cursorX2 = cursorX1;
 	//invalid bounds
-	if (cursorX1 < 0 || cursorX1 > 100 || cursorY1 < 50 || cursorY1 > 850) {
+	if (cursorX1 < 100 || cursorX1 > 1100 || cursorY1 < 50 || cursorY1 > 850) {
 		cursorX1 = cursorX2 = 0;
 		cursorY1 = cursorY2 = 0.00;
 		cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(cursorY1) + ")", juce::dontSendNotification); //mouse
 		cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(cursorY2) + ")", juce::dontSendNotification); //mouse
 	} 
 	else {
+		//offset xCoord [xCoord / (ratio of x-axis length to bounds)]
+		int xScale = 1000 / (xMax - xMin);
+		
+		cursorX1 += (xMin * xScale);
+		cursorX1 -= 100;
+		cursorX1 /= xScale;
+		cursorX2 = cursorX1;
+	
 		//plot 1
 		if (audioProcessor.getPlotIndex() == 0) {
 		const float* scopeData = audioProcessor.getScopeData();
