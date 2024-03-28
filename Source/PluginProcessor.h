@@ -20,7 +20,7 @@ class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
     {
         fftOrder = 10,             // [1]
         fftSize = 1 << fftOrder,  // [2]
-        scopeSize = 512,            // [3]	   //this will probably need to change since it is the "SIZE"
+        stepSize = 512,            // [3]	   //this will probably need to change since it is the "SIZE"
         numBins = fftSize / 2 +1,
         numFreqBins = fftSize / 2
     };
@@ -43,12 +43,9 @@ public:
     bool getProcBlockIsRunning();
     void resetProcBlockIsRunning();
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-    void drawNextFrameOfSpectrum(float* channelData, int numSample);
 
-    int getScopeSize() const;
+    int getStepSize() const;
     const float* getScopeData() const;
-    const double* getArray() const;
-    const float* getFFT() const;
     const float* getRingTest() const;
    
 
@@ -84,7 +81,11 @@ private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
 
     //declare the ringBuffer and set its size to 1000
-    RingBuffer<float> ringBuffer{ 10000 };                   
+    RingBuffer<float> ringBuffer{ 10000 };  
+    juce::dsp::WindowingFunction<float>::WindowingMethod window;
+
+    //counters
+    int fftCounter = 0;
 
     //static float arrays
     static float bufferRight[fftSize];
@@ -93,11 +94,9 @@ private:
     static float windowBufferLeft[fftSize];
     static float indexFreqMap[numBins];
     static float ringTest[10000];
-    static float scopeData[scopeSize];                  // [10]	
-
-    //counters
-    int sampleOutIndex = 0;
-    int ringIndex = 0;
+    static float scopeData[stepSize];                  // [10]	
+    static float bins[fftSize / 2 + 1];
+  
 
     //UI Teams code
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED

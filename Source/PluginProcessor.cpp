@@ -216,7 +216,8 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
     int rtotal = bufferSize - rSamples;
   
-   
+    int ringIndex = 0;
+    int sampleOutIndex = 0;
 
 	for (int buffers = 0; buffers < numBuffers; buffers++) {
 
@@ -248,12 +249,14 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
 		forwardFFT.performRealOnlyForwardTransform(windowBufferRight,true);
 
-		for (int i = 0; i < numBins; i++) {
+
+
+		for (int i = 0; i < numBins-1; i++) {
             float a = pow(windowBufferRight[2 * i],2);
             float b = pow(windowBufferRight[2 * i + 1], 2);
             float c = sqrt(a + b);
 			 //sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
-            channelData[sampleOutIndex] = c;
+            channelData[sampleOutIndex] = c/numFreqBins;
 			sampleOutIndex++;
 		}
 
@@ -262,10 +265,7 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
             channelData[counter] = windowBufferRight[i + 512] + windowBufferLeft[i];
             counter++;
         }*/
-	}
-
-    
-   
+	} 
 }
 
 
@@ -273,9 +273,9 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
 //}
 
-int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
+int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
 {
-    return scopeSize;
+    return stepSize;
 }
 
 
