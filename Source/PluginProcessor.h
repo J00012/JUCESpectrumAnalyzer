@@ -82,7 +82,8 @@ private:
 
     //declare the ringBuffer and set its size to 1000
     RingBuffer<float> ringBuffer{ 10000 };  
-    juce::dsp::WindowingFunction<float>::WindowingMethod window;
+
+    //juce::dsp::WindowingFunction<float>::WindowingMethod window;
 
     //counters
     int fftCounter = 0;
@@ -93,6 +94,7 @@ private:
     static float windowBufferRight[fftSize*2];
     static float windowBufferLeft[fftSize];
     static float indexFreqMap[numBins];
+    static float readBuffer[10000];
     static float ringTest[10000];
     static float scopeData[stepSize];                  // [10]	
     static float bins[fftSize / 2 + 1];

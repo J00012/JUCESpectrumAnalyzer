@@ -32,23 +32,18 @@ void RingBuffer<T>::write(const T* processBuffer, size_t bufferSize) {
 }
 
 template<typename T>
-void RingBuffer<T>::read(T* processBuffer, size_t bufferSize) {
+void RingBuffer<T>::read(T* processBuffer, size_t bufferIndex) {
     if (is_empty())
         throw std::underflow_error("Buffer is empty");
 
-    for (size_t i = 0; i < bufferSize; ++i) {
+    for (size_t i = 0; i < bufferIndex; ++i) {
         if (is_empty())
             throw std::underflow_error("Buffer is empty");
 
         processBuffer[i] = buffer[tail];
         tail = (tail + 1) % capacity;
         full = false;
-
     }
-    //T data = buffer[tail];
-    //tail = (tail + 1) % capacity;
-    //full = false;
-    //return data;
 }
 
 template<typename T>
