@@ -153,7 +153,6 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     int sampleRate = getSampleRate();  //get the Sample Rate of Buffer
 
     int channel = 0;          //set channel
-    int ringIndex = 0;        //read counter
     int sampleOutIndex = 0;   //accumulate counter
 
     juce::ScopedNoDenormals noDenormals;
@@ -163,8 +162,7 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     auto* channelData = buffer.getWritePointer(channel);
 
     ringBuffer.write(channelData, buffer.getNumSamples());
-    ringBuffer.read(readBuffer, buffer.getNumSamples());
-   
+  
     juce::dsp::WindowingFunction<float> window(fftSize, juce::dsp::WindowingFunction<float>::hann);   //declare the window object
     window.fillWindowingTables(fftSize, juce::dsp::WindowingFunction<float>::hann);                   //fills the content of the object array with a given windowing method
                        
@@ -173,21 +171,7 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     //do the window on the first 1024 (copy over in another buffer) (copy second in another buffer)  and the last 1024
     //memcpy
 
-
-    int bufferSize = buffer.getNumSamples();
-    int numBuffers = bufferSize / stepSize;
-    int rSamples = bufferSize % stepSize;
-
-    int rtotal = bufferSize - rSamples;
-
-   
-
-    //if(ringBuffer.size() < 512)
-    //if(ringBuffer.size() >= 512)
-    //while (ringBuffer.size() - ringIndex >= stepSize){
-	for (int buffers = 0; buffers < numBuffers; buffers++) {
-
-        //ringBuffer.read(ringTest, stepSize);
+    while (ringBuffer.size() >= stepSize){
 
 		for (int sample = 0; sample < stepSize; ++sample) {
 			bufferLeft[sample + stepSize] = bufferLeft[sample];
@@ -198,10 +182,7 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 		for (int sample = 0; sample < stepSize; ++sample) {
 			bufferRight[sample + stepSize] = bufferRight[sample];
 		}
-		for (int sample = 0; sample < stepSize && rSamples < buffer.getNumSamples() - ringIndex; ++sample) {
-			bufferRight[sample] = readBuffer[ringIndex];
-			ringIndex++;
-		}
+        ringBuffer.read(bufferRight, stepSize);
 
 		//copy for windowing
 		for (int sample = 0; sample < fftSize; ++sample) {

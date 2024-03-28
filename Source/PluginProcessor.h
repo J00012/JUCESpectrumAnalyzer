@@ -95,7 +95,7 @@ private:
     static float windowBufferLeft[fftSize];
     static float indexFreqMap[numBins];
     static float readBuffer[10000];
-    static float ringTest[10000];
+    static float ringTest[stepSize];
     static float scopeData[stepSize];                  // [10]	
     static float bins[fftSize / 2 + 1];
   
