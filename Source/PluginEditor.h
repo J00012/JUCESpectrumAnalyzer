@@ -29,14 +29,13 @@ public:
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
     void mouseMove(const juce::MouseEvent& event) override;
-    std::string floatToStringPrecision(float f);
+    std::string floatToStringPrecision(float f, int p);
 
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
-    static bool isEntered;
 
     juce::Label cursorPlot1; //mouse
     juce::Label cursorPlot2; //mouse

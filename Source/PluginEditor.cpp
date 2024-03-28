@@ -15,7 +15,6 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY1 = 0.00; //mouse
 int FFTSpectrumAnalyzerAudioProcessorEditor::cursorX2 = 0; //mouse
 float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY2 = 0.00; //mouse
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
-bool FFTSpectrumAnalyzerAudioProcessorEditor::isEntered = false;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
@@ -103,11 +102,11 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputYmax.setEditable(true);
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
-	cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(cursorY1) + ")", juce::dontSendNotification); //mouse
-	cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(cursorY2) + ")", juce::dontSendNotification); //mouse
-	cursorLabel0.setText("Cursor:", juce::dontSendNotification); //mouse
-	cursorLabel1.setText("Plot 1", juce::dontSendNotification); //mouse
-	cursorLabel2.setText("Plot 2", juce::dontSendNotification); //mouse
+	cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(cursorY1, 2) + ")", juce::dontSendNotification); 
+	cursorPlot2.setText("(" + floatToStringPrecision(cursorX2, 1) + ", " + floatToStringPrecision(cursorY2, 2) + ")", juce::dontSendNotification); 
+	cursorLabel0.setText("Cursor:", juce::dontSendNotification);
+	cursorLabel1.setText("Plot 1", juce::dontSendNotification);
+	cursorLabel2.setText("Plot 2", juce::dontSendNotification);
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
 	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
@@ -190,7 +189,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	// Graph plots
 	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
 	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
-	for (int i = 1; i < sampleSize; i++)
+	for (int i = 1; i <= sampleSize; i++)
 	{
 		if (isVisiblePlot2 == true) {
 			plot2.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + plotYShift);
@@ -241,7 +240,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillRect(0, 0, 100, 950);
 	//box 2
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(xBuffer * 1.5 + lengthXAxis, 0, 600, 950);
+	g.fillRect(xStartXYAxis + lengthXAxis, 0, 600, 950);
 	//box 3
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 	g.fillRect(0, 0, 1200, 30);
@@ -315,11 +314,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 
 	inputXmin.setBounds(leftMarginXmin, topMarginXMinMax, widthLabel, heightControlWidget);
 	inputXmax.setBounds(leftMarginXmax, topMarginXMinMax, widthLabel, heightControlWidget);
-	cursorPlot1.setBounds(500, 870, 60, 24); //mouse
-	cursorPlot2.setBounds(500, 900, 60, 24); //mouse
-	cursorLabel0.setBounds(440, 870, 60, 24); //mouse
-	cursorLabel1.setBounds(560, 870, 60, 24); //mouse
-	cursorLabel2.setBounds(560, 900, 60, 24); //mouse
+	cursorPlot1.setBounds(500, topMarginXMinMax - 20, 70, 24); //mouse
+	cursorPlot2.setBounds(500, topMarginXMinMax, 70, 24); //mouse
+	cursorLabel0.setBounds(450, topMarginXMinMax - 20, 60, 24); //mouse
+	cursorLabel1.setBounds(570, topMarginXMinMax - 20, 60, 24); //mouse
+	cursorLabel2.setBounds(570, topMarginXMinMax, 60, 24); //mouse
 	inputYmin.setBounds(leftMarginYmin, topMarginYmin, widthLabel, heightControlWidget);
 	inputYmax.setBounds(leftMarginYmax, topMarginYmax, widthLabel, heightControlWidget);
 	labelPlot1.setBounds(leftMarginPlotLabel, topMarginPlot1Label, widthPlotLabel, heightPlotLabel);
@@ -425,38 +424,38 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 	cursorX1 = event.getMouseDownX();
 	cursorY1 = event.getMouseDownY();
 	//invalid bounds
-	if (cursorX1 < 100 || cursorX1 > 1100 || cursorY1 < 50 || cursorY1 > 850) {
-		cursorX1 = cursorX2 = 0;
+	if (cursorX1 < 100 || cursorX1 > 1000 || cursorY1 < 30 || cursorY1 > 930) {
+		cursorX1 = cursorX2 = 0.0;
 		cursorY1 = cursorY2 = 0.00;
-		cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(cursorY1) + ")", juce::dontSendNotification); //mouse
-		cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(cursorY2) + ")", juce::dontSendNotification); //mouse
+		cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(cursorY1, 2) + ")", juce::dontSendNotification); //mouse
+		cursorPlot2.setText("(" + floatToStringPrecision(cursorX2, 1) + ", " + floatToStringPrecision(cursorY2, 2) + ")", juce::dontSendNotification); //mouse
 	} 
 	else {
 		//offset xCoord [xCoord / (ratio of x-axis length to bounds)]
-		int xScale = 1000 / (xMax - xMin);
+		int xScale = lengthXAxis / (xMax - xMin);
 		
 		cursorX1 += (xMin * xScale);
-		cursorX1 -= 100;
+		cursorX1 -= xStartXYAxis;
 		cursorX1 /= xScale;
 		cursorX2 = cursorX1;
 	
 		//plot 1
-		if (audioProcessor.getPlotIndex() == 0) {
+		if (audioProcessor.getPlotIndex() == 0 && isVisiblePlot1) {
 		const float* scopeData = audioProcessor.getScopeData();
-		cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(scopeData[cursorX1]) + ")", juce::dontSendNotification);
+		cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(scopeData[cursorX1], 2) + ")", juce::dontSendNotification);
 		}
 		//plot 2
-		else {
+		else if (audioProcessor.getPlotIndex() == 1 && isVisiblePlot2) {
 		const float* scopeData2 = audioProcessor.getScopeData() + audioProcessor.getScopeSize();
-		cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(scopeData2[cursorX2]) + ")", juce::dontSendNotification);
+		cursorPlot2.setText("(" + floatToStringPrecision(cursorX2, 1) + ", " + floatToStringPrecision(scopeData2[cursorX2], 2) + ")", juce::dontSendNotification);
 		}
 	}
 	repaint();
 }
 
-std::string FFTSpectrumAnalyzerAudioProcessorEditor::floatToStringPrecision(float f)
+std::string FFTSpectrumAnalyzerAudioProcessorEditor::floatToStringPrecision(float f, int p)
 {
 	std::ostringstream oss;
-	oss << std::fixed << std::setprecision(2) << f;
+	oss << std::fixed << std::setprecision(p) << f;
 	return oss.str();
 }
