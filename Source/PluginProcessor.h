@@ -83,21 +83,24 @@ public:
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
 
+    //declare the ringBuffer and set its size to 1000
+    RingBuffer<float> ringBuffer{ 10000 };                   
+
+    //static float arrays
     static float bufferRight[fftSize];
     static float bufferLeft[fftSize];
-
     static float windowBufferRight[fftSize*2];
     static float windowBufferLeft[fftSize];
-    static float windowBufferResult[scopeSize];
-
-    float fftArray[fftSize] = {0};
-    float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
+    static float indexFreqMap[numBins];
     static float ringTest[10000];
-    RingBuffer<float> ringBuffer{10000};                   //declare the ringBuffer object
-    int fftArrayIndex = 0;
-   
-    bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
     static float scopeData[scopeSize];                  // [10]	
+
+    //counters
+    int sampleOutIndex = 0;
+    int ringIndex = 0;
+
+    //UI Teams code
+    bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
     bool procBlockIsRunning = false;
     
 

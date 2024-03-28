@@ -54,45 +54,52 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint (juce::Graphics& g)
     g.setOpacity(1.0f);
     g.setColour(juce::Colours::white);
 
-    int lineHeight = 10; // Adjust line height as needed
-    int yPosition = 10; // Start position from the top
-    int xPosition = 10; // Start position from the left
+  /* int sampleRate= audioProcessor.getSampleRate();
+   int maxFreq = sampleRate / 2;
 
-    //g.drawFittedText(str, getLocalBounds(), juce::Justification::centred, 1);
-    const int scopeSize = audioProcessor.getScopeSize();
-    const float* scopeData = audioProcessor.getRingTest();
+    for (int i = 0; i < numBins; i++) {
+        indexFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
+    }*/
+ //   int lineHeight = 10; // Adjust line height as needed
+ //   int yPosition = 10; // Start position from the top
+ //   int xPosition = 10; // Start position from the left
 
-    const float* fft = audioProcessor.getFFT();
+ //   //g.drawFittedText(str, getLocalBounds(), juce::Justification::centred, 1);
 
-        for (int i = 0; i < scopeSize; ++i)
-        {
-            
-            // Convert each float value to a string
-            auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
+ //   //const int scopeSize = audioProcessor.getScopeSize();
+ //   //const float* scopeData = audioProcessor.getRingTest();
 
-            // Draw the string at appropriate positions
-            g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
-        }
-    
-    juce::Path myPath;
-    float offsetX = 50;
-    float offsetY = 500;
-    float scaleX = 10;
-    float scaleY = 100;
-    float sampleSize = 150;
-    float FlipYAxisValue = -1;
+ //  
 
-    myPath.startNewSubPath(offsetX, offsetY + scopeData[0]); //observe closely
-    for (int i = 1; i < sampleSize; i++)
-    {
-        myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
-    }
+ //   //    for (int i = 0; i < scopeSize; ++i)
+ //   //    {
+ //   //        
+ //   //        // Convert each float value to a string
+ //   //        auto valueString = std::to_string(scopeData[i]); // Change '4' to the desired number of decimal places
 
- /*   myPath.lineTo(100.0f, 200.0f);
-    myPath.lineTo(200.0f, 300.0f);*/
+ //   //        // Draw the string at appropriate positions
+ //   //        g.drawText(valueString, xPosition, yPosition + i * lineHeight, getWidth() , lineHeight, juce::Justification::left);
+ //   //    }
+ //   
+ //   juce::Path myPath;
+ //   float offsetX = 50;
+ //   float offsetY = 500;
+ //   float scaleX = 10;
+ //   float scaleY = 100;
+ //   float sampleSize = 150;
+ //   float FlipYAxisValue = -1;
 
-    g.strokePath(myPath, juce::PathStrokeType(5.0f));
-    
+ //   myPath.startNewSubPath(offsetX, offsetY + scopeData[0]); //observe closely
+ //   for (int i = 1; i < sampleSize; i++)
+ //   {
+ //       myPath.lineTo(i * scaleX + offsetX, FlipYAxisValue * scopeData[i] * scaleY + offsetY);
+ //   }
+
+ ///*   myPath.lineTo(100.0f, 200.0f);
+ //   myPath.lineTo(200.0f, 300.0f);*/
+
+ //   g.strokePath(myPath, juce::PathStrokeType(5.0f));
+ //   
     /*
     auto str1 = std::to_string(scopeData[0]);
     std::cout << scopeData[0];
