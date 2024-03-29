@@ -10,6 +10,10 @@
 #include "PluginEditor.h"
 #include "RingBuffer.h"
 
+float FFTSpectrumAnalyzerAudioProcessor::scopeData[plotSize][scopeSize] = { 0 };
+int FFTSpectrumAnalyzerAudioProcessor::scopeDataIndex = 0;
+int FFTSpectrumAnalyzerAudioProcessor::plotIndex = 0;
+
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
@@ -23,12 +27,12 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
                      #endif
                        ),
     forwardFFT(fftOrder) // Initialize forwardFFT with fftOrder
-    
+   
 #endif
 {
 }
 
-FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor()
+FFTSpectrumAnalyzerAudioProcessor::~FFTSpectrumAnalyzerAudioProcessor() // This is the destructor
 {
 }
 
@@ -133,14 +137,15 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
-void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockIsRunning() 
+//============================================================================== // Getters and Setters
+void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
 {
-    procBlockIsRunning = false;
+    procBlockCalled = false;
 }
 
-bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
+bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
 {
-    return procBlockIsRunning;
+    return procBlockCalled;
 }
 
 //PROCESS BLOCK
@@ -199,6 +204,10 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 	} 
 }
 
+void FFTSpectrumAnalyzerAudioProcessor::setPlotIndex(int rowIndex)
+{
+    plotIndex = rowIndex;
+}
 
 int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
 {
@@ -209,7 +218,6 @@ int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
 {
     return fftCounter;
 }
-
 
 const float* FFTSpectrumAnalyzerAudioProcessor::getBins() const
 {
@@ -240,7 +248,7 @@ void FFTSpectrumAnalyzerAudioProcessor::getStateInformation (juce::MemoryBlock& 
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    // as intermediaries to make it easy to save and load complex data. 
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)

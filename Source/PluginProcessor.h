@@ -15,7 +15,6 @@
 */
 class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
 {
-
     enum
     {
         fftOrder = 10,             // [1]
@@ -24,13 +23,12 @@ class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
         numBins = fftSize / 2 +1,
         numFreqBins = fftSize / 2
     };
-
+    
 
 public:
     //==============================================================================
     FFTSpectrumAnalyzerAudioProcessor();
-    ~FFTSpectrumAnalyzerAudioProcessor() override
-;
+    ~FFTSpectrumAnalyzerAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -40,8 +38,13 @@ public:
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
 
-    bool getProcBlockIsRunning();
-    void resetProcBlockIsRunning();
+    bool getProcBlockCalled();
+    void resetProcBlockCalled();
+    void resetScopeDataIndex();
+    void setPlotIndex(int rowIndex);
+    int getPlotIndex();
+    int getPlotSize();
+
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     int getStepSize() const;
@@ -49,7 +52,6 @@ public:
     const float* getBins() const;
     const float* getRingTest() const;
    
-
 
 
     //==============================================================================
@@ -73,10 +75,7 @@ public:
 
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
-
-
-   
+    void setStateInformation (const void* data, int sizeInBytes) override; 
 
 private:
     juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
@@ -103,8 +102,6 @@ private:
     //UI Teams code
     bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
     bool procBlockIsRunning = false;
-    
-
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)
