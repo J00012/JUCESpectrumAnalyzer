@@ -259,7 +259,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	yAxis.lineTo(xStartXYAxis, yStartXYAxis - lengthYAxis);
 	g.setColour(juce::Colours::white);
 	g.strokePath(yAxis, juce::PathStrokeType(2.0f));
-
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
