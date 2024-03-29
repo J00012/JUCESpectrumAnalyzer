@@ -45,7 +45,8 @@ public:
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     int getStepSize() const;
-    const float* getScopeData() const;
+    int getFFTCounter() const;
+    const float* getBins() const;
     const float* getRingTest() const;
    
 
@@ -87,14 +88,13 @@ private:
 
     //counters
     int fftCounter = 0;
-
+   
     //static float arrays
     static float bufferRight[fftSize];
     static float bufferLeft[fftSize];
     static float windowBufferRight[fftSize*2];
     static float windowBufferLeft[fftSize];
     static float indexFreqMap[numBins];
-    static float readBuffer[10000];
     static float ringTest[stepSize];
     static float scopeData[stepSize];                  // [10]	
     static float bins[fftSize / 2 + 1];

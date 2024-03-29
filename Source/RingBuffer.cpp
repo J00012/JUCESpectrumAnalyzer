@@ -51,6 +51,9 @@ bool RingBuffer<T>::is_empty() const {
     return !full && head == tail;
 }
 
+
+//size increase as more information is written
+//size decreases as more information is read
 template<typename T>
 size_t RingBuffer<T>::size() const {
     if (full)

@@ -143,11 +143,7 @@ bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockIsRunning()
     return procBlockIsRunning;
 }
 
-
-//buffer- two dimenstional array where rows represent different channels and columns represent individual samples
-//(A multi-channel buffer containing floating point audio samples)
-//
-//midiMessages
+//PROCESS BLOCK
 void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     int sampleRate = getSampleRate();  //get the Sample Rate of Buffer
@@ -182,15 +178,12 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 		for (int sample = 0; sample < stepSize; ++sample) {
 			bufferRight[sample + stepSize] = bufferRight[sample];
 		}
+
         ringBuffer.read(bufferRight, stepSize);
 
-		//copy for windowing
-		for (int sample = 0; sample < fftSize; ++sample) {
-			windowBufferRight[sample] = bufferRight[sample];
-		}
-		for (int sample = 0; sample < fftSize; ++sample) {
-			windowBufferLeft[sample] = bufferLeft[sample];
-		}
+        std::copy(bufferRight, bufferRight + fftSize, windowBufferRight);
+
+        std::copy(bufferLeft, bufferLeft + fftSize, windowBufferLeft);
 
 		window.multiplyWithWindowingTable(windowBufferRight, fftSize);
 
@@ -200,11 +193,8 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
         fftCounter++;
 
-		for (int i = 0; i < numBins-1; i++) {
-            float a= sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
-            channelData[sampleOutIndex] = a;
-            bins[i] += a;
-			sampleOutIndex++;
+		for (int i = 0; i < numBins; i++) {       
+            bins[i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
 		}
 	} 
 }
@@ -215,11 +205,18 @@ int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
     return stepSize;
 }
 
-
-const float* FFTSpectrumAnalyzerAudioProcessor::getScopeData() const
+int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
 {
-    return scopeData;
+    return fftCounter;
 }
+
+
+const float* FFTSpectrumAnalyzerAudioProcessor::getBins() const
+{
+    return bins;
+}
+
+
 
 
 const float* FFTSpectrumAnalyzerAudioProcessor::getRingTest() const
@@ -261,7 +258,6 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 //zero the static float arrays
 float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
-float FFTSpectrumAnalyzerAudioProcessor::readBuffer[] = { 0 };
 float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
 float FFTSpectrumAnalyzerAudioProcessor::bufferRight[] = { 0 };
 float FFTSpectrumAnalyzerAudioProcessor::bufferLeft[] = { 0 };
