@@ -48,25 +48,40 @@ private:
     juce::ToggleButton toggleButtonPlot2;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
-    static int xMinPrev;
-    static int xMin;
-    static int xMaxPrev;
-    static int xMax;
-    static int yMinPrev;
-    static int yMin;
-    static int yMaxPrev;
-    static int yMax;
-    static int plotIndexSelection;
+ 
+    int xMinPrev = 0;
+    int xMin = 0;
+    int xMaxPrev = 100;
+    int xMax = 100;
+    int yMinPrev = -10;
+    int yMin = -10;
+    int yMaxPrev = 10;
+    int yMax = 10;
+    int plotIndexSelection = 0;
 
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis;  //pixels = unit
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis;  //pixels = unit
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot;
+    // Rectangle bounds for background
+    int FFTSpectrumAnalyzerAudioProcessorEditor::widgetHeight = 24;
+    int rectanglesTopLeftMargin = 0;
+    int leftMarginR2 = 950;
+    int topMarginR4 = 1200;
+    int widthR1 = 1200;
+    int widthR2 = 600;
+    int widthR3 = 1200;
+    int widthR4 = 1200;
+    int heightR1 = 50;
+    int heightR2 = 950;
+    int heightR3 = 50;
+    int heightR4 = 400;
+
+    // Bounds and sizes for widgets
+    int widgetOffsetVertical = 10;
+    int widgetOffsetHorizontal = 10;
+    int widthLabel = 50;
+    int widthPlotLabel = 50;
+    int widthToggleButton = 30;
+    int widthButton = 90;
+
+    int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };

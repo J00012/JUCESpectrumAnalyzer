@@ -11,27 +11,9 @@
 #include <string>
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -10;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -10;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 10;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 10;
-int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
 
-int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 1300;
-int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 1000+2;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer = 50;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer = 30;
-int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis = 900;  //pixels = unit
-int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis = 900;  //pixels = unit
-int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis = yBuffer + lengthYAxis;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot = yBuffer + lengthYAxis / 2;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
@@ -39,7 +21,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 {
 	setOpaque(true);
 	startTimer(500);
-	setSize(windowWidth, windowHeight);
+	setSize(1300, 1000);
+	setResizable(true, true);
 
 	addAndMakeVisible(buttonPlot1);
 	buttonPlot1.setClickingTogglesState(true);
@@ -126,10 +109,14 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Path yAxisMarkersDown;
 	juce::Path zeroTick;
 
-
-	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
-
-
+	// Paint values for plotting
+	float xBuffer = getWidth() * 0.05;
+	float yBuffer = getHeight() * 0.05;
+	float lengthXAxis = getWidth() * 0.9;  //pixels = unit
+	float lengthYAxis = getHeight() * 0.9;  //pixels = unit
+	float yStartXYAxis = yBuffer + lengthYAxis;
+	float xStartXYAxis = getWidth() * 0.1;
+	float yStartPlot = yBuffer + lengthYAxis / 2;
 
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors
@@ -214,19 +201,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
 	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
 	
-	// Draw background boxes
-	//box 1
+	// Draw background boxes	
+	juce::Rectangle<int> leftPanelBox(rectanglesTopLeftMargin, rectanglesTopLeftMargin, widthR1, heightR1);
+	juce::Rectangle<int> rightPanelBox(leftMarginR2, rectanglesTopLeftMargin, widthR2, heightR2); 
+	juce::Rectangle<int> topPanelBox(rectanglesTopLeftMargin, rectanglesTopLeftMargin, widthR3, heightR3);
+	juce::Rectangle<int> bottomPanelBox(rectanglesTopLeftMargin, topMarginR4, widthR4, heightR4);
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, 0, 100, 950);
-	//box 2
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(xBuffer * 1.5 + lengthXAxis, 0, 600, 950);
-	//box 3
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, 0, 1200, 30);
-	//box 4
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, yBuffer + lengthYAxis, 1200, 400);
+	g.fillRect(leftPanelBox);
+	g.fillRect(rightPanelBox);
+	g.fillRect(topPanelBox);
+	g.fillRect(bottomPanelBox);
 
 	// Plot x-axis
 	xAxis.startNewSubPath(xStartXYAxis, yStartXYAxis);
@@ -257,15 +241,14 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
-	// This is generally where you'll want to lay out the positions of any
-	// subcomponents in your editor..
-	int widgetOffsetVertical = 10;
-	int widgetOffsetHorizontal = 10;
-
-	int widthLabel = 50;
-	int widthPlotLabel = 50;
-	int widthToggleButton = 30;
-	int widthButton = 90;
+	// Paint values for plotting
+	float xBuffer = getWidth() * 0.05;
+	float yBuffer = getHeight() * 0.05;
+	float lengthXAxis = getWidth() * 0.9;  //pixels = unit
+	float lengthYAxis = getHeight() * 0.9;  //pixels = unit
+	float yStartXYAxis = yBuffer + lengthYAxis;
+	float xStartXYAxis = getWidth() * 0.1;
+	float yStartPlot = yBuffer + lengthYAxis / 2;
 
 	int leftMarginXmin = xStartXYAxis;
 	int leftMarginXmax = lengthXAxis + widthLabel;
@@ -274,8 +257,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int topMarginXMinMax = lengthYAxis + yBuffer * 2;
 	int topMarginYmin = lengthYAxis + yBuffer;
 	int topMarginYmax = yBuffer;
-
-	int heightControlWidget = 24;
+	
+	int heightControlWidget = widgetHeight;
 	int heightPlotLabel = heightControlWidget;
 	int heightToggleButton = heightControlWidget;
 	int heightButton = heightControlWidget;
