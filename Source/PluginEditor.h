@@ -28,7 +28,8 @@ public:
     void setPlotIndex(int plotIndex);
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
-
+    void mouseMove(const juce::MouseEvent& event) override;
+    std::string floatToStringPrecision(float f, int p);
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -36,6 +37,21 @@ private:
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
 
+    // gui elements start
+    juce::Label gui_importAudio;
+    juce::Label gui_selectTrace;
+    juce::Label gui_zoom;
+    juce::Label gui_upper;
+    juce::Label gui_lower;
+    juce::Label gui_x;
+    juce::Label gui_y;
+    // gui elements end
+
+    juce::Label cursorPlot1; //mouse
+    juce::Label cursorPlot2; //mouse
+    juce::Label cursorLabel0; //mouse
+    juce::Label cursorLabel1; //mouse
+    juce::Label cursorLabel2; //mouse
     juce::Label inputXmin;
     juce::Label inputXmax;
     juce::Label inputYmin;
@@ -48,6 +64,10 @@ private:
     juce::ToggleButton toggleButtonPlot2;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
+    static int cursorX1; //mouse
+    static float cursorY1; //mouse
+    static int cursorX2; //mouse
+    static float cursorY2; //mouse
     static int xMinPrev;
     static int xMin;
     static int xMaxPrev;
@@ -57,6 +77,16 @@ private:
     static int yMaxPrev;
     static int yMax;
     static int plotIndexSelection;
+
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth;
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight;
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis;  //pixels = unit
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis;  //pixels = unit
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis;
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis;
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer;
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer;
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
 };
