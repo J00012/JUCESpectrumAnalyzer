@@ -10,11 +10,6 @@
 #include "PluginEditor.h"
 #include "RingBuffer.h"
 
-float FFTSpectrumAnalyzerAudioProcessor::scopeData[plotSize][scopeSize] = { 0 };
-int FFTSpectrumAnalyzerAudioProcessor::scopeDataIndex = 0;
-int FFTSpectrumAnalyzerAudioProcessor::plotIndex = 0;
-
-
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -137,16 +132,6 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
-//============================================================================== // Getters and Setters
-void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
-{
-    procBlockCalled = false;
-}
-
-bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
-{
-    return procBlockCalled;
-}
 
 //PROCESS BLOCK
 void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -202,11 +187,6 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
             bins[i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
 		}
 	} 
-}
-
-void FFTSpectrumAnalyzerAudioProcessor::setPlotIndex(int rowIndex)
-{
-    plotIndex = rowIndex;
 }
 
 int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
