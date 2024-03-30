@@ -29,7 +29,7 @@ public:
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
     void mouseMove(const juce::MouseEvent& event) override;
-    std::string floatToStringPrecision(float f);
+    std::string floatToStringPrecision(float f, int p);
 
 
 private:
@@ -37,7 +37,6 @@ private:
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
-    static bool isEntered;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
 
