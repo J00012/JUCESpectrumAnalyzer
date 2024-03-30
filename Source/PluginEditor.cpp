@@ -290,8 +290,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	float xStartXYAxis = xBuffer;
 	float yStartPlot = yBuffer + lengthYAxis / 2;
 
-	
-
 	int leftMarginXmin = xStartXYAxis;
 	int leftMarginXmax = lengthXAxis + xBuffer - widthLabel;
 	int leftMarginYmin = xBuffer - (widthLabel + widgetOffsetHorizontal);
@@ -437,15 +435,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
 {
-
-
 	float xBuffer = getWidth() * 0.10; 
+	float yBuffer = getWidth() * 0.10; 
 	float xStartXYAxis = xBuffer;
-	float lengthXAxis = getWidth() * 0.80;  //pixels = unit
+	float lengthXAxis = getWidth() * 0.80;
+	float lengthYAxis = getWidth() * 0.80;
+
 	cursorX1 = event.getMouseDownX();
 	cursorY1 = event.getMouseDownY();
 	//invalid bounds
-	if (cursorX1 < 100 || cursorX1 > 1000 || cursorY1 < 30 || cursorY1 > 930) {
+	if (cursorX1 < xBuffer || cursorX1 > (xBuffer + lengthXAxis) || cursorY1 < yBuffer || cursorY1 > (yBuffer + lengthYAxis)) {
 		cursorX1 = cursorX2 = 0.0;
 		cursorY1 = cursorY2 = 0.00;
 		cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(cursorY1, 2) + ")", juce::dontSendNotification); //mouse
