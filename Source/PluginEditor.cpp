@@ -10,32 +10,18 @@
 #include "PluginEditor.h"
 #include <string>
 
-int FFTSpectrumAnalyzerAudioProcessorEditor::cursorX1 = 0; //mouse
-float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY1 = 0.00; //mouse
-int FFTSpectrumAnalyzerAudioProcessorEditor::cursorX2 = 0; //mouse
-float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY2 = 0.00; //mouse
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -10;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -10;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 10;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 10;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 1;
 int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
-bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
-bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
-
-int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 1300;
-int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 1000+2;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer = 50;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer = 30;
-int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis = 900;  //pixels = unit
-int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis = 900;  //pixels = unit
-int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis = yBuffer + lengthYAxis;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot = yBuffer + lengthYAxis / 2;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
@@ -43,22 +29,19 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 {
 	setOpaque(true);
 	startTimer(500);
-	setSize(windowWidth, windowHeight);
-
-	setPlotIndex(plotIndexSelection);
+	setSize(1300, 1000);
+	setResizable(true, true);
 
 	addAndMakeVisible(buttonPlot1);
 	buttonPlot1.setClickingTogglesState(true);
 	buttonPlot1.onClick = [&]()
 		{
-			plotIndexSelection = 0;
 			setPlotIndex(0);
 		};
 	addAndMakeVisible(buttonPlot2);
 	buttonPlot2.setClickingTogglesState(true);
 	buttonPlot2.onClick = [&]()
 		{
-			plotIndexSelection = 1; 
 			setPlotIndex(1);
 		};
 
@@ -85,11 +68,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(cursorLabel0); //mouse
 	addAndMakeVisible(cursorLabel1); //mouse
 	addAndMakeVisible(cursorLabel2); //mouse
-	cursorPlot1.setEditable(false); //mouse
-	cursorPlot2.setEditable(false); //mouse
-	cursorLabel0.setEditable(false); //mouse
-	cursorLabel1.setEditable(false); //mouse
-	cursorLabel2.setEditable(false); //mouse
 	addAndMakeVisible(inputXmin);
 	addAndMakeVisible(inputXmax);
 	addAndMakeVisible(inputYmin);
@@ -102,17 +80,22 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputYmax.setEditable(true);
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
-	cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(cursorY1, 2) + ")", juce::dontSendNotification); 
-	cursorPlot2.setText("(" + floatToStringPrecision(cursorX2, 1) + ", " + floatToStringPrecision(cursorY2, 2) + ")", juce::dontSendNotification); 
-	cursorLabel0.setText("Cursor:", juce::dontSendNotification);
-	cursorLabel1.setText("Plot 1", juce::dontSendNotification);
-	cursorLabel2.setText("Plot 2", juce::dontSendNotification);
+	cursorPlot1.setEditable(false); //mouse
+	cursorPlot2.setEditable(false); //mouse
+	cursorLabel0.setEditable(false); //mouse
+	cursorLabel1.setEditable(false); //mouse
+	cursorLabel2.setEditable(false); //mouse
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
 	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
 	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
 	labelPlot1.setText("Plot 1", juce::dontSendNotification);
 	labelPlot2.setText("Plot 2", juce::dontSendNotification);
+	cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(cursorY1, 2) + ")", juce::dontSendNotification);
+	cursorPlot2.setText("(" + floatToStringPrecision(cursorX2, 1) + ", " + floatToStringPrecision(cursorY2, 2) + ")", juce::dontSendNotification);
+	cursorLabel0.setText("Cursor:", juce::dontSendNotification);
+	cursorLabel1.setText("Plot 1", juce::dontSendNotification);
+	cursorLabel2.setText("Plot 2", juce::dontSendNotification);
 	inputXmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 	inputXmax.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 	inputYmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
@@ -121,6 +104,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputXmax.onTextChange = [this] { getBounds(); };
 	inputYmin.onTextChange = [this] { getBounds(); };
 	inputYmax.onTextChange = [this] { getBounds(); };
+
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -149,7 +133,14 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Path yAxisMarkersDown;
 	juce::Path zeroTick;
 
-	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
+	// Paint values for plotting
+	float xBuffer = getWidth() * 0.10;
+	float yBuffer = getHeight() * 0.05;
+	float lengthXAxis = getWidth() * 0.80;
+	float lengthYAxis = getHeight() * 0.80;
+	float yStartXYAxis = yBuffer + lengthYAxis;
+	float xStartXYAxis = xBuffer;
+	float yStartPlot = yBuffer + lengthYAxis / 2;
 
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors
@@ -186,6 +177,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
 
 	float plotYShift = yStartPlot + yShift;
+
 	// Graph plots
 	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
 	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
@@ -203,7 +195,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(plot2, juce::PathStrokeType(3.0f));
 	g.setColour(juce::Colours::cornflowerblue);
 	g.strokePath(plot1, juce::PathStrokeType(3.0f));
-
 
 	// Axis variables
 	int numXMarkers = xDiff;
@@ -228,25 +219,38 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
 	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 
-
 	//Plot zero on Y-axis
 	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
 	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
 	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
 	
 	// Draw background boxes
-	//box 1
+	int leftMarginLeftPanel = origin;
+	int leftMarginRightPanel = xBuffer + lengthXAxis;
+	int leftMarginTopPanel = origin;
+	int leftMarginBottomPanel = origin;
+	int topMarginLeftPanel = origin;
+	int topMarginRightPanel = origin;
+	int topMarginTopPanel = origin;
+	int topMarginBottomPanel = yBuffer + lengthYAxis - 2;
+	int widthLeftPanel = xBuffer;
+	int widthRightPanel = getWidth() * 0.25;
+	int widthTopPanel = getWidth();
+	int widthBottomPanel = getWidth();
+	int heightLeftPanel = getHeight();
+	int heightRightPanel = getHeight();
+	int heightTopPanel = yBuffer;
+	int heightBottomPanel = getHeight() * 0.25;
+	
+	juce::Rectangle<int> leftPanel(leftMarginLeftPanel, topMarginLeftPanel, widthLeftPanel, heightLeftPanel);
+	juce::Rectangle<int> rightPanel(leftMarginRightPanel, topMarginRightPanel, widthRightPanel, heightRightPanel);
+	juce::Rectangle<int> topPanel(leftMarginTopPanel, topMarginTopPanel, widthTopPanel, heightTopPanel);
+	juce::Rectangle<int> bottomPanel(leftMarginBottomPanel, topMarginBottomPanel, widthBottomPanel, heightBottomPanel);
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, 0, 100, 950);
-	//box 2
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(xStartXYAxis + lengthXAxis, 0, 600, 950);
-	//box 3
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, 0, 1200, 30);
-	//box 4
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(0, yBuffer + lengthYAxis, 1200, 400);
+	g.fillRect(leftPanel);
+	g.fillRect(rightPanel);
+	g.fillRect(topPanel);
+	g.fillRect(bottomPanel);
 
 	// Plot x-axis
 	xAxis.startNewSubPath(xStartXYAxis, yStartXYAxis);
@@ -277,48 +281,59 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
-	// This is generally where you'll want to lay out the positions of any
-	// subcomponents in your editor..
-	int widgetOffsetVertical = 10;
-	int widgetOffsetHorizontal = 10;
-
-	int widthLabel = 50;
-	int widthPlotLabel = 50;
-	int widthToggleButton = 30;
-	int widthButton = 90;
+	// Paint values for plotting
+	float xBuffer = getWidth() * 0.10;
+	float yBuffer = getHeight() * 0.05;
+	float lengthXAxis = getWidth() * 0.80;  //pixels = unit
+	float lengthYAxis = getHeight() * 0.80;  //pixels = unit
+	float yStartXYAxis = yBuffer + lengthYAxis;
+	float xStartXYAxis = xBuffer;
+	float yStartPlot = yBuffer + lengthYAxis / 2;
 
 	int leftMarginXmin = xStartXYAxis;
-	int leftMarginXmax = lengthXAxis + widthLabel;
-	int leftMarginYmin = xBuffer;
-	int leftMarginYmax = xBuffer;
-	int topMarginXMinMax = lengthYAxis + yBuffer * 2;
-	int topMarginYmin = lengthYAxis + yBuffer;
+	int leftMarginXmax = lengthXAxis + xBuffer - widthLabel;
+	int leftMarginYmin = xBuffer - (widthLabel + widgetOffsetHorizontal);
+	int leftMarginYmax = xBuffer - (widthLabel + widgetOffsetHorizontal);
+	int topMarginXMinMax = lengthYAxis + (yBuffer + widgetOffsetVertical);
+	int topMarginYmin = lengthYAxis + yBuffer - widgetHeight;
 	int topMarginYmax = yBuffer;
-
-	int heightControlWidget = 24;
+	
+	int heightControlWidget = widgetHeight;
+	int heightCursorLabel = widgetHeight;
 	int heightPlotLabel = heightControlWidget;
 	int heightToggleButton = heightControlWidget;
 	int heightButton = heightControlWidget;
 
-	int leftMarginToggleButton = xBuffer * 4 + lengthXAxis;
+	int leftMarginCursorLabel0 = lengthXAxis / 2;
+	int leftMarginCursorLabel1 = lengthXAxis / 2;
+	int leftMarginCursorLabel2 = leftMarginCursorLabel0;
+	int leftMarginCursorPlot1 = leftMarginCursorLabel1 + widthPlotLabel + widgetOffsetHorizontal;
+	int leftMarginCursorPlot2 = leftMarginCursorLabel2 + widthPlotLabel + widgetOffsetHorizontal;
+	int leftMarginToggleButton = leftMarginCursorLabel0 + xBuffer +  widthToggleButton + widgetOffsetHorizontal;
 	int leftMarginPlotLabel = leftMarginToggleButton + widthToggleButton + widgetOffsetHorizontal;
 	int leftMarginButton = leftMarginPlotLabel + widthPlotLabel + widgetOffsetHorizontal;
-	
-	int topMarginControlWidget = yBuffer * 2;
-	int topMarginToggleButton1 = topMarginControlWidget;
+
+	int topMarginCursorLabel0 = yBuffer * 2 + lengthYAxis;
+	int topMarginCursorPlot1 = topMarginCursorLabel0 + heightCursorLabel + widgetOffsetVertical;
+	int topMarginCursorPlot2 = topMarginCursorPlot1 + heightCursorLabel + widgetOffsetVertical;
+	int topMarginCursorLabel1 = topMarginCursorLabel0 + heightCursorLabel + widgetOffsetVertical;
+	int topMarginCursorLabel2 = topMarginCursorLabel1 + heightCursorLabel + widgetOffsetVertical;
+	int topMarginControlWidget = topMarginCursorPlot1;
+	int topMarginToggleButton1 = topMarginCursorPlot1;
 	int topMarginToggleButton2 = topMarginControlWidget + heightToggleButton + widgetOffsetVertical;
 	int topMarginPlot1Label = topMarginControlWidget;
 	int topMarginPlot2Label = topMarginControlWidget + heightPlotLabel + widgetOffsetVertical;
 	int topMarginButton1 = topMarginControlWidget;
 	int topMarginButton2 = topMarginControlWidget + heightButton + widgetOffsetVertical;
 
+	cursorPlot1.setBounds(leftMarginCursorPlot1, topMarginCursorPlot1, widthButton, widgetHeight); //mouse
+	cursorPlot2.setBounds(leftMarginCursorPlot2, topMarginCursorPlot2, widthButton, widgetHeight); //mouse
+	cursorLabel0.setBounds(leftMarginCursorLabel0, topMarginCursorLabel0, widthButton, widgetHeight); //mouse
+	cursorLabel1.setBounds(leftMarginCursorLabel1, topMarginCursorLabel1, widthButton, widgetHeight); //mouse
+	cursorLabel2.setBounds(leftMarginCursorLabel2, topMarginCursorLabel2, widthButton, widgetHeight); //mouse
+
 	inputXmin.setBounds(leftMarginXmin, topMarginXMinMax, widthLabel, heightControlWidget);
 	inputXmax.setBounds(leftMarginXmax, topMarginXMinMax, widthLabel, heightControlWidget);
-	cursorPlot1.setBounds(500, topMarginXMinMax - 20, 70, 24); //mouse
-	cursorPlot2.setBounds(500, topMarginXMinMax, 70, 24); //mouse
-	cursorLabel0.setBounds(450, topMarginXMinMax - 20, 60, 24); //mouse
-	cursorLabel1.setBounds(570, topMarginXMinMax - 20, 60, 24); //mouse
-	cursorLabel2.setBounds(570, topMarginXMinMax, 60, 24); //mouse
 	inputYmin.setBounds(leftMarginYmin, topMarginYmin, widthLabel, heightControlWidget);
 	inputYmax.setBounds(leftMarginYmax, topMarginYmax, widthLabel, heightControlWidget);
 	labelPlot1.setBounds(leftMarginPlotLabel, topMarginPlot1Label, widthPlotLabel, heightPlotLabel);
@@ -328,7 +343,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	buttonPlot1.setBounds(leftMarginButton, topMarginButton1, widthButton, heightButton);
 	buttonPlot2.setBounds(leftMarginButton, topMarginButton2, widthButton, heightButton);
 }
-
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 {
@@ -421,33 +435,39 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
 {
+	float xBuffer = getWidth() * 0.10; 
+	float yBuffer = getWidth() * 0.10; 
+	float xStartXYAxis = xBuffer;
+	float lengthXAxis = getWidth() * 0.80;
+	float lengthYAxis = getWidth() * 0.80;
+
 	cursorX1 = event.getMouseDownX();
 	cursorY1 = event.getMouseDownY();
 	//invalid bounds
-	if (cursorX1 < 100 || cursorX1 > 1000 || cursorY1 < 30 || cursorY1 > 930) {
+	if (cursorX1 < xBuffer || cursorX1 > (xBuffer + lengthXAxis) || cursorY1 < yBuffer || cursorY1 > (yBuffer + lengthYAxis)) {
 		cursorX1 = cursorX2 = 0.0;
 		cursorY1 = cursorY2 = 0.00;
 		cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(cursorY1, 2) + ")", juce::dontSendNotification); //mouse
 		cursorPlot2.setText("(" + floatToStringPrecision(cursorX2, 1) + ", " + floatToStringPrecision(cursorY2, 2) + ")", juce::dontSendNotification); //mouse
-	} 
+	}
 	else {
 		//offset xCoord [xCoord / (ratio of x-axis length to bounds)]
 		int xScale = lengthXAxis / (xMax - xMin);
-		
+
 		cursorX1 += (xMin * xScale);
 		cursorX1 -= xStartXYAxis;
 		cursorX1 /= xScale;
 		cursorX2 = cursorX1;
-	
+
 		//plot 1
 		if (audioProcessor.getPlotIndex() == 0 && isVisiblePlot1) {
-		const float* scopeData = audioProcessor.getScopeData();
-		cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(scopeData[cursorX1], 2) + ")", juce::dontSendNotification);
+			const float* scopeData = audioProcessor.getScopeData();
+			cursorPlot1.setText("(" + floatToStringPrecision(cursorX1, 1) + ", " + floatToStringPrecision(scopeData[cursorX1], 2) + ")", juce::dontSendNotification);
 		}
 		//plot 2
-		else if (audioProcessor.getPlotIndex() == 1 && isVisiblePlot2) {
-		const float* scopeData2 = audioProcessor.getScopeData() + audioProcessor.getScopeSize();
-		cursorPlot2.setText("(" + floatToStringPrecision(cursorX2, 1) + ", " + floatToStringPrecision(scopeData2[cursorX2], 2) + ")", juce::dontSendNotification);
+		else {
+			const float* scopeData2 = audioProcessor.getScopeData() + audioProcessor.getScopeSize();
+			cursorPlot2.setText("(" + floatToStringPrecision(cursorX2, 1) + ", " + floatToStringPrecision(scopeData2[cursorX2], 2) + ")", juce::dontSendNotification);
 		}
 	}
 	repaint();

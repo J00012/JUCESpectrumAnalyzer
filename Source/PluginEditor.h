@@ -31,17 +31,15 @@ public:
     void mouseMove(const juce::MouseEvent& event) override;
     std::string floatToStringPrecision(float f, int p);
 
+
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
+    static bool isVisiblePlot1;
+    static bool isVisiblePlot2;
 
-    juce::Label cursorPlot1; //mouse
-    juce::Label cursorPlot2; //mouse
-    juce::Label cursorLabel0; //mouse
-    juce::Label cursorLabel1; //mouse
-    juce::Label cursorLabel2; //mouse
     juce::Label inputXmin;
     juce::Label inputXmax;
     juce::Label inputYmin;
@@ -52,12 +50,17 @@ private:
     juce::TextButton buttonPlot2{ "Select" };   
     juce::ToggleButton toggleButtonPlot1;
     juce::ToggleButton toggleButtonPlot2;
-    static bool isVisiblePlot1;
-    static bool isVisiblePlot2;
-    static int cursorX1; //mouse
-    static float cursorY1; //mouse
-    static int cursorX2; //mouse
-    static float cursorY2; //mouse
+    juce::Label cursorPlot1; //mouse
+    juce::Label cursorPlot2; //mouse
+    juce::Label cursorLabel0; //mouse
+    juce::Label cursorLabel1; //mouse
+    juce::Label cursorLabel2; //mouse
+
+    int cursorX1; //mouse
+    float cursorY1; //mouse
+    int cursorX2; //mouse
+    float cursorY2; //mouse
+ 
     static int xMinPrev;
     static int xMin;
     static int xMaxPrev;
@@ -68,15 +71,19 @@ private:
     static int yMax;
     static int plotIndexSelection;
 
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis;  //pixels = unit
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis;  //pixels = unit
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer;
-   static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot;
+    // Rectangle bounds for background
+    int origin = 0;
+
+    // Bounds and sizes for widgets
+    int widgetOffsetVertical = 10;
+    int widgetOffsetHorizontal = 10;
+    int widthLabel = 50;
+    int widthPlotLabel = 50;
+    int widthToggleButton = 30;
+    int widthButton = 80;
+    int widgetHeight = 24;
+
+    int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
