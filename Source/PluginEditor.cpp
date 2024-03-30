@@ -13,7 +13,15 @@
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
-
+int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
+int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
@@ -110,12 +118,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Path zeroTick;
 
 	// Paint values for plotting
-	float xBuffer = getWidth() * 0.05;
+	float xBuffer = getWidth() * 0.10;
 	float yBuffer = getHeight() * 0.05;
-	float lengthXAxis = getWidth() * 0.9;  //pixels = unit
-	float lengthYAxis = getHeight() * 0.9;  //pixels = unit
+	float lengthXAxis = getWidth() * 0.80;
+	float lengthYAxis = getHeight() * 0.80;
 	float yStartXYAxis = yBuffer + lengthYAxis;
-	float xStartXYAxis = getWidth() * 0.1;
+	float xStartXYAxis = xBuffer;
 	float yStartPlot = yBuffer + lengthYAxis / 2;
 
 	float xDiff = xMax - xMin;
@@ -153,6 +161,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
 
 	float plotYShift = yStartPlot + yShift;
+
 	// Graph plots
 	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
 	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
@@ -170,7 +179,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(plot2, juce::PathStrokeType(3.0f));
 	g.setColour(juce::Colours::cornflowerblue);
 	g.strokePath(plot1, juce::PathStrokeType(3.0f));
-
 
 	// Axis variables
 	int numXMarkers = xDiff;
@@ -195,22 +203,38 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
 	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 
-
 	//Plot zero on Y-axis
 	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
 	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
 	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
 	
-	// Draw background boxes	
-	juce::Rectangle<int> leftPanelBox(rectanglesTopLeftMargin, rectanglesTopLeftMargin, widthR1, heightR1);
-	juce::Rectangle<int> rightPanelBox(leftMarginR2, rectanglesTopLeftMargin, widthR2, heightR2); 
-	juce::Rectangle<int> topPanelBox(rectanglesTopLeftMargin, rectanglesTopLeftMargin, widthR3, heightR3);
-	juce::Rectangle<int> bottomPanelBox(rectanglesTopLeftMargin, topMarginR4, widthR4, heightR4);
+	// Draw background boxes
+	int leftMarginLeftPanel = origin;
+	int leftMarginRightPanel = xBuffer + lengthXAxis;
+	int leftMarginTopPanel = origin;
+	int leftMarginBottomPanel = origin;
+	int topMarginLeftPanel = origin;
+	int topMarginRightPanel = origin;
+	int topMarginTopPanel = origin;
+	int topMarginBottomPanel = yBuffer + lengthYAxis - 2;
+	int widthLeftPanel = xBuffer;
+	int widthRightPanel = getWidth() * 0.25;
+	int widthTopPanel = getWidth();
+	int widthBottomPanel = getWidth();
+	int heightLeftPanel = getHeight();
+	int heightRightPanel = getHeight();
+	int heightTopPanel = yBuffer;
+	int heightBottomPanel = getHeight() * 0.25;
+	
+	juce::Rectangle<int> leftPanel(leftMarginLeftPanel, topMarginLeftPanel, widthLeftPanel, heightLeftPanel);
+	juce::Rectangle<int> rightPanel(leftMarginRightPanel, topMarginRightPanel, widthRightPanel, heightRightPanel);
+	juce::Rectangle<int> topPanel(leftMarginTopPanel, topMarginTopPanel, widthTopPanel, heightTopPanel);
+	juce::Rectangle<int> bottomPanel(leftMarginBottomPanel, topMarginBottomPanel, widthBottomPanel, heightBottomPanel);
 	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-	g.fillRect(leftPanelBox);
-	g.fillRect(rightPanelBox);
-	g.fillRect(topPanelBox);
-	g.fillRect(bottomPanelBox);
+	g.fillRect(leftPanel);
+	g.fillRect(rightPanel);
+	g.fillRect(topPanel);
+	g.fillRect(bottomPanel);
 
 	// Plot x-axis
 	xAxis.startNewSubPath(xStartXYAxis, yStartXYAxis);
@@ -242,20 +266,20 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
 	// Paint values for plotting
-	float xBuffer = getWidth() * 0.05;
+	float xBuffer = getWidth() * 0.10;
 	float yBuffer = getHeight() * 0.05;
-	float lengthXAxis = getWidth() * 0.9;  //pixels = unit
-	float lengthYAxis = getHeight() * 0.9;  //pixels = unit
+	float lengthXAxis = getWidth() * 0.80;  //pixels = unit
+	float lengthYAxis = getHeight() * 0.80;  //pixels = unit
 	float yStartXYAxis = yBuffer + lengthYAxis;
-	float xStartXYAxis = getWidth() * 0.1;
+	float xStartXYAxis = xBuffer;
 	float yStartPlot = yBuffer + lengthYAxis / 2;
 
 	int leftMarginXmin = xStartXYAxis;
-	int leftMarginXmax = lengthXAxis + widthLabel;
-	int leftMarginYmin = xBuffer;
-	int leftMarginYmax = xBuffer;
-	int topMarginXMinMax = lengthYAxis + yBuffer * 2;
-	int topMarginYmin = lengthYAxis + yBuffer;
+	int leftMarginXmax = lengthXAxis + xBuffer - widthLabel;
+	int leftMarginYmin = xBuffer - (widthLabel + widgetOffsetHorizontal);
+	int leftMarginYmax = xBuffer - (widthLabel + widgetOffsetHorizontal);
+	int topMarginXMinMax = lengthYAxis + (yBuffer + widgetOffsetVertical);
+	int topMarginYmin = lengthYAxis + yBuffer - widgetHeight;
 	int topMarginYmax = yBuffer;
 	
 	int heightControlWidget = widgetHeight;
@@ -263,11 +287,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int heightToggleButton = heightControlWidget;
 	int heightButton = heightControlWidget;
 
-	int leftMarginToggleButton = xBuffer * 4 + lengthXAxis;
+	int leftMarginToggleButton = xBuffer + lengthXAxis/2;
 	int leftMarginPlotLabel = leftMarginToggleButton + widthToggleButton + widgetOffsetHorizontal;
 	int leftMarginButton = leftMarginPlotLabel + widthPlotLabel + widgetOffsetHorizontal;
 	
-	int topMarginControlWidget = yBuffer * 2;
+	int topMarginControlWidget = yBuffer * 2 + lengthYAxis;
 	int topMarginToggleButton1 = topMarginControlWidget;
 	int topMarginToggleButton2 = topMarginControlWidget + heightToggleButton + widgetOffsetVertical;
 	int topMarginPlot1Label = topMarginControlWidget;
@@ -286,7 +310,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	buttonPlot1.setBounds(leftMarginButton, topMarginButton1, widthButton, heightButton);
 	buttonPlot2.setBounds(leftMarginButton, topMarginButton2, widthButton, heightButton);
 }
-
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 {

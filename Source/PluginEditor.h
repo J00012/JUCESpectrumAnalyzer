@@ -49,29 +49,18 @@ private:
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
  
-    int xMinPrev = 0;
-    int xMin = 0;
-    int xMaxPrev = 100;
-    int xMax = 100;
-    int yMinPrev = -10;
-    int yMin = -10;
-    int yMaxPrev = 10;
-    int yMax = 10;
-    int plotIndexSelection = 0;
+    static int xMinPrev;
+    static int xMin;
+    static int xMaxPrev;
+    static int xMax;
+    static int yMinPrev;
+    static int yMin;
+    static int yMaxPrev;
+    static int yMax;
+    static int plotIndexSelection;
 
     // Rectangle bounds for background
-    int FFTSpectrumAnalyzerAudioProcessorEditor::widgetHeight = 24;
-    int rectanglesTopLeftMargin = 0;
-    int leftMarginR2 = 950;
-    int topMarginR4 = 1200;
-    int widthR1 = 1200;
-    int widthR2 = 600;
-    int widthR3 = 1200;
-    int widthR4 = 1200;
-    int heightR1 = 50;
-    int heightR2 = 950;
-    int heightR3 = 50;
-    int heightR4 = 400;
+    int origin = 0;
 
     // Bounds and sizes for widgets
     int widgetOffsetVertical = 10;
@@ -79,7 +68,8 @@ private:
     int widthLabel = 50;
     int widthPlotLabel = 50;
     int widthToggleButton = 30;
-    int widthButton = 90;
+    int widthButton = 80;
+    int widgetHeight = 24;
 
     int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
