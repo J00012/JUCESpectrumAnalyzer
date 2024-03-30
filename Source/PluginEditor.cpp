@@ -11,6 +11,7 @@
 #include <string>
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isEntered = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
@@ -63,6 +64,11 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	toggleButtonPlot2.onClick = [this] { updateToggleState(2); };
 	toggleButtonPlot2.setClickingTogglesState(true);
 
+	addAndMakeVisible(cursorPlot1); //mouse
+	addAndMakeVisible(cursorPlot2); //mouse
+	addAndMakeVisible(cursorLabel0); //mouse
+	addAndMakeVisible(cursorLabel1); //mouse
+	addAndMakeVisible(cursorLabel2); //mouse
 	addAndMakeVisible(inputXmin);
 	addAndMakeVisible(inputXmax);
 	addAndMakeVisible(inputYmin);
@@ -75,12 +81,22 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputYmax.setEditable(true);
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
+	cursorPlot1.setEditable(false); //mouse
+	cursorPlot2.setEditable(false); //mouse
+	cursorLabel0.setEditable(false); //mouse
+	cursorLabel1.setEditable(false); //mouse
+	cursorLabel2.setEditable(false); //mouse
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
 	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
 	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
 	labelPlot1.setText("Plot 1", juce::dontSendNotification);
 	labelPlot2.setText("Plot 2", juce::dontSendNotification);
+	cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(cursorY1) + ")", juce::dontSendNotification); //mouse
+	cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(cursorY2) + ")", juce::dontSendNotification); //mouse
+	cursorLabel0.setText("Cursor:", juce::dontSendNotification); //mouse
+	cursorLabel1.setText("Plot 1", juce::dontSendNotification); //mouse
+	cursorLabel2.setText("Plot 2", juce::dontSendNotification); //mouse
 	inputXmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 	inputXmax.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 	inputYmin.setColour(juce::Label::backgroundColourId, juce::Colours::black);
@@ -89,6 +105,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputXmax.onTextChange = [this] { getBounds(); };
 	inputYmin.onTextChange = [this] { getBounds(); };
 	inputYmax.onTextChange = [this] { getBounds(); };
+
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -165,7 +182,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	// Graph plots
 	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
 	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
-	for (int i = 1; i < sampleSize; i++)
+	for (int i = 1; i <= sampleSize; i++)
 	{
 		if (isVisiblePlot2 == true) {
 			plot2.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + plotYShift);
@@ -274,6 +291,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	float xStartXYAxis = xBuffer;
 	float yStartPlot = yBuffer + lengthYAxis / 2;
 
+	
+
 	int leftMarginXmin = xStartXYAxis;
 	int leftMarginXmax = lengthXAxis + xBuffer - widthLabel;
 	int leftMarginYmin = xBuffer - (widthLabel + widgetOffsetHorizontal);
@@ -283,21 +302,38 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int topMarginYmax = yBuffer;
 	
 	int heightControlWidget = widgetHeight;
+	int heightCursorLabel = widgetHeight;
 	int heightPlotLabel = heightControlWidget;
 	int heightToggleButton = heightControlWidget;
 	int heightButton = heightControlWidget;
 
-	int leftMarginToggleButton = xBuffer + lengthXAxis/2;
+	int leftMarginCursorLabel0 = lengthXAxis / 2;
+	int leftMarginCursorLabel1 = lengthXAxis / 2;
+	int leftMarginCursorLabel2 = leftMarginCursorLabel0;
+	int leftMarginCursorPlot1 = leftMarginCursorLabel1 + widthPlotLabel + widgetOffsetHorizontal;
+	int leftMarginCursorPlot2 = leftMarginCursorLabel2 + widthPlotLabel + widgetOffsetHorizontal;
+	int leftMarginToggleButton = leftMarginCursorLabel0 + xBuffer +  widthToggleButton + widgetOffsetHorizontal;
 	int leftMarginPlotLabel = leftMarginToggleButton + widthToggleButton + widgetOffsetHorizontal;
 	int leftMarginButton = leftMarginPlotLabel + widthPlotLabel + widgetOffsetHorizontal;
-	
-	int topMarginControlWidget = yBuffer * 2 + lengthYAxis;
-	int topMarginToggleButton1 = topMarginControlWidget;
+
+	int topMarginCursorLabel0 = yBuffer * 2 + lengthYAxis;
+	int topMarginCursorPlot1 = topMarginCursorLabel0 + heightCursorLabel + widgetOffsetVertical;
+	int topMarginCursorPlot2 = topMarginCursorPlot1 + heightCursorLabel + widgetOffsetVertical;
+	int topMarginCursorLabel1 = topMarginCursorLabel0 + heightCursorLabel + widgetOffsetVertical;
+	int topMarginCursorLabel2 = topMarginCursorLabel1 + heightCursorLabel + widgetOffsetVertical;
+	int topMarginControlWidget = topMarginCursorPlot1;
+	int topMarginToggleButton1 = topMarginCursorPlot1;
 	int topMarginToggleButton2 = topMarginControlWidget + heightToggleButton + widgetOffsetVertical;
 	int topMarginPlot1Label = topMarginControlWidget;
 	int topMarginPlot2Label = topMarginControlWidget + heightPlotLabel + widgetOffsetVertical;
 	int topMarginButton1 = topMarginControlWidget;
 	int topMarginButton2 = topMarginControlWidget + heightButton + widgetOffsetVertical;
+
+	cursorPlot1.setBounds(leftMarginCursorPlot1, topMarginCursorPlot1, widthButton, widgetHeight); //mouse
+	cursorPlot2.setBounds(leftMarginCursorPlot2, topMarginCursorPlot2, widthButton, widgetHeight); //mouse
+	cursorLabel0.setBounds(leftMarginCursorLabel0, topMarginCursorLabel0, widthButton, widgetHeight); //mouse
+	cursorLabel1.setBounds(leftMarginCursorLabel1, topMarginCursorLabel1, widthButton, widgetHeight); //mouse
+	cursorLabel2.setBounds(leftMarginCursorLabel2, topMarginCursorLabel2, widthButton, widgetHeight); //mouse
 
 	inputXmin.setBounds(leftMarginXmin, topMarginXMinMax, widthLabel, heightControlWidget);
 	inputXmax.setBounds(leftMarginXmax, topMarginXMinMax, widthLabel, heightControlWidget);
@@ -400,3 +436,43 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
 	}
 }
 
+void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
+{
+	cursorX1 = event.getMouseDownX();
+	cursorY1 = event.getMouseDownY();
+	//invalid bounds
+	if (cursorX1 < 100 || cursorX1 > 1100 || cursorY1 < 50 || cursorY1 > 850) {
+		cursorX1 = cursorX2 = 0;
+		cursorY1 = cursorY2 = 0.00;
+		cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(cursorY1) + ")", juce::dontSendNotification); //mouse
+		cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(cursorY2) + ")", juce::dontSendNotification); //mouse
+	}
+	else {
+		//offset xCoord [xCoord / (ratio of x-axis length to bounds)]
+		int xScale = 1000 / (xMax - xMin);
+
+		cursorX1 += (xMin * xScale);
+		cursorX1 -= 100;
+		cursorX1 /= xScale;
+		cursorX2 = cursorX1;
+
+		//plot 1
+		if (audioProcessor.getPlotIndex() == 0) {
+			const float* scopeData = audioProcessor.getScopeData();
+			cursorPlot1.setText("(" + std::to_string(cursorX1) + ", " + floatToStringPrecision(scopeData[cursorX1]) + ")", juce::dontSendNotification);
+		}
+		//plot 2
+		else {
+			const float* scopeData2 = audioProcessor.getScopeData() + audioProcessor.getScopeSize();
+			cursorPlot2.setText("(" + std::to_string(cursorX2) + ", " + floatToStringPrecision(scopeData2[cursorX2]) + ")", juce::dontSendNotification);
+		}
+	}
+	repaint();
+}
+
+std::string FFTSpectrumAnalyzerAudioProcessorEditor::floatToStringPrecision(float f)
+{
+	std::ostringstream oss;
+	oss << std::fixed << std::setprecision(2) << f;
+	return oss.str();
+}
