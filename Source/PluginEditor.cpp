@@ -55,7 +55,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 
 	addAndMakeVisible(gui_selectTrace);
 	gui_selectTrace.setText("Selected Traces", juce::dontSendNotification);
-	gui_selectTrace.setFont(juce::Font(16.0f));
+	gui_selectTrace.setFont(juce::Font(17.0f));
 	
 	addAndMakeVisible(gui_zoom);
 	gui_zoom.setFont(juce::Font("Arial", 18.0f, juce::Font::bold));
