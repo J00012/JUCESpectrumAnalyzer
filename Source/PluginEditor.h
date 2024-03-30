@@ -43,8 +43,12 @@ private:
     juce::Label gui_zoom;
     juce::Label gui_upper;
     juce::Label gui_lower;
-    juce::Label gui_x;
-    juce::Label gui_y;
+    juce::Label gui_xUpper;
+    juce::Label gui_yUpper;
+    juce::Label gui_xLower;
+    juce::Label gui_yLower;
+    juce::Label gui_export;
+    juce::TextButton gui_exportButton{ "Export .csv" };
     // gui elements end
 
     juce::Label cursorPlot1; //mouse
