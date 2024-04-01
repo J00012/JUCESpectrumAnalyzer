@@ -21,7 +21,7 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-    forwardFFT(fftOrder) // Initialize forwardFFT with fftOrder
+    forwardFFT(10) // Initialize forwardFFT with fftOrder
    
 #endif
 {
@@ -133,10 +133,24 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 #endif
 
 
+void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {
+    fftSize = newFFTSize;
+    stepSize = fftSize / 2;
+    numBins = fftSize / 2 + 1;
+    numFreqBins = fftSize / 2;
+    fftDataSize = 2 * fftSize;
+
+    bufferLeft.resize(fftSize, 0.0f);
+    bufferRight.resize(fftSize, 0.0f);
+    windowBufferRight.resize(fftDataSize, 0.0f);
+    windowBufferLeft.resize(fftSize, 0.0f);
+    bins.resize(numBins,0.0f);
+}
+
 //PROCESS BLOCK
 void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    int sampleRate = getSampleRate();  //get the Sample Rate of Buffer
+    sampleRate = getSampleRate();  //get the Sample Rate of Buffer
 
     int channel = 0;          //set channel
     int sampleOutIndex = 0;   //accumulate counter
@@ -155,38 +169,64 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     //buffer that is start at 0 (loop backwards) for loop that counts down ) 512 from the end 3*512
     //do the window for the first 1024
     //do the window on the first 1024 (copy over in another buffer) (copy second in another buffer)  and the last 1024
-    //memcpy
+    //memcpy   
 
     while (ringBuffer.size() >= stepSize){
 
-		for (int sample = 0; sample < stepSize; ++sample) {
+		/*for (int sample = 0; sample < stepSize; ++sample) {
 			bufferLeft[sample + stepSize] = bufferLeft[sample];
 		}
-		for (int sample = 0; sample < stepSize; ++sample) {
+ 		for (int sample = 0; sample < stepSize; ++sample) {
 			bufferLeft[sample] = bufferRight[sample + stepSize];
 		}
 		for (int sample = 0; sample < stepSize; ++sample) {
 			bufferRight[sample + stepSize] = bufferRight[sample];
-		}
+		}*/
 
-        ringBuffer.read(bufferRight, stepSize);
+        std::copy(bufferLeft.begin(), bufferLeft.begin()+stepSize, bufferLeft.begin()+stepSize);
+        std::copy(bufferRight.begin()+stepSize, bufferRight.end(), bufferLeft.begin());
+        std::copy(bufferRight.begin(), bufferRight.begin()+stepSize, bufferRight.begin() + stepSize);
+       
 
-        std::copy(bufferRight, bufferRight + fftSize, windowBufferRight);
+        ringBuffer.read(bufferRight.data(), stepSize);
 
-        std::copy(bufferLeft, bufferLeft + fftSize, windowBufferLeft);
+        //std::copy(bufferRight, bufferRight + fftSize, windowBufferRight);
+        std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
+        //std::copy(bufferLeft, bufferLeft + fftSize, windowBufferLeft);
 
-		window.multiplyWithWindowingTable(windowBufferRight, fftSize);
+        windowBufferLeft = bufferLeft;
 
-		window.multiplyWithWindowingTable(windowBufferLeft, fftSize);
+		window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
 
-		forwardFFT.performRealOnlyForwardTransform(windowBufferRight,true);
+		window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
+
+		forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
 
         fftCounter++;
 
-		for (int i = 0; i < numBins; i++) {       
-            bins[i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+		for (int i = 0; i < numBins-1; i++) { 
+            float a= sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+            channelData[sampleOutIndex] = a;
+            bins[i] += a;
+            sampleOutIndex++;
 		}
 	} 
+    procBlockCalled = true;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
+{
+    procBlockCalled = false;
+}
+
+bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
+{
+    return procBlockCalled;
+}
+
+int FFTSpectrumAnalyzerAudioProcessor::getBlockSampleRate() const
+{
+    return sampleRate;
 }
 
 int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
@@ -201,16 +241,9 @@ int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
 
 const float* FFTSpectrumAnalyzerAudioProcessor::getBins() const
 {
-    return bins;
+    return bins.data();
 }
 
-
-
-
-const float* FFTSpectrumAnalyzerAudioProcessor::getRingTest() const
-{
-    return ringTest;
-}
 
 //==============================================================================
 bool FFTSpectrumAnalyzerAudioProcessor::hasEditor() const
@@ -245,11 +278,30 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 }
 
 //zero the static float arrays
+//float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
+//float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
+//float FFTSpectrumAnalyzerAudioProcessor::bufferRight[] = { 0 };
+//float FFTSpectrumAnalyzerAudioProcessor::bufferLeft[] = { 0 };
+//float FFTSpectrumAnalyzerAudioProcessor::windowBufferRight[] = { 0 };
+//float FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft[] = { 0 };
+//float FFTSpectrumAnalyzerAudioProcessor::indexFreqMap[] = { 0 };
+//float FFTSpectrumAnalyzerAudioProcessor::bins[] = { 0 };
+
+//zero the static variables
+int FFTSpectrumAnalyzerAudioProcessor::sampleRate = 0;
+int FFTSpectrumAnalyzerAudioProcessor::fftCounter = 0;
+
+int FFTSpectrumAnalyzerAudioProcessor::fftSize=0;
+int FFTSpectrumAnalyzerAudioProcessor::stepSize=0;
+int FFTSpectrumAnalyzerAudioProcessor::numBins=0;
+int FFTSpectrumAnalyzerAudioProcessor::numFreqBins=0;
+int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
+
+// Define static member variables
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferRight = { 0 };
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferLeft = { 0 };
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferRight = { 0 };
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft = { 0 };
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bins = { 0 };
+
 float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
-float FFTSpectrumAnalyzerAudioProcessor::scopeData[] = { 0 };
-float FFTSpectrumAnalyzerAudioProcessor::bufferRight[] = { 0 };
-float FFTSpectrumAnalyzerAudioProcessor::bufferLeft[] = { 0 };
-float FFTSpectrumAnalyzerAudioProcessor::windowBufferRight[] = { 0 };
-float FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft[] = { 0 };
-float FFTSpectrumAnalyzerAudioProcessor::indexFreqMap[] = { 0 };
-float FFTSpectrumAnalyzerAudioProcessor::bins[] = { 0 };

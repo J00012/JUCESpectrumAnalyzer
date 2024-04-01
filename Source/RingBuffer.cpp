@@ -46,6 +46,7 @@ void RingBuffer<T>::read(T* processBuffer, size_t bufferIndex) {
     }
 }
 
+
 template<typename T>
 bool RingBuffer<T>::is_empty() const {
     return !full && head == tail;
