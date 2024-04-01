@@ -258,7 +258,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	float xDiff = xMax - xMin;
 
-	// ** To add later: Check for invalid characters for x/y min/max **//
+	// ** To add later: Check for invalid characters for x/y min/max values **//
 
 	if (xDiff <= 0)  // handles divide by zero errors
 	{
