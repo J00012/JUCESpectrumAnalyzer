@@ -79,7 +79,7 @@ private:
 
     //juce::dsp::WindowingFunction<float>::WindowingMethod window;
 
-    //counters
+  
     static int fftCounter;
 
     static int sampleRate;
@@ -90,15 +90,7 @@ private:
     static int numFreqBins;
     static int fftDataSize;
    
-    //static float arrays
-    //static float bufferRight[fftSize];
-    //static float bufferLeft[fftSize];
-    //static float windowBufferRight[fftSize*2];
-    //static float windowBufferLeft[fftSize];
-    //static float indexFreqMap[numBins];
     static float ringTest[10000];
-    //static float scopeData[stepSize];                  // [10]	
-    //static float bins[fftSize / 2 + 1];
 
     static std::vector<float> bufferRight;
     static std::vector<float> bufferLeft;
