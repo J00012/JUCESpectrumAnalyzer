@@ -45,7 +45,7 @@ const int width_secondaryLabel = 150;
 const int height_secondaryLabel = 25;
 // space between primary labels and secondary labels
 const int yOffsetPrimary_secondaryLabel = 8;
-// space between secondary components (e.g. white box for plot selection) and boundaries
+// space between secondary components (e.g. white box for plot selection) and physical boundaries
 const int x_componentOffset = 6;
 const int y_componentOffset = 6;
 // dimensions of white box for plot selection
