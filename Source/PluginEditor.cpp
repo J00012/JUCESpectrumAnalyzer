@@ -37,7 +37,7 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis = yBuffer + lengthYAxi
 int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis = 100;
 int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot = yBuffer + lengthYAxis / 2;
 
-// height and width for primary category labels (Import Audio, Zoom, Export) 
+// height and width for primary category labels (Import Audio, Zoom, Export, etc.) 
 const int width_primaryCategoryLabel = 275; 
 const int height_primaryCategoryLabel = 25;  
 // height and width for secondary labels ("Selected Traces", Upper/Lower, etc.)
@@ -257,6 +257,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
 	float xDiff = xMax - xMin;
+
+	// ** To add later: Check for invalid characters for x/y min/max **//
 
 	if (xDiff <= 0)  // handles divide by zero errors
 	{
