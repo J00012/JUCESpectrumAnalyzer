@@ -226,9 +226,9 @@ int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
     return fftCounter;
 }
 
-const float* FFTSpectrumAnalyzerAudioProcessor::getBins() const
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::getBins() const
 {
-    return bins.data();
+    return bins;
 }
 
 

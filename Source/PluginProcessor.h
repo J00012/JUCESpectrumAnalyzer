@@ -44,8 +44,7 @@ public:
     int getStepSize() const;
     int getFFTCounter() const;
     int getBlockSampleRate() const;
-    const float* getBins() const;
-    const float* getRingTest() const;
+    std::vector<float> getBins() const;
    
 
 

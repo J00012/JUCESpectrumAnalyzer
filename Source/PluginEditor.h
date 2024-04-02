@@ -22,6 +22,7 @@ public:
     
     void paint (juce::Graphics&) override;
     void drawFrame(juce::Graphics& g); 
+    void setFreqData(int fftData,int sampleR);
     void resized() override;
     void timerCallback() override;
    
@@ -32,6 +33,15 @@ private:
     static bool isRunning;
 
     static int fftSize;
+
+    static int fftS;
+    static int numBins;
+    static int sampleRate;
+    static int maxFreq;
+    static int numFreqBins;
+
+    static std::vector<float> indexToFreqMap;
+    static std::vector<float> bins;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
