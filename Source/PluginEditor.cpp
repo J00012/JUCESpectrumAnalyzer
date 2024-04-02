@@ -33,7 +33,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	int fftS = 1024;
 
+	juce::dsp::WindowingFunction<float>::WindowingMethod windowType =juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
 	audioProcessor.setFFTSize(fftS);
+	audioProcessor.setWindow(windowType);
 
 	int sampleRate = audioProcessor.getBlockSampleRate();
 	//std::string rate = std::to_string(sampleRate);

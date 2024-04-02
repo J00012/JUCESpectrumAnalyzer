@@ -20,9 +20,8 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ),
-    forwardFFT(10) // Initialize forwardFFT with fftOrder
-   
+                       )
+     // Initialize forwardFFT with fftOrder
 #endif
 {
 }
@@ -145,6 +144,12 @@ void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {
     windowBufferRight.resize(fftDataSize, 0.0f);
     windowBufferLeft.resize(fftSize, 0.0f);
     bins.resize(numBins,0.0f);
+    forwardFFT = juce::dsp::FFT(std::log2(fftSize));
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {
+    juce::dsp::WindowingFunction<float> window(fftSize, type);
+    window.fillWindowingTables(fftSize, type);
 }
 
 //PROCESS BLOCK
@@ -163,8 +168,8 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
     ringBuffer.write(channelData, buffer.getNumSamples());
   
-    juce::dsp::WindowingFunction<float> window(fftSize, juce::dsp::WindowingFunction<float>::hann);   //declare the window object
-    window.fillWindowingTables(fftSize, juce::dsp::WindowingFunction<float>::hann);                   //fills the content of the object array with a given windowing method
+    //juce::dsp::WindowingFunction<float> window(fftSize, juce::dsp::WindowingFunction<float>::hann);   //declare the window object
+    //window.fillWindowingTables(fftSize, juce::dsp::WindowingFunction<float>::hann);                   //fills the content of the object array with a given windowing method
                        
     while (ringBuffer.size() >= stepSize){
 
@@ -269,11 +274,15 @@ int FFTSpectrumAnalyzerAudioProcessor::numBins=0;
 int FFTSpectrumAnalyzerAudioProcessor::numFreqBins=0;
 int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
 
+juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessor::forwardFFT(0);
+
 // Define static member variables
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferLeft = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bins = { 0 };
+
+juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessor::window(0, juce::dsp::WindowingFunction<float>::blackman);
 
 float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };

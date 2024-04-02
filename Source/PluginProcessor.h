@@ -40,6 +40,7 @@ public:
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     void setFFTSize(int newFFTsize);
+    void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
     int getStepSize() const;
     int getFFTCounter() const;
     int getBlockSampleRate() const;
@@ -72,12 +73,12 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override; 
 
 private:
-    juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
+    static juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
 
     //declare the ringBuffer and set its size to 10000
     RingBuffer<float> ringBuffer{ 10000 };  
 
-    //juce::dsp::WindowingFunction<float>::WindowingMethod window;
+    static juce::dsp::WindowingFunction<float> window;
 
   
     static int fftCounter;
