@@ -25,7 +25,7 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 550 + 2;
-int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxWidth = 2160;
+int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxWidth = 2160; 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxHeight = 1080;
 
 // height and width for primary category labels (Import Audio, Zoom, Export, etc.) 
@@ -104,6 +104,54 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	gui_exportButton.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
 	gui_exportButton.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
 	gui_exportButton.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+
+	addAndMakeVisible(cursorLabel); 
+	cursorLabel.setText("Cursor", juce::dontSendNotification);
+	cursorLabel.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
+	cursorLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+
+	addAndMakeVisible(peakLabel);
+	peakLabel.setText("Peak", juce::dontSendNotification);
+	peakLabel.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
+	peakLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+
+	addAndMakeVisible(windowLabel);
+	windowLabel.setText("Function", juce::dontSendNotification);
+	windowLabel.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
+	windowLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+
+	addAndMakeVisible(axisLabel);
+	axisLabel.setText("Axis", juce::dontSendNotification);
+	axisLabel.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
+	axisLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+
+	addAndMakeVisible(sizeLabel);
+	sizeLabel.setText("Size", juce::dontSendNotification);
+	sizeLabel.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
+	sizeLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+
+	addAndMakeVisible(windowFunction);
+	windowFunction.addItem("Hann window", 1);
+	windowFunction.setSelectedId(1);
+	windowFunction.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white); 
+	windowFunction.setColour(juce::ComboBox::textColourId, juce::Colours::black);
+	windowFunction.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey); 
+
+	addAndMakeVisible(axis);
+	axis.addItem("Log Frequency", 1);
+	axis.setSelectedId(1);
+	axis.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
+	axis.setColour(juce::ComboBox::textColourId, juce::Colours::black);
+	axis.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
+
+	addAndMakeVisible(size);
+	size.addItem("1024", 1);
+	size.setSelectedId(1);
+	size.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
+	size.setColour(juce::ComboBox::textColourId, juce::Colours::black);
+	size.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
+
+
 
 	// new gui elements end
 
@@ -414,6 +462,23 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::darkgrey);
 	g.fillRect(xMargin_zoomBoundary, yMargin_zoomBoundary, 245, 1); 
 
+	//** white box for cursor label **//
+	int xMargin_cursorBox = xStartXYAxis + 138;
+	int yMargin_cursorBox = heightBorder + 55;
+	int width_cursorBox = 180;
+	int height_cursorBox = 26;
+	// draw white box
+	g.setColour(juce::Colours::white);
+	g.fillRoundedRectangle(xMargin_cursorBox, yMargin_cursorBox, width_cursorBox, height_cursorBox, 2);
+
+	//** white box for peak label **//
+	int xMargin_peakBox = xMargin_cursorBox + 205; 
+	int yMargin_peakBox = yMargin_cursorBox;
+	int width_peakBox = 180;
+	int height_peakBox = 26;
+	// draw white box
+	g.fillRoundedRectangle(xMargin_peakBox, yMargin_peakBox, width_peakBox, height_peakBox, 2);
+
 	// ** END OF NEW STUFF ** //
 }
 
@@ -435,6 +500,19 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	// This is generally where you'll want to lay out the positions of any
 	// subcomponents in your editor..
 
+	//** graph scaling variables **//
+	float border_xBuffer = getWidth() * 0.295;
+	float border_yBuffer = y_componentOffset;
+	float widthBorder = getWidth() - x_componentOffset;
+	float heightBorder = getHeight() - 240;
+	float xBuffer = border_xBuffer + 2;
+	float yBuffer = border_yBuffer + 12;
+	float lengthXAxis = widthBorder;
+	float lengthYAxis = heightBorder * .95;
+	float yStartXYAxis = yBuffer + lengthYAxis - 1;
+	float xStartXYAxis = xBuffer - 3;
+	float yStartPlot = (yBuffer + lengthYAxis) / 2;
+
 	//** margins for primary labels **//
 	int yMargin_selectTraceLabel = height_primaryCategoryLabel + yOffsetPrimary_secondaryLabel;
 	int yMargin_zoomLabel = yMargin_selectTraceLabel + (22.5 * y_componentOffset);
@@ -446,6 +524,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int width_selectButton = 90;
 	int width_inputTextbox = 60;
 	int width_exportButton = 95;
+	int width_comboBox = 160;
 
 	// secondary gui element height
 	int heightControlWidget = 24;
@@ -454,7 +533,59 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int height_selectButton = heightControlWidget;
 	int height_inputTextbox = heightControlWidget - 2;
 	int height_exportButton = heightControlWidget + 4;
+	int height_comboBox = 30;
+
+	//** margins for combo
+
+	//** cursor *//
+	// label
+	int xMargin_cursorLabel = xStartXYAxis + 133;
+	int yMargin_cursorLabel = heightBorder + 30;
+
 	
+	//** peak **//
+	// label
+	int xMargin_peakLabel = xMargin_cursorLabel + 205;
+	int yMargin_peaklabel = yMargin_cursorLabel;
+
+	
+	//** window function **//
+	//label
+	int xMargin_windowLabel = xStartXYAxis + 65;
+	int yMargin_windowLabel = yMargin_peaklabel + 62;
+	// combobox
+	int xMargin_winCombo = xMargin_windowLabel + 4;
+	int yMargin_winCombo = yMargin_windowLabel + 22;
+	
+	//** axis **//
+	// label
+	int xMargin_axisLabel = xMargin_winCombo + 180;
+	int yMargin_axisLabel = yMargin_windowLabel; 
+	// combobox
+	int xMargin_axisCombo = xMargin_axisLabel + 4;
+	int yMargin_axisCombo = yMargin_winCombo;
+
+	
+	//** size **//
+	// label
+	int xMargin_sizeLabel = xMargin_axisLabel + 180;
+	int yMargin_sizeLabel = yMargin_axisLabel;
+	// combobox
+	int xMargin_sizeCombo = xMargin_sizeLabel + 4;
+	int yMargin_sizeCombo = yMargin_winCombo;
+
+	//** Set bounds for right side elements **//
+	cursorLabel.setBounds(xMargin_cursorLabel, yMargin_cursorLabel, width_secondaryLabel, height_secondaryLabel);
+	peakLabel.setBounds(xMargin_peakLabel, yMargin_peaklabel, width_secondaryLabel, height_secondaryLabel);
+	windowLabel.setBounds(xMargin_windowLabel, yMargin_windowLabel, width_secondaryLabel, height_secondaryLabel);
+	axisLabel.setBounds(xMargin_axisLabel, yMargin_axisLabel, width_secondaryLabel, height_secondaryLabel);
+	sizeLabel.setBounds(xMargin_sizeLabel, yMargin_sizeLabel, width_secondaryLabel, height_secondaryLabel);
+
+	windowFunction.setBounds(xMargin_winCombo, yMargin_winCombo, width_comboBox, height_comboBox);
+	axis.setBounds(xMargin_axisCombo, yMargin_axisCombo, width_comboBox, height_comboBox);
+	size.setBounds(xMargin_sizeCombo, yMargin_sizeCombo, width_comboBox, height_comboBox);
+	
+
 	//** plot 1 **//
 	// toggle button 1
 	int xMargin_toggleButton1 = 2 * x_componentOffset;
