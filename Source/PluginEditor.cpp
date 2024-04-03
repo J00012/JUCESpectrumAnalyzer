@@ -249,6 +249,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Path yAxisMarkersDown;
 	juce::Path zeroTick;
 
+	// Graph scaling
 	float border_xBuffer = width_primaryCategoryLabel + x_componentOffset;
 	float border_yBuffer = y_componentOffset;
 	float widthBorder = getWidth() - x_componentOffset;
