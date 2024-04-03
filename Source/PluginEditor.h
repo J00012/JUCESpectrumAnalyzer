@@ -49,6 +49,14 @@ private:
     juce::Label gui_yLower;
     juce::Label gui_export;
     juce::TextButton gui_exportButton{ "Export .csv" };
+    juce::Label cursorLabel;
+    juce::Label peakLabel;
+    juce::Label windowLabel;
+    juce::Label axisLabel;
+    juce::Label sizeLabel;
+    juce::ComboBox windowFunction;
+    juce::ComboBox axis;
+    juce::ComboBox size;
     // gui elements end
 
     juce::Label cursorPlot1; //mouse
