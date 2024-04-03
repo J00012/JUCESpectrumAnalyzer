@@ -223,17 +223,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
 
-	/*
-	// gui elements start
-	const int gui_secondaryComponentMarginX = 6;
-	const int gui_secondaryComponentMarginY = 60;
-	const int widthPlotSelectionBox = 265;					// plot selection width has a difference of 12 vs category label width
-	const int heightPlotSelectionBox = 88;
-	const int labelMarginX = widthPlotSelectionBox + 12;
-
-	// gui elements end
-	*/
-
 	const int scopeSize = audioProcessor.getScopeSize();
 	const int plotSize = audioProcessor.getPlotSize();
 	const int plotIndex = audioProcessor.getPlotIndex();
@@ -249,8 +238,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Path yAxisMarkersDown;
 	juce::Path zeroTick;
 
-	// Graph scaling
-	float border_xBuffer = width_primaryCategoryLabel + x_componentOffset;
+	//** graph scaling variables **//
+	float border_xBuffer = getWidth() * 0.295;
 	float border_yBuffer = y_componentOffset;
 	float widthBorder = getWidth() - x_componentOffset;
 	float heightBorder = getHeight() - 240;
@@ -258,28 +247,14 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float yBuffer = border_yBuffer + 12;
 	float lengthXAxis = widthBorder;
 	float lengthYAxis = heightBorder * .95;
-	float yStartXYAxis = yBuffer + lengthYAxis; 
-	float xStartXYAxis = xBuffer; 
+	float yStartXYAxis = yBuffer + lengthYAxis - 1; 
+	float xStartXYAxis = xBuffer - 3; 
 	float yStartPlot = (yBuffer + lengthYAxis) / 2;
-
-	/*
-	// Paint values for plotting
-	float xBuffer = getWidth() * 0.10;
-	float yBuffer = getHeight() * 0.05;
-	float lengthXAxis = getWidth() * 0.80;
-	float lengthYAxis = getHeight() * 0.80;
-	float yStartXYAxis = yBuffer + lengthYAxis;
-	float xStartXYAxis = xBuffer;
-	float yStartPlot = yBuffer + lengthYAxis / 2;
-	*/
 
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
 	float xDiff = xMax - xMin;
-
-	// ** To add later: Check for invalid characters for x/y min/max values **//
-
-	if (xDiff <= 0)  // handles divide by zero errors
+	if (xDiff <= 0)  // handles divide by zero errors 
 	{
 		xMax = xMaxPrev;
 		xMin = xMinPrev;
@@ -292,7 +267,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		xMaxPrev = xMax;
 		xMinPrev = xMin;
 	}
-
 	float scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
 	float xShift = -xMin * scaleX;
 
@@ -310,181 +284,97 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		yMaxPrev = yMax;
 		yMinPrev = yMin;
 	}
-
 	float scaleY = -lengthYAxis / yDiff;  // Scaling Y increments; pixels shown per sample
 	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
 
 	float plotYShift = yStartPlot + yShift;
 
+	// Graph plots
+	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
+	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
+	for (int i = 1; i <= sampleSize; i++)
+	{
+		if (isVisiblePlot2 == true) {
+			plot2.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + plotYShift);
+		}
+		if (isVisiblePlot1 == true) {
+			plot1.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + plotYShift);
+		}
+	}
+
+	g.setColour(juce::Colours::lightgreen);
+	g.strokePath(plot2, juce::PathStrokeType(3.0f));
+	g.setColour(juce::Colours::cornflowerblue);
+	g.strokePath(plot1, juce::PathStrokeType(3.0f));
+
+	// Axis variables
+	int numXMarkers = xDiff;
+	int numYMarkers = yDiff;
+
+	// Plot X Axis Markers
+	for (int i = 1; i <= numXMarkers; i++) {
+		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - 5);
+		xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + 5);
+	}
+	g.setColour(juce::Colours::white);
+	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
+
+	// Plot Y Axis Markers
+	for (int i = 1; i <= numYMarkers; i++) {
+		yAxisMarkersUp.startNewSubPath(xStartXYAxis - 5, yStartPlot + (scaleY * i) + yShift);
+		yAxisMarkersUp.lineTo(xStartXYAxis + 5, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+		yAxisMarkersDown.startNewSubPath(xStartXYAxis - 5, yStartPlot - (scaleY * i) + yShift);
+		yAxisMarkersDown.lineTo(xStartXYAxis + 5, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+	}
+	g.setColour(juce::Colours::white);
+	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
+	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
+
+	//Plot zero on Y-axis
+	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
+	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
+	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
+
 	//** draw graph border **//
-	juce::Path graphBoundary; 
+	juce::Path graphBoundary;
 	graphBoundary.startNewSubPath(border_xBuffer, border_yBuffer);
 	graphBoundary.lineTo(widthBorder, border_yBuffer);
 	graphBoundary.lineTo(widthBorder, heightBorder);
 	graphBoundary.lineTo(border_xBuffer, heightBorder);
 	graphBoundary.lineTo(border_xBuffer, border_yBuffer);
-	g.setColour(juce::Colours::darkgrey);
+	g.setColour(juce::Colours::slategrey);
 	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
 
-	// Graph plots
-	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
-	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
-	for (int i = 1; i <= sampleSize; i++)
-	{
-		if (isVisiblePlot2 == true) {
-			plot2.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + plotYShift);
-		}
-		if (isVisiblePlot1 == true) {
-			plot1.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + plotYShift);
-		}
-	}
+	//** draw boxes to hide out of bound plots **//
+	int x_LeftBoxOffset = 0;
+	int y_LeftBoxOffset = 0;
+	int width_LeftBox = border_xBuffer;
+	int height_LeftBox = getHeight();
 
-	g.setColour(juce::Colours::lightgreen);
-	g.strokePath(plot2, juce::PathStrokeType(3.0f));
-	g.setColour(juce::Colours::cornflowerblue);
-	g.strokePath(plot1, juce::PathStrokeType(3.0f));
+	int x_TopBoxOffset = 0;
+	int y_TopBoxOffset = 0;
+	int width_TopBox = getWidth();
+	int height_TopBox = border_yBuffer;
 
-	// Axis variables
-	int numXMarkers = xDiff;
-	int numYMarkers = yDiff;
+	int x_RightBoxOffset = widthBorder + 0.5;
+	int y_RightBoxOffset = 0;
+	int width_RightBox = getWidth();
+	int height_RightBox = getHeight();
 
-	// Plot X Axis Markers
-	for (int i = 1; i <= numXMarkers; i++) {
-		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - 5);
-		xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + 5);
-	}
-	g.setColour(juce::Colours::white);
-	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
+	int x_BottonBoxOffset = 0;
+	int y_BottomBoxOffset = heightBorder;
+	int width_BottomBox = getWidth();
+	int height_BottomBox = getHeight();
 
-	// Plot Y Axis Markers
-	for (int i = 1; i <= numYMarkers; i++) {
-		yAxisMarkersUp.startNewSubPath(xStartXYAxis - 5, yStartPlot + (scaleY * i) + yShift);
-		yAxisMarkersUp.lineTo(xStartXYAxis + 5, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-		yAxisMarkersDown.startNewSubPath(xStartXYAxis - 5, yStartPlot - (scaleY * i) + yShift);
-		yAxisMarkersDown.lineTo(xStartXYAxis + 5, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-	}
-	g.setColour(juce::Colours::white);
-	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
-	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
-
-	//Plot zero on Y-axis
-	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
-	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
-	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
-
-	//** Draw boxes **//
-
-
-	/*
-	// Draw background boxes
-	int leftMarginLeftPanel = origin;
-	int leftMarginRightPanel = xBuffer + lengthXAxis;
-	int leftMarginTopPanel = origin;
-	int leftMarginBottomPanel = origin;
-	int topMarginLeftPanel = origin;
-	int topMarginRightPanel = origin;
-	int topMarginTopPanel = origin;
-	int topMarginBottomPanel = yBuffer + lengthYAxis - 2;
-	int widthLeftPanel = xBuffer;
-	int widthRightPanel = getWidth() * 0.25; 
-	int widthTopPanel = getWidth(); 
-	int widthBottomPanel = getWidth(); 
-	int heightLeftPanel = getHeight(); 
-	int heightRightPanel = getHeight(); 
-	int heightTopPanel = yBuffer; 
-	int heightBottomPanel = getHeight() * 0.25; 
-
-	juce::Rectangle<int> leftPanel(leftMarginLeftPanel, topMarginLeftPanel, widthLeftPanel, heightLeftPanel);
-	juce::Rectangle<int> rightPanel(leftMarginRightPanel, topMarginRightPanel, widthRightPanel, heightRightPanel);
-	juce::Rectangle<int> topPanel(leftMarginTopPanel, topMarginTopPanel, widthTopPanel, heightTopPanel);
-	juce::Rectangle<int> bottomPanel(leftMarginBottomPanel, topMarginBottomPanel, widthBottomPanel, heightBottomPanel);
-	g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+	juce::Rectangle<int> leftPanel(x_LeftBoxOffset, y_LeftBoxOffset, width_LeftBox, height_LeftBox);
+	juce::Rectangle<int> rightPanel(x_RightBoxOffset, y_RightBoxOffset, width_RightBox, height_RightBox);
+	juce::Rectangle<int> topPanel(x_TopBoxOffset, y_TopBoxOffset, width_TopBox, height_TopBox);
+	juce::Rectangle<int> bottomPanel(x_BottonBoxOffset, y_BottomBoxOffset, width_BottomBox, height_BottomBox);
+	g.setColour(juce::Colours::black);
 	g.fillRect(leftPanel);
 	g.fillRect(rightPanel);
 	g.fillRect(topPanel);
 	g.fillRect(bottomPanel);
-	*/
-
-	// Plot x-axis
-	xAxis.startNewSubPath(xStartXYAxis, yStartXYAxis); 
-	xAxis.lineTo(xStartXYAxis + lengthXAxis, yStartXYAxis); 
-	g.setColour(juce::Colours::white); 
-	g.strokePath(xAxis, juce::PathStrokeType(2.0f)); 
-
-	// Plot y-axis
-	yAxis.startNewSubPath(xStartXYAxis, yStartXYAxis); 
-	yAxis.lineTo(xStartXYAxis, yStartXYAxis - lengthYAxis); 
-	g.setColour(juce::Colours::white); 
-	g.strokePath(yAxis, juce::PathStrokeType(2.0f)); 
-
-	/*
-	// Graph plots
-	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + *(scopeData + 1 * scopeSize) * scaleY + yShift);
-	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + scopeData[0] * scaleY + yShift);  // Xmin needs to be the new startXPlot; this will be reset by the bounds read in to xMin textEntry box
-	for (int i = 1; i <= sampleSize; i++)
-	{
-		if (isVisiblePlot2 == true) {
-			plot2.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 1 * scopeSize) * scaleY + plotYShift);
-		}
-		if (isVisiblePlot1 == true) {
-			plot1.lineTo(i * scaleX + xStartXYAxis + xShift, *((scopeData + i) + 0 * scopeSize) * scaleY + plotYShift);
-		}
-	}
-
-	g.setColour(juce::Colours::lightgreen);
-	g.strokePath(plot2, juce::PathStrokeType(3.0f));
-	g.setColour(juce::Colours::cornflowerblue);
-	g.strokePath(plot1, juce::PathStrokeType(3.0f));
-
-
-	// Axis variables
-	int numXMarkers = xDiff;
-	int numYMarkers = yDiff;
-
-	// Plot X Axis Markers
-	for (int i = 1; i <= numXMarkers; i++) {
-		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - 5);
-		xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + 5);
-	}
-	g.setColour(juce::Colours::white);
-	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
-
-	// Plot Y Axis Markers
-	for (int i = 1; i <= numYMarkers; i++) {
-		yAxisMarkersUp.startNewSubPath(xStartXYAxis - 5, yStartPlot + (scaleY * i) + yShift);
-		yAxisMarkersUp.lineTo(xStartXYAxis + 5, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-		yAxisMarkersDown.startNewSubPath(xStartXYAxis - 5, yStartPlot - (scaleY * i) + yShift);
-		yAxisMarkersDown.lineTo(xStartXYAxis + 5, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-	}
-	g.setColour(juce::Colours::white);
-	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
-	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
-
-
-	//Plot zero on Y-axis
-	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
-	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
-	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
-	*/
-	
-	/*
-	// Draw background boxes
-	//box 1
-	g.setColour(juce::Colours::black);
-	g.fillRect(0, 0, 100, 950);
-
-	//box 2
-	g.setColour(juce::Colours::black);
-	g.fillRect(0 + lengthXAxis, 0, 600, 950);
-
-	//box 3
-	g.setColour(juce::Colours::black);
-	g.fillRect(0, 0, 1200, 30);
-
-	//box 4
-	g.setColour(juce::Colours::black);
-	g.fillRect(0, yBuffer + lengthYAxis, 1200, 400);
-	*/
 	
 	// ** NEW STUFF ** //
 
@@ -525,20 +415,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillRect(xMargin_zoomBoundary, yMargin_zoomBoundary, 245, 1); 
 
 	// ** END OF NEW STUFF ** //
-
-	/*
-	// Plot x-axis
-	xAxis.startNewSubPath(xStartXYAxis, yStartXYAxis);
-	xAxis.lineTo(xStartXYAxis + lengthXAxis, yStartXYAxis);
-	g.setColour(juce::Colours::white);
-	g.strokePath(xAxis, juce::PathStrokeType(2.0f));
-
-	// Plot y-axis
-	yAxis.startNewSubPath(xStartXYAxis, yStartXYAxis);
-	yAxis.lineTo(xStartXYAxis, yStartXYAxis - lengthYAxis);
-	g.setColour(juce::Colours::white);
-	g.strokePath(yAxis, juce::PathStrokeType(2.0f));
-	*/
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
