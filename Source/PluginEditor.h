@@ -28,7 +28,7 @@ public:
     void setPlotIndex(int plotIndex);
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
-    void mouseMove(const juce::MouseEvent& event) override;
+    //void mouseMove(const juce::MouseEvent& event) override;
     std::string floatToStringPrecision(float f, int p);
 
 private:
@@ -68,10 +68,6 @@ private:
     juce::ToggleButton toggleButtonPlot2;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
-    static int cursorX1; //mouse
-    static float cursorY1; //mouse
-    static int cursorX2; //mouse
-    static float cursorY2; //mouse
     static int xMinPrev;
     static int xMin;
     static int xMaxPrev;
@@ -84,13 +80,8 @@ private:
 
     static int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth;
     static int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight;
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthXAxis;  //pixels = unit
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::lengthYAxis;  //pixels = unit
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartXYAxis;
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::xStartXYAxis;
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::xBuffer;
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::yBuffer;
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::yStartPlot;
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxWidth;
+    static int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxHeight;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
 };
