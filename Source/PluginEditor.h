@@ -32,6 +32,7 @@ public:
     int findPeak(int index);
     int screenToGraph(int screenCoord);
     int graphToScreen(int graphCoord);
+    void setWindowFunction();
     std::string floatToStringPrecision(float f, int p);
 
 private:

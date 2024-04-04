@@ -146,11 +146,11 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	windowFunction.addItem("Kaiser", 6);
 	windowFunction.addItem("Rectangular window", 7);
 	windowFunction.addItem("Triangular window", 8);
-
 	windowFunction.setSelectedId(5);
 	windowFunction.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	windowFunction.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	windowFunction.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
+	windowFunction.onChange = [this] { setWindowFunction(); };
 
 	addAndMakeVisible(axis);
 	axis.addItem("Linear Frequency", 1);
@@ -178,10 +178,14 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	size.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
 
 	addAndMakeVisible(cursorFunction);
-	addAndMakeVisible(peakFunction);
-	cursorFunction.setEditable(false);
-	peakFunction.setEditable(false);
+	cursorFunction.setColour(juce::Label::backgroundColourId, juce::Colours::white);
+	cursorFunction.setColour(juce::Label::textColourId, juce::Colours::black);
+	//cursorFunction.setEditable(false);
 
+	addAndMakeVisible(peakFunction);
+	peakFunction.setColour(juce::Label::backgroundColourId, juce::Colours::white);
+	peakFunction.setColour(juce::Label::textColourId, juce::Colours::black);
+	//peakFunction.setEditable(false);
 
 
 	// new gui elements end
@@ -571,7 +575,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int height_selectButton = heightControlWidget;
 	int height_inputTextbox = heightControlWidget - 2;
 	int height_exportButton = heightControlWidget + 4;
-	int height_comboBox = 30;
+	int height_cursorPeak = heightControlWidget - 4;
+	int height_comboBox = heightControlWidget + 6;
 
 	//** margins for combo
 
@@ -619,9 +624,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int yMargin_sizeCombo = yMargin_winCombo;
 
 	//** Set bounds for right side elements **//
-	cursorLabel.setBounds(xMargin_cursorLabel, yMargin_cursorLabel, width_secondaryLabel, height_secondaryLabel);
-	peakLabel.setBounds(xMargin_peakLabel, yMargin_peaklabel, width_secondaryLabel, height_secondaryLabel);
-	windowLabel.setBounds(xMargin_windowLabel, yMargin_windowLabel, width_secondaryLabel, height_secondaryLabel);
+	cursorLabel.setBounds(xMargin_cursorLabel, yMargin_cursorLabel, width_secondaryLabel, height_cursorPeak); 
+	peakLabel.setBounds(xMargin_peakLabel, yMargin_peaklabel, width_secondaryLabel, height_cursorPeak);
+	windowLabel.setBounds(xMargin_windowLabel, yMargin_windowLabel, width_secondaryLabel, height_secondaryLabel); 
 	axisLabel.setBounds(xMargin_axisLabel, yMargin_axisLabel, width_secondaryLabel, height_secondaryLabel);
 	sizeLabel.setBounds(xMargin_sizeLabel, yMargin_sizeLabel, width_secondaryLabel, height_secondaryLabel);
 
@@ -818,6 +823,22 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
 		}
 	}
 } 
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::setWindowFunction() {
+	/*
+	switch (windowFunction.getSelectedId()) {
+	case 1: juce::dsp::WindowingFunction<float>::blackman; break;
+	case 2: juce::dsp::WindowingFunction<float>::blackmanHarris; break;
+	case 3: juce::dsp::WindowingFunction<float>::flatTop; break;
+	case 4: juce::dsp::WindowingFunction<float>::hamming; break;
+	case 5: juce::dsp::WindowingFunction<float>::hann; break;
+	case 6: juce::dsp::WindowingFunction<float>::kaiser; break;
+	case 7: juce::dsp::WindowingFunction<float>::rectangular; break;
+	case 8: juce::dsp::WindowingFunction<float>::triangular; break;
+	}
+	*/
+}
+
 void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
 {
 	cursorX = event.getMouseDownX();
