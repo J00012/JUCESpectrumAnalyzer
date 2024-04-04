@@ -12,7 +12,7 @@
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
-bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;	
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
