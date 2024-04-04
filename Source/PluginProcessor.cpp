@@ -147,7 +147,7 @@ void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize,int plotIndex)
     windowBufferLeft.resize(fftSize, 0.0f);
    
     //add a clear function 
-    binMag.resize(1, std::vector<float> (stepSize,0));
+    binMag.resize(1, std::vector<float> (numBins,0));
 
     //for (auto& row : binMag) {
     //    //row.resize(numBins, 0.0f);
@@ -201,12 +201,11 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
         fftCounter++;
 
-		for (int i = 0; i < numBins-1; i++) { 
+		for (int i = 0; i < numBins; i++) { 
             //float a= sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
-            binMag[rowIndex][i]=sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
-            channelData[sampleOutIndex] = binMag[rowIndex][i];
-            //binMag[rowIndex][i] += a;
-            sampleOutIndex++;
+            binMag[rowIndex][i]+=sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+            //channelData[sampleOutIndex] = binMag[rowIndex][i];
+            //sampleOutIndex++;
 		}
 	} 
     procBlockCalled = true;
