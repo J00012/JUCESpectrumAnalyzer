@@ -381,7 +381,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 
 		binMag = audioProcessor.getBinMag();
-		bins = audioProcessor.getBins();
 
 		int fftCounter = audioProcessor.getFFTCounter();
 		//std::string counter = std::to_string(fftCounter);
