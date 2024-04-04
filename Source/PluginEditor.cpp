@@ -131,22 +131,41 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	sizeLabel.setColour(juce::Label::textColourId, juce::Colours::white);
 
 	addAndMakeVisible(windowFunction);
-	windowFunction.addItem("Hann window", 1);
-	windowFunction.setSelectedId(1);
+	windowFunction.addItem("Blackman window", 1);
+	windowFunction.addItem("Blackman-Harris window", 2);
+	windowFunction.addItem("Flatop window", 3);
+	windowFunction.addItem("Hamming window", 4);
+	windowFunction.addItem("Hann window", 5);
+	windowFunction.addItem("Kaiser", 6);
+	windowFunction.addItem("Rectangular window", 7);
+	windowFunction.addItem("Triangular window", 8);
+
+	windowFunction.setSelectedId(5);
 	windowFunction.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white); 
 	windowFunction.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	windowFunction.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey); 
 
 	addAndMakeVisible(axis);
-	axis.addItem("Log Frequency", 1);
-	axis.setSelectedId(1);
+	axis.addItem("Linear Frequency", 1);
+	axis.addItem("Log Frequency", 2);
+	axis.setSelectedId(2);
 	axis.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	axis.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	axis.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
 
 	addAndMakeVisible(size);
-	size.addItem("1024", 1);
-	size.setSelectedId(1);
+	size.addItem("128", 1);
+	size.addItem("256", 2);
+	size.addItem("512", 3);
+	size.addItem("1024", 4);
+	size.addItem("2048", 5);
+	size.addItem("4096", 6);
+	size.addItem("8192", 7);
+	size.addItem("16384", 8);
+	size.addItem("32768", 9);
+	size.addItem("65536", 10);
+	size.addItem("131072", 11);
+	size.setSelectedId(4);
 	size.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	size.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	size.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
