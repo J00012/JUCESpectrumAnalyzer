@@ -10,6 +10,10 @@
 #include "PluginEditor.h"
 #include <string>
 
+int FFTSpectrumAnalyzerAudioProcessorEditor::cursorX1 = 0; //mouse
+float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY1 = 0.00; //mouse
+int FFTSpectrumAnalyzerAudioProcessorEditor::cursorX2 = 0; //mouse
+float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY2 = 0.00; //mouse
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
@@ -822,4 +826,3 @@ std::string FFTSpectrumAnalyzerAudioProcessorEditor::floatToStringPrecision(floa
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(p) << f;
 	return oss.str();
-}

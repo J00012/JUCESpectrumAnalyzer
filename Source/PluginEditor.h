@@ -19,9 +19,10 @@ public:
     ~FFTSpectrumAnalyzerAudioProcessorEditor() override;
 
     //==============================================================================
-
-    void paint(juce::Graphics&) override;
-    void drawFrame(juce::Graphics& g);
+    
+    void paint (juce::Graphics&) override;
+    void drawFrame(juce::Graphics& g); 
+    void setFreqData(int fftData,int sampleR);
     void resized() override;
     void timerCallback() override;
     void getBounds();
@@ -36,6 +37,15 @@ private:
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
+    static int fftSize;
+	static int fftS;
+    static int numBins;
+    static int sampleRate;
+    static int maxFreq;
+    static int numFreqBins;
+    static std::vector<float> indexToFreqMap;
+    static std::vector<float> bins;
+
 
     // gui elements start
     juce::Label gui_importAudio;
