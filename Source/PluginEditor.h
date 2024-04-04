@@ -12,10 +12,10 @@
 #include "PluginProcessor.h"
 
 //==============================================================================
-class FFTSpectrumAnalyzerAudioProcessorEditor : public juce::AudioProcessorEditor, juce::Timer
+class FFTSpectrumAnalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor, juce::Timer
 {
 public:
-    FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor&);
+    FFTSpectrumAnalyzerAudioProcessorEditor (FFTSpectrumAnalyzerAudioProcessor&);
     ~FFTSpectrumAnalyzerAudioProcessorEditor() override;
 
     //==============================================================================
@@ -37,17 +37,22 @@ private:
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
+
     static int fftSize;
-	static int fftS;
+
+    static int fftS;
     static int numBins;
     static int sampleRate;
     static int maxFreq;
     static int numFreqBins;
+
+    static int row;
+    
+
     static std::vector<float> indexToFreqMap;
-    static std::vector<float> bins;
+    static std::vector<std::vector<float>> binMag;
 
-
-    // gui elements start
+	 // gui elements start
     juce::Label gui_importAudio;
     juce::Label gui_selectTrace;
     juce::Label gui_zoom;
@@ -101,5 +106,5 @@ private:
     static int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxWidth;
     static int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxHeight;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };

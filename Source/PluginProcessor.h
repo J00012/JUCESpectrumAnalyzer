@@ -39,12 +39,12 @@ public:
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
-    void setFFTSize(int newFFTsize);
+    void setFFTSize(int newFFTsize, int plotIndex);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
     int getStepSize() const;
     int getFFTCounter() const;
     int getBlockSampleRate() const;
-    std::vector<float> getBins() const;
+    std::vector<std::vector<float>> getBinMag() const;
    
 
 
@@ -89,6 +89,7 @@ private:
     static int numBins;
     static int numFreqBins;
     static int fftDataSize;
+    static int rowIndex;
    
     static float ringTest[10000];
 
@@ -96,7 +97,7 @@ private:
     static std::vector<float> bufferLeft;
     static std::vector<float> windowBufferRight;
     static std::vector<float> windowBufferLeft;
-    static std::vector<float> bins;
+    static std::vector<std::vector<float>> binMag;
   
     bool nextFFTBlockReady = false;
     bool procBlockCalled = false;
