@@ -32,8 +32,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::white);
 
 	int fftS = 1024;
+	int row = 0;
 
-	audioProcessor.setFFTSize(fftS);
+	audioProcessor.setFFTSize(fftS,row);
 	int sampleRate = audioProcessor.getBlockSampleRate();
 	//std::string rate = std::to_string(sampleRate);
 	setFreqData(fftS, sampleRate);
@@ -41,11 +42,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
 	audioProcessor.setWindow(windowType);
 
+	//x variable for labeling
 	for (int i = 0; i < numBins; i++) {
 		indexToFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
 	}
 
-	bins = audioProcessor.getBins();
+	binMag = audioProcessor.getBinMag();
 
 	int fftCounter = audioProcessor.getFFTCounter();
 	//std::string counter = std::to_string(fftCounter);
@@ -82,7 +84,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData,int sample
 	numFreqBins = fftS / 2;
 
 	indexToFreqMap.resize(numBins);
-	bins.resize(numBins);
+
+	//bins.resize(numBins);
 }
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftSize = 1024;
@@ -93,4 +96,4 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
 
 
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::indexToFreqMap = { 0 };
-std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bins = { 0 };
+std::vector< std::vector<float>> FFTSpectrumAnalyzerAudioProcessorEditor::binMag;

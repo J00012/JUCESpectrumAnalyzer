@@ -132,18 +132,28 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 #endif
 
 
-void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {
+void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize,int plotIndex) {
     fftSize = newFFTSize;
     stepSize = fftSize / 2;
     numBins = fftSize / 2 + 1;
     numFreqBins = fftSize / 2;
     fftDataSize = 2 * fftSize;
 
+    rowIndex = plotIndex;
+
     bufferLeft.resize(fftSize, 0.0f);
     bufferRight.resize(fftSize, 0.0f);
     windowBufferRight.resize(fftDataSize, 0.0f);
     windowBufferLeft.resize(fftSize, 0.0f);
-    bins.resize(numBins,0.0f);
+   
+    //add a clear function 
+    binMag.resize(1, std::vector<float> (stepSize,0));
+
+    //for (auto& row : binMag) {
+    //    //row.resize(numBins, 0.0f);
+    //    row.resize(stepSize, 0.0f);
+    //}
+
     forwardFFT = juce::dsp::FFT(std::log2(fftSize));
 }
 
@@ -192,9 +202,10 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
         fftCounter++;
 
 		for (int i = 0; i < numBins-1; i++) { 
-            float a= sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
-            channelData[sampleOutIndex] = a;
-            bins[i] += a;
+            //float a= sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+            binMag[rowIndex][i]=sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+            channelData[sampleOutIndex] = binMag[rowIndex][i];
+            //binMag[rowIndex][i] += a;
             sampleOutIndex++;
 		}
 	} 
@@ -226,9 +237,9 @@ int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
     return fftCounter;
 }
 
-std::vector<float> FFTSpectrumAnalyzerAudioProcessor::getBins() const
+std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::getBinMag() const
 {
-    return bins;
+    return binMag;
 }
 
 
@@ -268,6 +279,7 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 int FFTSpectrumAnalyzerAudioProcessor::sampleRate = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftCounter = 0;
 
+int FFTSpectrumAnalyzerAudioProcessor::rowIndex = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftSize=0;
 int FFTSpectrumAnalyzerAudioProcessor::stepSize=0;
 int FFTSpectrumAnalyzerAudioProcessor::numBins=0;
@@ -281,7 +293,7 @@ std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferLeft = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft = { 0 };
-std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bins = { 0 };
+std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::binMag;
 
 juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessor::window(0, juce::dsp::WindowingFunction<float>::blackman);
 

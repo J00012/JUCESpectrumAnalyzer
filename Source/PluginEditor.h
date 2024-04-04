@@ -40,8 +40,11 @@ private:
     static int maxFreq;
     static int numFreqBins;
 
+    static int row;
+    
+
     static std::vector<float> indexToFreqMap;
-    static std::vector<float> bins;
+    static std::vector<std::vector<float>> binMag;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
