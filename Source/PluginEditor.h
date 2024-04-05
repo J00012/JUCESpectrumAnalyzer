@@ -22,6 +22,7 @@ public:
     
     void paint (juce::Graphics&) override;
     void drawFrame(juce::Graphics& g); 
+    void setFreqData(int fftData,int sampleR);
     void resized() override;
     void timerCallback() override;
     void getBounds();
@@ -60,6 +61,19 @@ private:
     float cursorY1; //mouse
     int cursorX2; //mouse
     float cursorY2; //mouse
+    
+    //processor statics
+    static int fftSize;
+    static int fftS;
+    static int numBins;
+    static int sampleRate;
+    static int maxFreq;
+    static int numFreqBins;
+    static int row;
+    
+    //static vectors
+    static std::vector<float> indexToFreqMap;
+    static std::vector<std::vector<float>> binMag;
  
     static int xMinPrev;
     static int xMin;
