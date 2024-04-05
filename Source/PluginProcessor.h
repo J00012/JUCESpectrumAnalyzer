@@ -9,17 +9,12 @@
 #pragma once
 
 #include <JuceHeader.h>
-
+#include "RingBuffer.h"
 //==============================================================================
 /**
 */
 class FFTSpectrumAnalyzerAudioProcessor : public juce::AudioProcessor
 {
-    enum
-    {
-        fftOrder = 11,            // [1]
-        fftSize = 1 << fftOrder,  // [2]          
-    };
 
 
 public:
@@ -37,18 +32,26 @@ public:
 
     bool getProcBlockCalled();
     void resetProcBlockCalled();
-    void resetScopeDataIndex();
-    void setPlotIndex(int rowIndex);
-    int getPlotIndex();
-    int getPlotSize();
+    //void resetScopeDataIndex();
+    //void setPlotIndex(int rowIndex);
+    //int getPlotIndex();
+    //int getPlotSize();
 
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-    void drawNextFrameOfSpectrum(float* channelData, int numSample);
 
-    int getScopeSize() const;
-    const float* getScopeData() const;
-    const double* getArray() const;
-    const float* getFFT() const;
+    void zeroSelection(int selectionIndex, int selectionSize);
+    void zeroAllSelections(int newFFTSize, int selectionSize);
+    void removeSelection(int selectionIndex);
+    void clearAllSelections();
+    void prepSelection(int binMagSize, int selectionSize, int selectionIndex);
+    void setFFTSize(int newFFTSize);
+    void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
+    int getStepSize() const;
+    int getFFTCounter() const;
+    int getBlockSampleRate() const;
+    std::vector<std::vector<float>> getBinMag() const;
+
+
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
@@ -74,21 +77,35 @@ public:
     void setStateInformation(const void* data, int sizeInBytes) override;
 
 private:
-    juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
-    juce::dsp::WindowingFunction<float> window;     // [5]	//HERE IS THE WINDOW DECLARATION
+    static juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
 
-    float fftArray[fftSize] = { 0 };
-    float fftData[2 * fftSize] = { 0 };
-    int fftArrayIndex = 0;
+    //declare the ringBuffer and set its size to 10000
+    RingBuffer<float> ringBuffer{ 10000 };
+
+    static juce::dsp::WindowingFunction<float> window;
+
+
+    static int fftCounter;
+
+    static int sampleRate;
+
+    static int fftSize;
+    static int stepSize;
+    static int numBins;
+    static int numFreqBins;
+    static int fftDataSize;
+    static int rowIndex;
+
+    static float ringTest[10000];
+
+    static std::vector<float> bufferRight;
+    static std::vector<float> bufferLeft;
+    static std::vector<float> windowBufferRight;
+    static std::vector<float> windowBufferLeft;
+    static std::vector<std::vector<float>> binMag;
 
     bool nextFFTBlockReady = false;
     bool procBlockCalled = false;
-
-    static const int scopeSize = 48000 * 5;
-    static const int plotSize = 2;
-    static float scopeData[plotSize][scopeSize];
-    static int scopeDataIndex;
-    static int plotIndex;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessor)

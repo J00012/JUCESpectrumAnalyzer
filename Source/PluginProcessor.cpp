@@ -8,11 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
-float FFTSpectrumAnalyzerAudioProcessor::scopeData[plotSize][scopeSize] = { 0 };
-int FFTSpectrumAnalyzerAudioProcessor::scopeDataIndex = 0;
-int FFTSpectrumAnalyzerAudioProcessor::plotIndex = 0;
-
+#include "RingBuffer.h"
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
@@ -24,9 +20,8 @@ FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
 #endif
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-    ),
-    forwardFFT(fftOrder), // Initialize forwardFFT with fftOrder
-    window(fftSize, juce::dsp::WindowingFunction<float>::hann) // Initialize window
+    )
+    // Initialize forwardFFT with fftOrder
 #endif
 {
 }
@@ -136,7 +131,118 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported(const BusesLayout
 }
 #endif
 
-//============================================================================== // Getters and Setters
+void FFTSpectrumAnalyzerAudioProcessor::zeroSelection(int selectionIndex, int binMagSize) {
+    for (int i = 0; i < binMagSize; i++) {
+        binMag[selectionIndex][i] = 0;
+    }
+}
+
+//based on index value
+void FFTSpectrumAnalyzerAudioProcessor::removeSelection(int selectionIndex) {
+    binMag.erase(binMag.begin() + selectionIndex);
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::clearAllSelections() {
+    binMag.clear();
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::zeroAllSelections(int binMagSize, int selectionSize) {
+    binMag.resize(selectionSize, std::vector<float>(binMagSize, 0));
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int selectionSize, int selectionIndex) {
+
+    binMag.resize(selectionSize, std::vector<float>(binMagSize));
+    zeroSelection(selectionIndex, binMagSize);
+
+    bufferLeft.resize(fftSize, 0.0f);
+    bufferRight.resize(fftSize, 0.0f);
+    windowBufferRight.resize(fftDataSize, 0.0f);
+    windowBufferLeft.resize(fftSize, 0.0f);
+
+    rowIndex = selectionIndex;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {
+    fftSize = newFFTSize;
+    stepSize = fftSize / 2;
+    numBins = fftSize / 2 + 1;
+    numFreqBins = fftSize / 2;
+    fftDataSize = 2 * fftSize;
+
+    //rowIndex = selectionIndex;
+
+    /*bufferLeft.resize(fftSize, 0.0f);
+    bufferRight.resize(fftSize, 0.0f);
+    windowBufferRight.resize(fftDataSize, 0.0f);
+    windowBufferLeft.resize(fftSize, 0.0f);*/
+
+
+    //add a clear function 
+   // binMag.resize(selectionSize, std::vector<float> (numBins));
+
+    //for (auto& row : binMag) {
+    //    //row.resize(numBins, 0.0f);
+    //    row.resize(stepSize, 0.0f);
+    //}
+
+    forwardFFT = juce::dsp::FFT(std::log2(fftSize));
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {
+    juce::dsp::WindowingFunction<float> window(fftSize, type);
+    window.fillWindowingTables(fftSize, type);
+}
+
+//PROCESS BLOCK
+void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+    sampleRate = getSampleRate();  //get the Sample Rate of Buffer
+
+    int channel = 0;          //set channel
+    int sampleOutIndex = 0;   //accumulate counter
+
+    juce::ScopedNoDenormals noDenormals;
+    auto totalNumInputChannels = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+    auto* channelData = buffer.getWritePointer(channel);
+
+    ringBuffer.write(channelData, buffer.getNumSamples());
+
+    //juce::dsp::WindowingFunction<float> window(fftSize, juce::dsp::WindowingFunction<float>::hann);   //declare the window object
+    //window.fillWindowingTables(fftSize, juce::dsp::WindowingFunction<float>::hann);                   //fills the content of the object array with a given windowing method
+
+    while (ringBuffer.size() >= stepSize) {
+
+        std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
+        std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
+        std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
+
+        ringBuffer.read(bufferRight.data(), stepSize);
+
+        std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
+
+        windowBufferLeft = bufferLeft;
+
+        window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
+
+        window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
+
+        forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
+
+        fftCounter++;
+
+        for (int i = 0; i < numBins; i++) {
+            //float a= sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+            binMag[rowIndex][i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+            //channelData[sampleOutIndex] = binMag[rowIndex][i];
+            //sampleOutIndex++;
+        }
+    }
+    procBlockCalled = true;
+}
+
 void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
 {
     procBlockCalled = false;
@@ -147,66 +253,26 @@ bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
     return procBlockCalled;
 }
 
-void FFTSpectrumAnalyzerAudioProcessor::resetScopeDataIndex()
+int FFTSpectrumAnalyzerAudioProcessor::getBlockSampleRate() const
 {
-    scopeDataIndex = 0;
+    return sampleRate;
 }
 
-int FFTSpectrumAnalyzerAudioProcessor::getPlotIndex()
+int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
 {
-    return plotIndex;
+    return stepSize;
 }
 
-int FFTSpectrumAnalyzerAudioProcessor::getPlotSize()
+int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
 {
-    return plotSize;
+    return fftCounter;
 }
 
-void FFTSpectrumAnalyzerAudioProcessor::setPlotIndex(int rowIndex)
+std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::getBinMag() const
 {
-    plotIndex = rowIndex;
+    return binMag;
 }
 
-
-int FFTSpectrumAnalyzerAudioProcessor::getScopeSize() const
-{
-    return scopeSize;
-}
-
-
-const float* FFTSpectrumAnalyzerAudioProcessor::getScopeData() const
-{
-    //return (float*) scopeData;
-    return reinterpret_cast<float*>(scopeData);
-}
-
-//==============================================================================
-
-// Buffer = two dimenstional array where rows represent different channels and columns represent individual samples
-// ^(A multi-channel buffer containing floating point audio samples)
-void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
-{
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    //just for mono
-    int channel = 0;
-
-    auto* channelData = buffer.getReadPointer(channel);
-
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample, ++scopeDataIndex)
-    {
-        scopeData[plotIndex][scopeDataIndex] = channelData[sample];
-    }
-
-    procBlockCalled = true;
-}
-
-const float* FFTSpectrumAnalyzerAudioProcessor::getFFT() const
-{
-    return fftData;
-}
 
 //==============================================================================
 bool FFTSpectrumAnalyzerAudioProcessor::hasEditor() const
@@ -239,3 +305,27 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new FFTSpectrumAnalyzerAudioProcessor();
 }
+
+//zero the static variables
+int FFTSpectrumAnalyzerAudioProcessor::sampleRate = 0;
+int FFTSpectrumAnalyzerAudioProcessor::fftCounter = 0;
+
+int FFTSpectrumAnalyzerAudioProcessor::rowIndex = 0;
+int FFTSpectrumAnalyzerAudioProcessor::fftSize = 0;
+int FFTSpectrumAnalyzerAudioProcessor::stepSize = 0;
+int FFTSpectrumAnalyzerAudioProcessor::numBins = 0;
+int FFTSpectrumAnalyzerAudioProcessor::numFreqBins = 0;
+int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
+
+juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessor::forwardFFT(0);
+
+// Define static member variables
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferRight = { 0 };
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferLeft = { 0 };
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferRight = { 0 };
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft = { 0 };
+std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::binMag;
+
+juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessor::window(0, juce::dsp::WindowingFunction<float>::blackman);
+
+float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
