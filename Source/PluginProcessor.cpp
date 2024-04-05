@@ -131,7 +131,7 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
-void FFTSpectrumAnalyzerAudioProcessor::clearSelection(int selectionIndex, int binMagSize) {
+void FFTSpectrumAnalyzerAudioProcessor::zeroSelection(int selectionIndex, int binMagSize) {
     for (int i = 0; i < binMagSize; i++) {
         binMag[selectionIndex][i] = 0;
     }
@@ -142,23 +142,25 @@ void FFTSpectrumAnalyzerAudioProcessor::removeSelection(int selectionIndex) {
     binMag.erase(binMag.begin() + selectionIndex);
 }
 
-void FFTSpectrumAnalyzerAudioProcessor::removeAllSelections() {
+void FFTSpectrumAnalyzerAudioProcessor::clearAllSelections() {
     binMag.clear();
 }
 
-void FFTSpectrumAnalyzerAudioProcessor::clearAllSelections(int binMagSize, int selectionSize) {
+void FFTSpectrumAnalyzerAudioProcessor::zeroAllSelections(int binMagSize, int selectionSize) {
     binMag.resize(selectionSize, std::vector<float>(binMagSize, 0));
 }
 
-void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int selectionSize) {
+void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int selectionSize,int selectionIndex) {
    
     binMag.resize(selectionSize, std::vector<float>(binMagSize));
-    clearSelection(binMagSize -1, selectionSize);
+    zeroSelection(selectionIndex, binMagSize);
 
     bufferLeft.resize(fftSize, 0.0f);
     bufferRight.resize(fftSize, 0.0f);
     windowBufferRight.resize(fftDataSize, 0.0f);
     windowBufferLeft.resize(fftSize, 0.0f);
+
+    rowIndex = selectionIndex;
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {

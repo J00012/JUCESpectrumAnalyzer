@@ -39,11 +39,11 @@ public:
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
-    void clearSelection(int selectionIndex,int selectionSize);
-    void clearAllSelections(int newFFTSize, int selectionSize);
+    void zeroSelection(int selectionIndex,int selectionSize);
+    void zeroAllSelections(int newFFTSize, int selectionSize);
     void removeSelection(int selectionIndex);
-    void removeAllSelections();
-    void prepSelection(int binMagSize, int selectionSize);
+    void clearAllSelections();
+    void prepSelection(int binMagSize, int selectionSize,int selectionIndex);
     void setFFTSize(int newFFTSize);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
     int getStepSize() const;
