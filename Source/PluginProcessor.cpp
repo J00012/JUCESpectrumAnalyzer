@@ -131,23 +131,53 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported (const BusesLayou
 }
 #endif
 
+void FFTSpectrumAnalyzerAudioProcessor::clearSelection(int selectionIndex, int binMagSize) {
+    for (int i = 0; i < binMagSize; i++) {
+        binMag[selectionIndex][i] = 0;
+    }
+}
 
-void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize,int plotIndex) {
+//based on index value
+void FFTSpectrumAnalyzerAudioProcessor::removeSelection(int selectionIndex) {
+    binMag.erase(binMag.begin() + selectionIndex);
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::removeAllSelections() {
+    binMag.clear();
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::clearAllSelections(int binMagSize, int selectionSize) {
+    binMag.resize(selectionSize, std::vector<float>(binMagSize, 0));
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int selectionSize) {
+   
+    binMag.resize(selectionSize, std::vector<float>(binMagSize));
+    clearSelection(binMagSize -1, selectionSize);
+
+    bufferLeft.resize(fftSize, 0.0f);
+    bufferRight.resize(fftSize, 0.0f);
+    windowBufferRight.resize(fftDataSize, 0.0f);
+    windowBufferLeft.resize(fftSize, 0.0f);
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {
     fftSize = newFFTSize;
     stepSize = fftSize / 2;
     numBins = fftSize / 2 + 1;
     numFreqBins = fftSize / 2;
     fftDataSize = 2 * fftSize;
 
-    rowIndex = plotIndex;
+    //rowIndex = selectionIndex;
 
-    bufferLeft.resize(fftSize, 0.0f);
+    /*bufferLeft.resize(fftSize, 0.0f);
     bufferRight.resize(fftSize, 0.0f);
     windowBufferRight.resize(fftDataSize, 0.0f);
-    windowBufferLeft.resize(fftSize, 0.0f);
+    windowBufferLeft.resize(fftSize, 0.0f);*/
    
+
     //add a clear function 
-    binMag.resize(1, std::vector<float> (numBins,0));
+   // binMag.resize(selectionSize, std::vector<float> (numBins));
 
     //for (auto& row : binMag) {
     //    //row.resize(numBins, 0.0f);

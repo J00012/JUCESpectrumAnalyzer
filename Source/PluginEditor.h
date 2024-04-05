@@ -21,7 +21,7 @@ public:
     //==============================================================================
     
     void paint (juce::Graphics&) override;
-    void drawFrame(juce::Graphics& g); 
+    //void drawFrame(juce::Graphics& g); 
     void setFreqData(int fftData,int sampleR);
     void resized() override;
     void timerCallback() override;
@@ -57,10 +57,14 @@ private:
     juce::Label cursorLabel1; //mouse
     juce::Label cursorLabel2; //mouse
 
-    int cursorX1; //mouse
-    float cursorY1; //mouse
-    int cursorX2; //mouse
-    float cursorY2; //mouse
+    static int cursorX1; //mouse
+    static float cursorY1; //mouse
+    static int cursorX2; //mouse
+    static float cursorY2; //mouse
+
+    static int rowSize;
+    static int rowIndex;
+
     
     //processor statics
     static int fftSize;
