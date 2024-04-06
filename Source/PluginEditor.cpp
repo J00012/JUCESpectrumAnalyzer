@@ -148,8 +148,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	int sampleRate = audioProcessor.getBlockSampleRate();
 	setFreqData(fftS, sampleRate);
 	audioProcessor.setFFTSize(fftS);
+	// TODO - add check to see that the selection has already been prepped before zeroing
 	//audioProcessor.zeroAllSelections(numBins, rowSize);  //this is used for the hardcoded 2 selections
-	audioProcessor.prepSelection(numBins, rowSize,rowIndex); 
+	audioProcessor.prepSelection(numBins, rowSize, rowIndex); 
 
 	//std::string rate = std::to_string(sampleRate);
 	setFreqData(fftS, sampleRate);
