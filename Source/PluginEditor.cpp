@@ -15,7 +15,6 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY1 = 0.00; //mouse
 int FFTSpectrumAnalyzerAudioProcessorEditor::cursorX2 = 0; //mouse
 float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY2 = 0.00; //mouse
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
-<<<<<<<<< Temporary merge branch 1
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
@@ -481,8 +480,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::updateToggleState(int plotId)
 	repaint();
 }
 
-
-<<<<<<<<< Temporary merge branch 1
 void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
 {
 	if (plotId == 1)

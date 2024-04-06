@@ -25,7 +25,6 @@ public:
     void setFreqData(int fftData,int sampleR);
     void resized() override;
     void timerCallback() override;
-<<<<<<<<< Temporary merge branch 1
     void getBounds();
     void setPlotIndex(int plotIndex);
     void updateToggleState(int plotId);
@@ -42,7 +41,6 @@ private:
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
 
-<<<<<<<<< Temporary merge branch 1
     juce::Label inputXmin;
     juce::Label inputXmax;
     juce::Label inputYmin;
@@ -87,21 +85,19 @@ private:
     int widgetHeight = 24;
 
     int sampleSize = 100;  // Adjust the number of samples being displayed as needed
-=========
-    static int fftSize;
 
     static int fftS;
+    static int fftSize;
     static int numBins;
     static int sampleRate;
     static int maxFreq;
     static int numFreqBins;
-
-    static int row;
+    static int rowIndex;
+    static int rowSize;
     
 
     static std::vector<float> indexToFreqMap;
     static std::vector<std::vector<float>> binMag;
->>>>>>>>> Temporary merge branch 2
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };
