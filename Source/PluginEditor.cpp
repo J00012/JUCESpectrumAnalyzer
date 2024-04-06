@@ -173,9 +173,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	binMag = audioProcessor.getBinMag();
 
 
-
-	for (int i = 0; i < numBins; i++) {
-		binMag[rowIndex][i] /= fftCounter;
+	if (fftCounter != 0) {
+		for (int i = 0; i < numBins; i++) {
+			binMag[rowIndex][i] /= fftCounter;
+		}
 	}
 	
 	juce::Path plot1;
