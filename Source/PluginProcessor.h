@@ -32,14 +32,19 @@ public:
 
     bool getProcBlockCalled();
     void resetProcBlockCalled();
-    void resetScopeDataIndex();
-    void setPlotIndex(int rowIndex);
-    int getPlotIndex();
-    int getPlotSize();
+    //void resetScopeDataIndex();
+    //void setPlotIndex(int rowIndex);
+    //int getPlotIndex();
+    //int getPlotSize();
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
-    void setFFTSize(int newFFTsize, int plotIndex);
+    void zeroSelection(int selectionIndex,int selectionSize);
+    void zeroAllSelections(int newFFTSize, int selectionSize);
+    void removeSelection(int selectionIndex);
+    void clearAllSelections();
+    void prepSelection(int binMagSize, int selectionSize,int selectionIndex);
+    void setFFTSize(int newFFTSize);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
     int getStepSize() const;
     int getFFTCounter() const;
