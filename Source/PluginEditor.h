@@ -29,13 +29,13 @@ public:
     void setPlotIndex(int plotIndex);
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
-    void mouseMove(const juce::MouseEvent& event) override; 
+    void mouseMove(const juce::MouseEvent& event) override;
     //int findPeak(int index); 
-    int screenToGraph(int screenCoord); 
-    int graphToScreen(int graphCoord); 
-    void setWindowFunction(); 
-    void setSampleSize(); 
-    void setAxisScale(); 
+    int screenToGraph(int screenCoord);
+    int graphToScreen(int graphCoord);
+    void setWindowFunction();
+    void setSampleSize();
+    void setAxisScale();
     std::string floatToStringPrecision(float f, int p);
 
 
@@ -49,8 +49,8 @@ private:
     static bool isGraph;
 
     // gui elements
-    juce::Label gui_importAudio; 
-    juce::Label gui_selectTrace; 
+    juce::Label gui_importAudio;
+    juce::Label gui_selectTrace;
     juce::Label gui_zoom;
     juce::Label gui_upper;
     juce::Label gui_lower;
