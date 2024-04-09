@@ -24,6 +24,7 @@ public:
     //void drawFrame(juce::Graphics& g); 
     void setFreqData(int fftData,int sampleR);
     void resized() override;
+    void getFFTData();
     void timerCallback() override;
     void getBounds();
     void setPlotIndex(int plotIndex);
@@ -57,27 +58,10 @@ private:
     juce::Label cursorLabel1; //mouse
     juce::Label cursorLabel2; //mouse
 
-    static int cursorX1; //mouse
-    static float cursorY1; //mouse
-    static int cursorX2; //mouse
-    static float cursorY2; //mouse
-
-    static int rowSize;
-    static int rowIndex;
-
-    
-    //processor statics
-    static int fftSize;
-    static int fftS;
-    static int numBins;
-    static int sampleRate;
-    static int maxFreq;
-    static int numFreqBins;
-    static int row;
-    
-    //static vectors
-    static std::vector<float> indexToFreqMap;
-    static std::vector<std::vector<float>> binMag;
+    int cursorX1; //mouse
+    float cursorY1; //mouse
+    int cursorX2; //mouse
+    float cursorY2; //mouse
  
     static int xMinPrev;
     static int xMin;
@@ -102,6 +86,19 @@ private:
     int widgetHeight = 24;
 
     int sampleSize = 100;  // Adjust the number of samples being displayed as needed
+
+    static int fftS;
+    static int fftSize;
+    static int numBins;
+    static int sampleRate;
+    static int maxFreq;
+    static int numFreqBins;
+    static int rowIndex;
+    static int rowSize;
+    
+
+    static std::vector<float> indexToFreqMap;
+    static std::vector<std::vector<float>> binMag;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessorEditor)
 };

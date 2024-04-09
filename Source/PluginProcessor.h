@@ -44,6 +44,7 @@ public:
     void removeSelection(int selectionIndex);
     void clearAllSelections();
     void prepSelection(int binMagSize, int selectionSize,int selectionIndex);
+    void setRowIndex(int plotIndex);
     void setFFTSize(int newFFTSize);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
     int getStepSize() const;
@@ -104,7 +105,6 @@ private:
     static std::vector<float> windowBufferLeft;
     static std::vector<std::vector<float>> binMag;
   
-    bool nextFFTBlockReady = false;
     bool procBlockCalled = false;
     
     //==============================================================================
