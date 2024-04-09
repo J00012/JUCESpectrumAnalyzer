@@ -134,7 +134,44 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
 
-	getFFTData();
+	//const int scopeSize = audioProcessor.getScopeSize();
+	//const int plotSize = audioProcessor.getPlotSize();
+	//const int plotIndex = audioProcessor.getPlotIndex();
+	//const float* scopeData = audioProcessor.getScopeData();
+	//const float* fft = audioProcessor.getFFT();
+
+	//PROCESSOR CLASS CODE!!!!!!!!!
+	fftS = 1024;
+	rowIndex = 0;
+	rowSize = 2;
+
+	int sampleRate = audioProcessor.getBlockSampleRate();
+	setFreqData(fftS, sampleRate);
+	audioProcessor.setFFTSize(fftS);
+	//audioProcessor.zeroAllSelections(numBins, rowSize);  //this is used for the hardcoded 2 selections
+	audioProcessor.prepSelection(numBins, rowSize,rowIndex); 
+
+	//std::string rate = std::to_string(sampleRate);
+	setFreqData(fftS, sampleRate);
+
+	juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
+	audioProcessor.setWindow(windowType);
+
+	//x variable for labeling
+	for (int i = 0; i < numBins; i++) {
+		indexToFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
+	}
+
+	int fftCounter = audioProcessor.getFFTCounter();
+	//std::string counter = std::to_string(fftCounter);
+
+	binMag = audioProcessor.getBinMag();
+
+	if (fftCounter != 0) {
+		for (int i = 0; i < numBins; i++) {
+			binMag[rowIndex][i] /= fftCounter;
+		}
+	}
 	
 	juce::Path plot1;
 	juce::Path plot2;
@@ -277,41 +314,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::white);
 	g.strokePath(yAxis, juce::PathStrokeType(2.0f));
 
-}
-
-void FFTSpectrumAnalyzerAudioProcessorEditor::getFFTData() {
-	//PROCESSOR CLASS CODE!!!!!!!!!
-	fftS = 1024;
-	rowIndex = 0;
-	rowSize = 2;
-
-	int sampleRate = audioProcessor.getBlockSampleRate();
-	setFreqData(fftS, sampleRate);
-	audioProcessor.setFFTSize(fftS);
-	// TODO - add check to see that the selection has already been prepped before zeroing
-	audioProcessor.prepSelection(numBins, rowSize, rowIndex);
-
-	//std::string rate = std::to_string(sampleRate);
-	setFreqData(fftS, sampleRate);
-
-	juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
-	audioProcessor.setWindow(windowType);
-
-	//x variable for labeling
-	for (int i = 0; i < numBins; i++) {
-		indexToFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
-	}
-
-	int fftCounter = audioProcessor.getFFTCounter();
-	//std::string counter = std::to_string(fftCounter);
-
-	binMag = audioProcessor.getBinMag();
-
-	if (fftCounter != 0) {
-		for (int i = 0; i < numBins; i++) {
-			binMag[rowIndex][i] /= fftCounter;
-		}
-	}
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()

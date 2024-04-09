@@ -24,7 +24,6 @@ public:
     //void drawFrame(juce::Graphics& g); 
     void setFreqData(int fftData,int sampleR);
     void resized() override;
-    void getFFTData();
     void timerCallback() override;
     void getBounds();
     void setPlotIndex(int plotIndex);
