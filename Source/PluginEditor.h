@@ -29,7 +29,8 @@ public:
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
     //void mouseMove(const juce::MouseEvent& event) override;
-void setWindowFunction();
+    void setFreqData(int fftData, int sampleRate);
+    void setWindowFunction();
     std::string floatToStringPrecision(float f, int p);
 
 private:
