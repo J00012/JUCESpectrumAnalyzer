@@ -184,6 +184,15 @@ void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int select
     windowBufferLeft.resize(fftSize, 0.0f);
 
     rowIndex = selectionIndex;
+    if (rowIndex != 0) {
+        zeroSelection(selectionIndex, binMagSize);
+    }
+    else { 
+        bufferLeft.resize(fftSize, 0.0f);
+        bufferRight.resize(fftSize, 0.0f);
+        windowBufferRight.resize(fftDataSize, 0.0f);
+        windowBufferLeft.resize(fftSize, 0.0f);
+    }
 }
 void FFTSpectrumAnalyzerAudioProcessor::setRowIndex(int plotIndex) {
     rowIndex = plotIndex;
