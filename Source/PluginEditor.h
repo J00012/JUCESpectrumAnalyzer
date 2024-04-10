@@ -28,6 +28,8 @@ public:
     void setPlotIndex(int plotIndex);
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
+    void handleNewSelection(int numBins, int rowSize, int rowIndex);
+
     //void mouseMove(const juce::MouseEvent& event) override;
     void setFreqData(int fftData, int sampleRate);
     void setWindowFunction();
@@ -88,10 +90,10 @@ private:
     static int yMax;
     static int plotIndexSelection;
 
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth;
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight;
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxWidth;
-    static int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxHeight;
+    static int windowWidth;
+    static int windowHeight;
+    static int windowMaxWidth;
+    static int windowMaxHeight;
 	static int fftS;
     static int fftSize;
     static int numBins;
@@ -100,6 +102,9 @@ private:
     static int numFreqBins;
     static int rowIndex;
     static int rowSize;
+
+    static int count;
+    static int countPrev;
     
 
     static std::vector<float> indexToFreqMap;

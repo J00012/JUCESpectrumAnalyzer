@@ -44,6 +44,7 @@ public:
     void removeSelection(int selectionIndex);
     void clearAllSelections();
     void prepSelection(int binMagSize, int selectionSize,int selectionIndex);
+    void prepBuffers(int fftSize);
     void setRowIndex(int plotIndex);
     void setFFTSize(int newFFTSize);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);

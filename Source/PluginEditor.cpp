@@ -54,6 +54,9 @@ const int height_selectionBox = 90;
 //ROW INDEX STUFF!!!
 int FFTSpectrumAnalyzerAudioProcessorEditor::rowSize=2;
 int FFTSpectrumAnalyzerAudioProcessorEditor::rowIndex=0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::count=0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::countPrev=0;
+
 
 //Processor statics
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftSize = 1024;
@@ -322,16 +325,14 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	
 		//PROCESSOR CLASS CODE!!!!!!!!!
 	fftS = 1024;
-	rowIndex = 0;
 	rowSize = 2;
 
 	int sampleRate = audioProcessor.getBlockSampleRate();
 	setFreqData(fftS, sampleRate);
 	audioProcessor.setFFTSize(fftS);
-	// TODO - add check to see that the selection has already been prepped before zeroing
-	audioProcessor.prepSelection(numBins, rowSize, rowIndex);
 
-	//std::string rate = std::to_string(sampleRate);
+	handleNewSelection(numBins, rowSize, rowIndex);
+	
 	setFreqData(fftS, sampleRate);
 
 	juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
@@ -342,12 +343,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		indexToFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
 	}
 
+	//audioProcessor.zeroAllSelections(numBins, rowSize);
+	//audioProcessor.prepBuffers(fftSize);
+	//binMag = audioProcessor.getBinMag();
+	//audioProcessor.zeroSelection(rowIndex, numBins);
+
 	int fftCounter = audioProcessor.getFFTCounter();
-	//std::string counter = std::to_string(fftCounter);
-
 	binMag = audioProcessor.getBinMag();
-
-	if (fftCounter != 0) {
+	if (fftCounter != 0)
+	{
 		for (int i = 0; i < numBins; i++) {
 			binMag[rowIndex][i] /= fftCounter;
 		}
@@ -576,6 +580,28 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 		repaint();
 		//audioProcessor.resetScopeDataIndex();
 	}
+}
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex) 
+{
+	if (count == 0) {  //prepping all existing rows
+		for (int r = 0; r < rowSize; r++) {
+			audioProcessor.prepSelection(numBins, rowSize, r);
+		}
+	}
+
+	else if (count > countPrev) 
+	{  //handling new row selection
+		if (rowIndex > rowSize) 
+		{
+			audioProcessor.prepSelection(numBins, rowSize, rowIndex);
+		}
+		else { 
+			return; 
+		}  //there is no selection made, return
+	}
+	countPrev = count;
+	count++;
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
@@ -818,8 +844,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 {
-	plotIndexSelection = plotIndex;
-	audioProcessor.setRowIndex(plotIndexSelection);
+	rowIndex = plotIndex;
+	audioProcessor.setRowIndex(rowIndex);
 	if (plotIndex == 0)
 	{
 		buttonPlot1.setButtonText("Selected");

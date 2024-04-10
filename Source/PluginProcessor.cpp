@@ -177,16 +177,20 @@ void FFTSpectrumAnalyzerAudioProcessor::zeroAllSelections(int binMagSize, int se
 
 void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int selectionSize, int selectionIndex) {
     binMag.resize(selectionSize, std::vector<float>(binMagSize));
-    if (rowIndex != 0) {
-        zeroSelection(selectionIndex, binMagSize);
-    }
-    else { 
-        bufferLeft.resize(fftSize, 0.0f);
-        bufferRight.resize(fftSize, 0.0f);
-        windowBufferRight.resize(fftDataSize, 0.0f);
-        windowBufferLeft.resize(fftSize, 0.0f);
-    }
+    zeroSelection(selectionIndex, binMagSize);
+    bufferLeft.resize(fftSize, 0.0f);
+    bufferRight.resize(fftSize, 0.0f);
+    windowBufferRight.resize(fftDataSize, 0.0f);
+    windowBufferLeft.resize(fftSize, 0.0f);
 }
+
+void FFTSpectrumAnalyzerAudioProcessor::prepBuffers(int fftSize) {
+    bufferLeft.resize(fftSize, 0.0f);
+    bufferRight.resize(fftSize, 0.0f);
+    windowBufferRight.resize(fftSize * 2, 0.0f);
+    windowBufferLeft.resize(fftSize, 0.0f);
+}
+
 void FFTSpectrumAnalyzerAudioProcessor::setRowIndex(int plotIndex) {
     rowIndex = plotIndex;
 }
