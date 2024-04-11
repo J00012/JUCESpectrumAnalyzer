@@ -95,7 +95,7 @@ private:
     static int windowMaxWidth;
     static int windowMaxHeight;
 	static int fftS;
-    static int fftSize;
+    //static int fftSize;
     static int numBins;
     static int sampleRate;
     static int maxFreq;
