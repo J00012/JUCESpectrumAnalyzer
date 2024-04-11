@@ -45,6 +45,7 @@ public:
     void clearAllSelections();
     void prepSelection(int binMagSize, int selectionSize,int selectionIndex);
     void prepBuffers(int fftSize);
+    void setInitialBlock();
     void setRowIndex(int plotIndex);
     void setFFTSize(int newFFTSize);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
@@ -97,6 +98,8 @@ private:
     static int numFreqBins;
     static int fftDataSize;
     static int rowIndex;
+    static bool initialBlock;
+    static int channel;
    
     static float ringTest[10000];
 

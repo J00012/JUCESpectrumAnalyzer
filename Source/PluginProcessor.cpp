@@ -15,12 +15,15 @@
 int FFTSpectrumAnalyzerAudioProcessor::sampleRate = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftCounter = 0;
 
+int FFTSpectrumAnalyzerAudioProcessor::channel = 0;
 int FFTSpectrumAnalyzerAudioProcessor::rowIndex = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftSize = 0;
 int FFTSpectrumAnalyzerAudioProcessor::stepSize = 0;
 int FFTSpectrumAnalyzerAudioProcessor::numBins = 0;
 int FFTSpectrumAnalyzerAudioProcessor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
+
+bool FFTSpectrumAnalyzerAudioProcessor::initialBlock = true;
 
 juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessor::forwardFFT(0);
 
@@ -177,7 +180,7 @@ void FFTSpectrumAnalyzerAudioProcessor::zeroAllSelections(int binMagSize, int se
 
 void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int selectionSize, int selectionIndex) {
     binMag.resize(selectionSize, std::vector<float>(binMagSize));
-    zeroSelection(selectionIndex, binMagSize);
+    zeroSelection(selectionIndex, binMagSize);   
     bufferLeft.resize(fftSize, 0.0f);
     bufferRight.resize(fftSize, 0.0f);
     windowBufferRight.resize(fftDataSize, 0.0f);
@@ -212,38 +215,45 @@ void FFTSpectrumAnalyzerAudioProcessor::setWindow(juce::dsp::WindowingFunction<f
 //================================================PROCESS BLOCK====================================================================//
 void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    sampleRate = getSampleRate();  //get the Sample Rate of Buffer
+	if (initialBlock == true && buffer.getNumSamples() < stepSize) {
 
-    int channel = 0;          //set channel
-    int sampleOutIndex = 0;   //accumulate counter
+	}
+	else {
+		sampleRate = getSampleRate();  //get the Sample Rate of Buffer
 
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+		juce::ScopedNoDenormals noDenormals;
+		auto totalNumInputChannels = getTotalNumInputChannels();
+		auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    auto* channelData = buffer.getWritePointer(channel);
+		auto* channelData = buffer.getWritePointer(channel);
 
-    ringBuffer.write(channelData, buffer.getNumSamples());  //fills the content of the object array with a given windowing method
-                       
-    while (ringBuffer.size() >= stepSize){
+		ringBuffer.write(channelData, buffer.getNumSamples());  //fills the content of the object array with a given windowing method
 
-        std::copy(bufferLeft.begin(), bufferLeft.begin()+stepSize, bufferLeft.begin()+stepSize);
-        std::copy(bufferRight.begin()+stepSize, bufferRight.end(), bufferLeft.begin());
-        std::copy(bufferRight.begin(), bufferRight.begin()+stepSize, bufferRight.begin() + stepSize);
-       
-        ringBuffer.read(bufferRight.data(), stepSize);
-        std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
-        windowBufferLeft = bufferLeft;
-		window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
-		window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
-		forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
-        fftCounter++;
+		while (ringBuffer.size() >= stepSize) {
 
-		for (int i = 0; i < numBins; i++) {
-            binMag[rowIndex][i]+=sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+			std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
+			std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
+			std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
+
+			ringBuffer.read(bufferRight.data(), stepSize);
+			std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
+			windowBufferLeft = bufferLeft;
+			window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
+			window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
+			forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
+			fftCounter++;
+
+			for (int i = 0; i < numBins; i++) {
+				binMag[rowIndex][i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+			}
 		}
-	} 
-    procBlockCalled = true;
+		procBlockCalled = true;
+        initialBlock = false;
+	}
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::setInitialBlock() {
+    initialBlock = true;
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()

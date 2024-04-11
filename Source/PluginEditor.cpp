@@ -323,7 +323,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
 	
-		//PROCESSOR CLASS CODE!!!!!!!!!
+	//PROCESSOR CLASS CODE!!!!!!!!!
 	fftS = 1024;
 	rowSize = 2;
 
@@ -577,6 +577,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 	}
 	else if (isRunning && !audioProcessor.getProcBlockCalled()) {
 		isRunning = false;
+		audioProcessor.setInitialBlock();
 		repaint();
 		//audioProcessor.resetScopeDataIndex();
 	}
