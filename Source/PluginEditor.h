@@ -33,6 +33,8 @@ public:
     //void mouseMove(const juce::MouseEvent& event) override;
     void setFreqData(int fftData, int sampleRate);
     void setWindowFunction();
+    void setBlockSize();
+    void setAxisType();
     std::string floatToStringPrecision(float f, int p);
 
 private:
@@ -106,7 +108,7 @@ private:
     static int count;
     static int countPrev;
 
-    static bool validSize;
+    static bool setToLog;
 
     static std::vector<float> indexToFreqMap;
     static std::vector<std::vector<float>> binMag;
