@@ -25,9 +25,9 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
 int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 10;
 int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
@@ -438,7 +438,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 					plot2.lineTo(i * xAxisScale * scaleX + xStartXYAxis + xShift, binMag[1][i] * 20 * std::log10(i) * scaleY + plotYShift);
 				}
 				if (isVisiblePlot1 == true) {
-					plot1.lineTo(i * xAxisScale * scaleX + xStartXYAxis + xShift, binMag[0][i] * scaleY + plotYShift);
+					plot1.lineTo(i * xAxisScale * scaleX + xStartXYAxis + xShift, binMag[0][i] * 20 * std::log10(i) * scaleY + plotYShift);
 				}
 			}
 		}
