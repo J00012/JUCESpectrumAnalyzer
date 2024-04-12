@@ -32,12 +32,12 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 550 + 2;
-int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxWidth = 2160; 
+int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxWidth = 2160;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxHeight = 1080;
 
 // height and width for primary category labels (Import Audio, Zoom, Export, etc.) 
-const int width_primaryCategoryLabel = 275; 
-const int height_primaryCategoryLabel = 25;  
+const int width_primaryCategoryLabel = 275;
+const int height_primaryCategoryLabel = 25;
 // height and width for secondary labels ("Selected Traces", Upper/Lower, etc.)
 const int width_secondaryLabel = 150;
 const int height_secondaryLabel = 25;
@@ -52,18 +52,20 @@ const int width_selectionBox = 263;
 const int height_selectionBox = 90;
 
 //ROW INDEX STUFF!!!
-int FFTSpectrumAnalyzerAudioProcessorEditor::rowSize=2;
-int FFTSpectrumAnalyzerAudioProcessorEditor::rowIndex=0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::count=0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::countPrev=0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::rowSize = 2;
+int FFTSpectrumAnalyzerAudioProcessorEditor::rowIndex = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::count = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::countPrev = 0;
 
 
 //Processor statics
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftSize = 1024;
-int FFTSpectrumAnalyzerAudioProcessorEditor::fftS = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::fftS = 1024;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numBins = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::maxFreq = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
+
+bool FFTSpectrumAnalyzerAudioProcessorEditor::validSize = true;
 
 //Processor vectors
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::indexToFreqMap = { 0 };
@@ -90,7 +92,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(gui_selectTrace);
 	gui_selectTrace.setText("Selected Traces", juce::dontSendNotification);
 	gui_selectTrace.setFont(juce::Font(17.0f));
-	
+
 	addAndMakeVisible(gui_zoom);
 	gui_zoom.setFont(juce::Font("Arial", 18.0f, juce::Font::bold));
 	gui_zoom.setText("Zoom", juce::dontSendNotification);
@@ -130,7 +132,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	gui_exportButton.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
 	gui_exportButton.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
-	addAndMakeVisible(cursorLabel); 
+	addAndMakeVisible(cursorLabel);
 	cursorLabel.setText("Cursor", juce::dontSendNotification);
 	cursorLabel.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
 	cursorLabel.setColour(juce::Label::textColourId, juce::Colours::white);
@@ -322,9 +324,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillAll(juce::Colours::black);
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
-	
+
 	//PROCESSOR CLASS CODE!!!!!!!!!
-	fftS = 1024;
 	rowSize = 2;
 
 	int sampleRate = audioProcessor.getBlockSampleRate();
@@ -332,7 +333,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	audioProcessor.setFFTSize(fftS);
 
 	handleNewSelection(numBins, rowSize, rowIndex);
-	
+
 	setFreqData(fftS, sampleRate);
 
 	juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
@@ -375,8 +376,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float yBuffer = border_yBuffer + 12;
 	float lengthXAxis = widthBorder;
 	float lengthYAxis = heightBorder * .95;
-	float yStartXYAxis = yBuffer + lengthYAxis - 1; 
-	float xStartXYAxis = xBuffer - 3; 
+	float yStartXYAxis = yBuffer + lengthYAxis - 1;
+	float xStartXYAxis = xBuffer - 3;
 	float yStartPlot = (yBuffer + lengthYAxis) / 2;
 	float xAxisScale = 0.702;
 
@@ -426,21 +427,29 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// Graph plots
 	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + binMag[1][0] * scaleY + yShift);
-	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + binMag[0][0] * scaleY + yShift); 
-	for (int i = 1; i <= sampleSize; i++)
-	{
-		if (isVisiblePlot2 == true) {
-			plot2.lineTo(i* xAxisScale * scaleX + xStartXYAxis + xShift, binMag[1][i] * scaleY + plotYShift);
+	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + binMag[0][0] * scaleY + yShift);
+	if (audioProcessor.minBlockSize) {
+		for (int i = 1; i <= sampleSize; i++)
+		{
+			if (isVisiblePlot2 == true) {
+				plot2.lineTo(i * xAxisScale * scaleX + xStartXYAxis + xShift, binMag[1][i] * scaleY + plotYShift);
+			}
+			if (isVisiblePlot1 == true) {
+				plot1.lineTo(i * xAxisScale * scaleX + xStartXYAxis + xShift, binMag[0][i] * scaleY + plotYShift);
+			}
 		}
-		if (isVisiblePlot1 == true) {
-			plot1.lineTo(i* xAxisScale * scaleX + xStartXYAxis + xShift, binMag[0][i] * scaleY + plotYShift);
-		}
-	}
 
-	g.setColour(juce::Colours::lightgreen);
-	g.strokePath(plot2, juce::PathStrokeType(3.0f));
-	g.setColour(juce::Colours::cornflowerblue);
-	g.strokePath(plot1, juce::PathStrokeType(3.0f));
+		g.setColour(juce::Colours::lightgreen); 
+		g.strokePath(plot2, juce::PathStrokeType(3.0f));
+		g.setColour(juce::Colours::cornflowerblue);
+		g.strokePath(plot1, juce::PathStrokeType(3.0f));
+	}
+	else {
+		g.setColour(juce::Colours::black);
+		g.fillRoundedRectangle(border_xBuffer, border_yBuffer, widthBorder, heightBorder, 3);
+		g.setColour(juce::Colours::white);
+		g.drawText("Not enough data selected", juce::Rectangle<int>(border_xBuffer, border_yBuffer, widthBorder, heightBorder), juce::Justification::centred, true);
+	}
 
 	// Axis variables
 	int numXMarkers = xDiff;
@@ -448,8 +457,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// Plot X Axis Markers
 	for (int i = 1; i <= numXMarkers; i++) {
-		xAxisMarkers.startNewSubPath(xStartXYAxis + (i* xAxisScale * scaleX), yStartXYAxis - 5);
-		xAxisMarkers.lineTo(xStartXYAxis + (i* xAxisScale * scaleX), yStartXYAxis + 5);
+		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+		xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
@@ -510,7 +519,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillRect(rightPanel);
 	g.fillRect(topPanel);
 	g.fillRect(bottomPanel);
-	
+
 	// ** NEW STUFF ** //
 
 	//** line to seperate left-side components and right-side components **//
@@ -534,7 +543,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	}
 	if (isVisiblePlot2 == true) {
 		g.setColour(juce::Colours::dodgerblue);
-		g.fillRoundedRectangle(xMargin_checkboxFill, yMargin_checkboxFill2, 16, 16, 4); 
+		g.fillRoundedRectangle(xMargin_checkboxFill, yMargin_checkboxFill2, 16, 16, 4);
 	}
 
 	// draw line to seperate plot selections
@@ -547,7 +556,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	int xMargin_zoomBoundary = 2.5 * x_componentOffset;
 	int yMargin_zoomBoundary = (119.5 * yOffset_selectionBox);
 	g.setColour(juce::Colours::darkgrey);
-	g.fillRect(xMargin_zoomBoundary, yMargin_zoomBoundary, 245, 1); 
+	g.fillRect(xMargin_zoomBoundary, yMargin_zoomBoundary, 245, 1);
 
 	//** white box for cursor label **//
 	int xMargin_cursorBox = xStartXYAxis + 138;
@@ -559,7 +568,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	//g.fillRoundedRectangle(xMargin_cursorBox, yMargin_cursorBox, width_cursorBox, height_cursorBox, 2);
 
 	//** white box for peak label **//
-	int xMargin_peakBox = xMargin_cursorBox + 205; 
+	int xMargin_peakBox = xMargin_cursorBox + 205;
 	int yMargin_peakBox = yMargin_cursorBox;
 	int width_peakBox = 180;
 	int height_peakBox = 26;
@@ -583,7 +592,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 	}
 }
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex) 
+void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex)
 {
 	if (count == 0) {  //prepping all existing rows
 		for (int r = 0; r < rowSize; r++) {
@@ -591,14 +600,14 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, in
 		}
 	}
 
-	else if (count > countPrev) 
+	else if (count > countPrev)
 	{  //handling new row selection
-		if (rowIndex > rowSize) 
+		if (rowIndex > rowSize)
 		{
 			audioProcessor.prepSelection(numBins, rowSize, rowIndex);
 		}
-		else { 
-			return; 
+		else {
+			return;
 		}  //there is no selection made, return
 	}
 	countPrev = count;
@@ -652,13 +661,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int xMargin_cursorLabel = xStartXYAxis + 133;
 	int yMargin_cursorLabel = heightBorder + 30;
 
-	
+
 	//** peak **//
 	// label
 	int xMargin_peakLabel = xMargin_cursorLabel + 205;
 	int yMargin_peaklabel = yMargin_cursorLabel;
 
-	
+
 	//** window function **//
 	//label
 	int xMargin_windowLabel = xStartXYAxis + 65;
@@ -666,7 +675,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	// combobox
 	int xMargin_winCombo = xMargin_windowLabel + 4;
 	int yMargin_winCombo = yMargin_windowLabel + 22;
-	
+
 	//** axis **//
 	// label
 	int xMargin_axisLabel = xMargin_winCombo + 180;
@@ -687,7 +696,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	//** Set bounds for right side elements **//
 	//cursorLabel.setBounds(xMargin_cursorLabel, yMargin_cursorLabel, width_secondaryLabel, height_cursorPeak); 
 	//peakLabel.setBounds(xMargin_peakLabel, yMargin_peaklabel, width_secondaryLabel, height_cursorPeak);
-	windowLabel.setBounds(xMargin_windowLabel, yMargin_windowLabel, width_secondaryLabel, height_secondaryLabel); 
+	windowLabel.setBounds(xMargin_windowLabel, yMargin_windowLabel, width_secondaryLabel, height_secondaryLabel);
 	axisLabel.setBounds(xMargin_axisLabel, yMargin_axisLabel, width_secondaryLabel, height_secondaryLabel);
 	sizeLabel.setBounds(xMargin_sizeLabel, yMargin_sizeLabel, width_secondaryLabel, height_secondaryLabel);
 
@@ -795,7 +804,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	gui_exportButton.setBounds(xMargin_exportButton, yMargin_exportButton, width_exportButton, height_exportButton);
 }
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData,int sampleRate) {
+void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData, int sampleRate) {
 	fftS = fftData;
 	numBins = fftS / 2 + 1;
 	maxFreq = sampleRate / 2;
@@ -814,7 +823,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		xMin = val;
 	}
-	else{inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);}
+	else { inputXmin.setText(std::to_string(xMin), juce::dontSendNotification); }
 
 	temp = inputXmax.getText(false);
 	val = std::atoi(temp.toStdString().c_str());
@@ -822,7 +831,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		xMax = val;
 	}
-	else{inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);}
+	else { inputXmax.setText(std::to_string(xMax), juce::dontSendNotification); }
 
 	temp = inputYmin.getText(false);
 	val = std::atoi(temp.toStdString().c_str());
@@ -830,7 +839,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		yMin = val;
 	}
-	else{inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);}
+	else { inputYmin.setText(std::to_string(yMin), juce::dontSendNotification); }
 
 	temp = inputYmax.getText(false);
 	val = std::atoi(temp.toStdString().c_str());
@@ -838,7 +847,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		yMax = val;
 	}
-	else{inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);}
+	else { inputYmax.setText(std::to_string(yMax), juce::dontSendNotification); }
 	repaint();
 }
 
@@ -891,7 +900,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
 			isVisiblePlot2 = false;
 		}
 	}
-} 
+}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setWindowFunction() {
 	/*
@@ -949,7 +958,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setWindowFunction() {
 //	}
 //	repaint();
 //}
-
 
 std::string FFTSpectrumAnalyzerAudioProcessorEditor::floatToStringPrecision(float f, int p)
 {

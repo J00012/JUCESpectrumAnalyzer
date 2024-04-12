@@ -94,8 +94,8 @@ private:
     static int windowHeight;
     static int windowMaxWidth;
     static int windowMaxHeight;
-	static int fftS;
-    //static int fftSize;
+    static int fftS;
+    static int fftSize;
     static int numBins;
     static int sampleRate;
     static int maxFreq;
@@ -105,7 +105,8 @@ private:
 
     static int count;
     static int countPrev;
-    
+
+    static bool validSize;
 
     static std::vector<float> indexToFreqMap;
     static std::vector<std::vector<float>> binMag;

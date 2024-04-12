@@ -13,9 +13,9 @@
 //==============================================================================
 /**
 */
-class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
+class FFTSpectrumAnalyzerAudioProcessor : public juce::AudioProcessor
 {
-    
+
 
 public:
     //==============================================================================
@@ -23,12 +23,12 @@ public:
     ~FFTSpectrumAnalyzerAudioProcessor() override;
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+#ifndef JucePlugin_PreferredChannelConfigurations
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+#endif
 
     bool getProcBlockCalled();
     void resetProcBlockCalled();
@@ -37,13 +37,13 @@ public:
     //int getPlotIndex();
     //int getPlotSize();
 
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
-    void zeroSelection(int selectionIndex,int selectionSize);
+    void zeroSelection(int selectionIndex, int selectionSize);
     void zeroAllSelections(int newFFTSize, int selectionSize);
     void removeSelection(int selectionIndex);
     void clearAllSelections();
-    void prepSelection(int binMagSize, int selectionSize,int selectionIndex);
+    void prepSelection(int binMagSize, int selectionSize, int selectionIndex);
     void prepBuffers(int fftSize);
     void setInitialBlock();
     void setRowIndex(int plotIndex);
@@ -53,7 +53,7 @@ public:
     int getFFTCounter() const;
     int getBlockSampleRate() const;
     std::vector<std::vector<float>> getBinMag() const;
-   
+
 
 
     //==============================================================================
@@ -71,23 +71,25 @@ public:
     //==============================================================================
     int getNumPrograms() override;
     int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    void setCurrentProgram(int index) override;
+    const juce::String getProgramName(int index) override;
+    void changeProgramName(int index, const juce::String& newName) override;
 
     //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override; 
+    void getStateInformation(juce::MemoryBlock& destData) override;
+    void setStateInformation(const void* data, int sizeInBytes) override;
+
+    static bool minBlockSize;
 
 private:
     static juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
 
     //declare the ringBuffer and set its size to 10000
-    RingBuffer<float> ringBuffer{ 10000 };  
+    RingBuffer<float> ringBuffer{ 10000 };
 
     static juce::dsp::WindowingFunction<float> window;
 
-  
+
     static int fftCounter;
 
     static int sampleRate;
@@ -100,7 +102,7 @@ private:
     static int rowIndex;
     static bool initialBlock;
     static int channel;
-   
+
     static float ringTest[10000];
 
     static std::vector<float> bufferRight;
@@ -108,9 +110,9 @@ private:
     static std::vector<float> windowBufferRight;
     static std::vector<float> windowBufferLeft;
     static std::vector<std::vector<float>> binMag;
-  
+
     bool procBlockCalled = false;
-    
+
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessor)
 };
