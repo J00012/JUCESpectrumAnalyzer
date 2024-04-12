@@ -80,14 +80,14 @@ private:
     juce::ToggleButton toggleButtonPlot2;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
-    static int xMinPrev;
-    static int xMin;
-    static int xMaxPrev;
-    static int xMax;
-    static int yMinPrev;
-    static int yMin;
-    static int yMaxPrev;
-    static int yMax;
+    static float xMinPrev;
+    static float xMin;
+    static float xMaxPrev;
+    static float xMax;
+    static float yMinPrev;
+    static float yMin;
+    static float yMaxPrev;
+    static float yMax;
     static int plotIndexSelection;
 
     static int windowWidth;
@@ -105,8 +105,9 @@ private:
 
     static int count;
     static int countPrev;
-    
 
+    int tickBuffer = 5;
+    
     static std::vector<float> indexToFreqMap;
     static std::vector<std::vector<float>> binMag;
 

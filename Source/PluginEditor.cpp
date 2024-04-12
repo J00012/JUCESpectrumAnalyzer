@@ -20,14 +20,14 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 //bool FFTSpectrumAnalyzerAudioProcessorEditor::isGraph = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMin = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 1;
 int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
@@ -59,7 +59,7 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::countPrev=0;
 
 
 //Processor statics
-int FFTSpectrumAnalyzerAudioProcessorEditor::fftSize = 1024;
+//int FFTSpectrumAnalyzerAudioProcessorEditor::fftSize = 1024;
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftS = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numBins = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::maxFreq = 0;
@@ -427,7 +427,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	// Graph plots
 	plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + binMag[1][0] * scaleY + yShift);
 	plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + binMag[0][0] * scaleY + yShift); 
-	for (int i = 1; i <= sampleSize; i++)
+	for (float i = 1; i <= sampleSize; i++)
 	{
 		if (isVisiblePlot2 == true) {
 			plot2.lineTo(i* xAxisScale * scaleX + xStartXYAxis + xShift, binMag[1][i] * scaleY + plotYShift);
@@ -443,31 +443,31 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(plot1, juce::PathStrokeType(3.0f));
 
 	// Axis variables
-	int numXMarkers = xDiff;
-	int numYMarkers = yDiff;
+	float numXMarkers = xDiff;
+	float numYMarkers = yDiff;
 
 	// Plot X Axis Markers
-	for (int i = 1; i <= numXMarkers; i++) {
-		xAxisMarkers.startNewSubPath(xStartXYAxis + (i* xAxisScale * scaleX), yStartXYAxis - 5);
-		xAxisMarkers.lineTo(xStartXYAxis + (i* xAxisScale * scaleX), yStartXYAxis + 5);
+	for (float i = 1; i <= numXMarkers; i++) {
+		xAxisMarkers.startNewSubPath(xStartXYAxis + (i* xAxisScale * scaleX), yStartXYAxis - tickBuffer);
+		xAxisMarkers.lineTo(xStartXYAxis + (i* xAxisScale * scaleX), yStartXYAxis + tickBuffer);
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
 
 	// Plot Y Axis Markers
-	for (int i = 1; i <= numYMarkers; i++) {
-		yAxisMarkersUp.startNewSubPath(xStartXYAxis - 5, yStartPlot + (scaleY * i) + yShift);
-		yAxisMarkersUp.lineTo(xStartXYAxis + 5, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-		yAxisMarkersDown.startNewSubPath(xStartXYAxis - 5, yStartPlot - (scaleY * i) + yShift);
-		yAxisMarkersDown.lineTo(xStartXYAxis + 5, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+	for (float i = 1; i <= numYMarkers; i++) {
+		yAxisMarkersUp.startNewSubPath(xStartXYAxis - tickBuffer, yStartPlot + (scaleY * i) + yShift);
+		yAxisMarkersUp.lineTo(xStartXYAxis + tickBuffer, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+		yAxisMarkersDown.startNewSubPath(xStartXYAxis - tickBuffer, yStartPlot - (scaleY * i) + yShift);
+		yAxisMarkersDown.lineTo(xStartXYAxis + tickBuffer, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
 	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 
 	//Plot zero on Y-axis
-	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
-	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
+	zeroTick.startNewSubPath(xStartXYAxis - tickBuffer * 3, yStartPlot + yShift);
+	zeroTick.lineTo(xStartXYAxis + tickBuffer * 3, yStartPlot + yShift);
 	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
 
 	//** draw graph border **//
@@ -806,10 +806,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData,int sample
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 {
-	int minVal = -1000;
-	int maxVal = 1000;
+	float minVal = -1000;
+	float maxVal = 1000;
 	juce::String temp = inputXmin.getText(false);
-	int val = std::atoi(temp.toStdString().c_str());
+	float val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
 		xMin = val;
@@ -817,7 +817,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	else{inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);}
 
 	temp = inputXmax.getText(false);
-	val = std::atoi(temp.toStdString().c_str());
+	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
 		xMax = val;
@@ -825,7 +825,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	else{inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);}
 
 	temp = inputYmin.getText(false);
-	val = std::atoi(temp.toStdString().c_str());
+	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
 		yMin = val;
@@ -833,7 +833,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	else{inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);}
 
 	temp = inputYmax.getText(false);
-	val = std::atoi(temp.toStdString().c_str());
+	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
 		yMax = val;
