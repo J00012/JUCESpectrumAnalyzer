@@ -32,6 +32,23 @@ void RingBuffer<T>::write(const T* processBuffer, size_t bufferSize) {
 }
 
 template<typename T>
+void RingBuffer<T>::writeVector(const T* processBuffer, size_t bufferSize) {
+
+    if (full)
+        throw std::overflow_error("Buffer is full");
+
+    for (size_t sample = 0; sample < bufferSize; ++sample) {
+        if (full)
+            throw std::overflow_error("Buffer is full");
+
+        buffer[head] = processBuffer[sample];
+        head = (head + 1) % capacity;
+        if (head == tail)
+            full = true;
+    }
+}
+
+template<typename T>
 void RingBuffer<T>::read(T* processBuffer, size_t bufferIndex) {
     if (is_empty())
         throw std::underflow_error("Buffer is empty");

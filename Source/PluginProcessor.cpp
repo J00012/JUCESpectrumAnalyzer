@@ -17,6 +17,7 @@ int FFTSpectrumAnalyzerAudioProcessor::fftCounter = 0;
 
 int FFTSpectrumAnalyzerAudioProcessor::channel = 0;
 int FFTSpectrumAnalyzerAudioProcessor::rowIndex = 0;
+int FFTSpectrumAnalyzerAudioProcessor::rowSize = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftSize = 0;
 int FFTSpectrumAnalyzerAudioProcessor::stepSize = 0;
 int FFTSpectrumAnalyzerAudioProcessor::numBins = 0;
@@ -160,10 +161,11 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported(const BusesLayout
 }
 #endif
 
-void FFTSpectrumAnalyzerAudioProcessor::zeroSelection(int selectionIndex, int binMagSize) {
-    for (int i = 0; i < binMagSize; i++) {
+void FFTSpectrumAnalyzerAudioProcessor::zeroSelection(int selectionIndex) {
+  /*  for (int i = 0; i < binMagSize; i++) {
         binMag[selectionIndex][i] = 0;
-    }
+    }*/
+    std::fill(binMag[selectionIndex].begin(), binMag[selectionIndex].end(), 0.0f);
 }
 
 //based on index value
@@ -181,7 +183,7 @@ void FFTSpectrumAnalyzerAudioProcessor::zeroAllSelections(int binMagSize, int se
 
 void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int selectionSize, int selectionIndex) {
     binMag.resize(selectionSize, std::vector<float>(binMagSize));
-    zeroSelection(selectionIndex, binMagSize);
+    zeroSelection(selectionIndex);
     bufferLeft.resize(fftSize, 0.0f);
     bufferRight.resize(fftSize, 0.0f);
     windowBufferRight.resize(fftDataSize, 0.0f);
@@ -189,10 +191,14 @@ void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int select
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::prepBuffers(int fftSize) {
-    bufferLeft.resize(fftSize, 0.0f);
-    bufferRight.resize(fftSize, 0.0f);
-    windowBufferRight.resize(fftSize * 2, 0.0f);
-    windowBufferLeft.resize(fftSize, 0.0f);
+    bufferLeft.resize(fftSize);
+    std::fill(bufferLeft.begin(), bufferLeft.end(), 0.0f);
+    bufferRight.resize(fftSize);
+    std::fill(bufferRight.begin(), bufferRight.end(), 0.0f);
+    windowBufferRight.resize(fftSize * 2);
+    std::fill(windowBufferRight.begin(), windowBufferRight.end(), 0.0f);
+    windowBufferLeft.resize(fftSize);
+    std::fill(windowBufferLeft.begin(), windowBufferLeft.end(), 0.0f);
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::setRowIndex(int plotIndex) {
@@ -283,9 +289,44 @@ int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
     return fftCounter;
 }
 
-std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::getBinMag() const
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::getBinMag() const
+{
+    return binMag[rowIndex];
+}
+
+std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::getBinSet() const
 {
     return binMag;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::processBinMag(std::vector<std::vector<float>>& binMagSet)
+{
+
+    //for (int i = 0; i < rowSize; i++) {
+    //    auto* channelData = binMagSet;
+    //    ringBuffer.write(channelData, binMagSet[i].size());  //fills the content of the object array with a given windowing method
+
+    //    while (ringBuffer.size() >= stepSize) {
+
+    //        std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
+    //        std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
+    //        std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
+
+    //        ringBuffer.read(bufferRight.data(), stepSize);
+    //        std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
+    //        windowBufferLeft = bufferLeft;
+    //        window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
+    //        window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
+    //        forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
+    //        fftCounter++;
+
+    //        for (int i = 0; i < numBins; i++) {
+    //            binMag[rowIndex][i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+    //        }
+    //    }
+    //    procBlockCalled = true;
+    //    initialBlock = false;
+    //}
 }
 
 

@@ -17,6 +17,7 @@
 //int FFTSpectrumAnalyzerAudioProcessorEditor::graphNorth = 0;
 //int FFTSpectrumAnalyzerAudioProcessorEditor::graphSouth = 0;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
 //bool FFTSpectrumAnalyzerAudioProcessorEditor::isGraph = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
@@ -61,9 +62,10 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::countPrev = 0;
 //Processor statics
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftSize = 1024;
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftS = 1024;
-int FFTSpectrumAnalyzerAudioProcessorEditor::numBins = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::numBins = 513;
 int FFTSpectrumAnalyzerAudioProcessorEditor::maxFreq = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::fftCounter = 0;
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog = false;
 
@@ -77,11 +79,15 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 {
 	setOpaque(true);
 	startTimer(500);
+
 	setSize(windowWidth, windowHeight);
 	setResizable(true, true);
 	setResizeLimits(windowWidth, windowHeight, windowMaxWidth, windowMaxHeight);
 
 	setPlotIndex(plotIndexSelection);
+	audioProcessor.zeroAllSelections(numBins, rowSize);
+	audioProcessor.prepBuffers(fftS);
+	binMag = audioProcessor.getBinSet();
 
 	// new gui elements start
 	addAndMakeVisible(gui_importAudio);
@@ -334,7 +340,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	setFreqData(fftS, sampleRate);
 	audioProcessor.setFFTSize(fftS);
 
-	handleNewSelection(numBins, rowSize, rowIndex);
+	//handleNewSelection(numBins, rowSize, rowIndex);
+	
 
 	setFreqData(fftS, sampleRate);
 
@@ -350,14 +357,18 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	//audioProcessor.prepBuffers(fftSize);
 	//binMag = audioProcessor.getBinMag();
 	//audioProcessor.zeroSelection(rowIndex, numBins);
-
-	int fftCounter = audioProcessor.getFFTCounter();
-	binMag = audioProcessor.getBinMag();
-	if (fftCounter != 0)
-	{
-		for (int i = 0; i < numBins; i++) {
-			binMag[rowIndex][i] /= fftCounter;
+	if (newSelection == true) {
+		fftCounter = audioProcessor.getFFTCounter();
+		binMag[rowIndex] = audioProcessor.getBinMag();
+		audioProcessor.prepBuffers(fftS);
+		audioProcessor.zeroSelection(rowIndex);
+		if (fftCounter != 0)
+		{
+			for (int i = 0; i < numBins; i++) {
+				binMag[rowIndex][i] /= fftCounter;
+			}
 		}
+		newSelection = false;
 	}
 
 	juce::Path plot1;
@@ -438,7 +449,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 					plot2.lineTo(i * xAxisScale * scaleX + xStartXYAxis + xShift, binMag[1][i] * 20 * std::log10(i) * scaleY + plotYShift);
 				}
 				if (isVisiblePlot1 == true) {
-					plot1.lineTo(i * xAxisScale * scaleX + xStartXYAxis + xShift, binMag[0][i] * scaleY + plotYShift);
+					plot1.lineTo(i * xAxisScale * scaleX + xStartXYAxis + xShift, binMag[0][i] * 20 * std::log10(i) * scaleY + plotYShift);
 				}
 			}
 		}
@@ -601,6 +612,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 	}
 	else if (isRunning && !audioProcessor.getProcBlockCalled()) {
 		isRunning = false;
+		newSelection = true;
 		audioProcessor.setInitialBlock();
 		repaint();
 		//audioProcessor.resetScopeDataIndex();
@@ -825,7 +837,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData, int sampl
 	maxFreq = sampleRate / 2;
 	numFreqBins = fftS / 2;
 	indexToFreqMap.resize(numBins);
-	binMag.resize(1, std::vector<float>(numBins, 0));
+	binMag.resize(rowSize, std::vector<float>(numBins, 0));
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
