@@ -26,9 +26,9 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
 int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 100;
 int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 10;
 int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
