@@ -341,7 +341,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	audioProcessor.setFFTSize(fftS);
 
 	//handleNewSelection(numBins, rowSize, rowIndex);
-	
 
 	setFreqData(fftS, sampleRate);
 
@@ -362,6 +361,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		binMag[rowIndex] = audioProcessor.getBinMag();
 		audioProcessor.prepBuffers(fftS);
 		audioProcessor.zeroSelection(rowIndex);
+		audioProcessor.clearRingBuffer();
 		if (fftCounter != 0)
 		{
 			for (int i = 0; i < numBins; i++) {

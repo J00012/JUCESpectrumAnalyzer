@@ -48,6 +48,7 @@ public:
     void setInitialBlock();
     void setRowIndex(int plotIndex);
     void setFFTSize(int newFFTSize);
+    void clearRingBuffer();
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
     void processBinMag(std::vector<std::vector<float>>& binMagSet);
     int getStepSize() const;

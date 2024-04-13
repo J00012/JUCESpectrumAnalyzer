@@ -162,10 +162,8 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported(const BusesLayout
 #endif
 
 void FFTSpectrumAnalyzerAudioProcessor::zeroSelection(int selectionIndex) {
-  /*  for (int i = 0; i < binMagSize; i++) {
-        binMag[selectionIndex][i] = 0;
-    }*/
     std::fill(binMag[selectionIndex].begin(), binMag[selectionIndex].end(), 0.0f);
+    fftCounter = 0;
 }
 
 //based on index value
@@ -267,6 +265,10 @@ void FFTSpectrumAnalyzerAudioProcessor::setInitialBlock() {
 void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
 {
     procBlockCalled = false;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::clearRingBuffer() {
+    ringBuffer.clear();
 }
 
 bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
