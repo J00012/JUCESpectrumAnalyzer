@@ -33,6 +33,8 @@ public:
     //void mouseMove(const juce::MouseEvent& event) override;
     void setFreqData(int fftData, int sampleRate);
     void setWindowFunction();
+    void setBlockSize();
+    void setAxisType();
     std::string floatToStringPrecision(float f, int p);
 
 private:
@@ -80,34 +82,36 @@ private:
     juce::ToggleButton toggleButtonPlot2;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
-    static float xMinPrev;
-    static float xMin;
-    static float xMaxPrev;
-    static float xMax;
-    static float yMinPrev;
-    static float yMin;
-    static float yMaxPrev;
-    static float yMax;
+    static int xMinPrev;
+    static int xMin;
+    static int xMaxPrev;
+    static int xMax;
+    static int yMinPrev;
+    static int yMin;
+    static int yMaxPrev;
+    static int yMax;
     static int plotIndexSelection;
 
     static int windowWidth;
     static int windowHeight;
     static int windowMaxWidth;
     static int windowMaxHeight;
-	static int fftS;
-    //static int fftSize;
+    static int fftS;
+    static int fftSize;
     static int numBins;
     static int sampleRate;
     static int maxFreq;
     static int numFreqBins;
     static int rowIndex;
     static int rowSize;
+    static int fftCounter;
 
     static int count;
     static int countPrev;
 
-    int tickBuffer = 5;
-    
+    static bool setToLog;
+    static bool newSelection;
+
     static std::vector<float> indexToFreqMap;
     static std::vector<std::vector<float>> binMag;
 
