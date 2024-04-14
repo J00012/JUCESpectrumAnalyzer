@@ -17,6 +17,7 @@
 //int FFTSpectrumAnalyzerAudioProcessorEditor::graphNorth = 0;
 //int FFTSpectrumAnalyzerAudioProcessorEditor::graphSouth = 0;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
 //bool FFTSpectrumAnalyzerAudioProcessorEditor::isGraph = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
@@ -462,7 +463,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				}
 			}
 		}
-	}
+	
 
 		g.setColour(juce::Colours::lightgreen); 
 		g.strokePath(plot2, juce::PathStrokeType(3.0f));
@@ -602,6 +603,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// ** END OF NEW STUFF ** //
 }
+
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
