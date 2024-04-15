@@ -380,18 +380,31 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Path zeroTick;
 
 	//** graph scaling variables **//
-	float border_xBuffer = getWidth() * 0.295;
+	float border_buffer = 0.295;
+	float height_buffer = 240;
+	float xbuffer_graphOffset = 2;
+	float ybuffer_graphOffset = 12;
+	float legnthYAxisAdjustment = .95;
+	float xAxisScale = 0.702;
+	int markerWidth = 5;
+	int zeroMarkerWidth = 15;
+	int origin = 0;
+	int widthBorderBuffer = 0.5;
+	int yStartXYAxisBuffer = 1;
+	int xStartXYAxisBuffer = 3;
+	int rectangleCornerSize = 3;
+
+	float border_xBuffer = getWidth() * border_buffer;
 	float border_yBuffer = y_componentOffset;
 	float widthBorder = getWidth() - x_componentOffset;
-	float heightBorder = getHeight() - 240;
-	float xBuffer = border_xBuffer + 2;
-	float yBuffer = border_yBuffer + 12;
+	float heightBorder = getHeight() - height_buffer;
+	float xBuffer = border_xBuffer + xbuffer_graphOffset;
+	float yBuffer = border_yBuffer + ybuffer_graphOffset;
 	float lengthXAxis = widthBorder;
-	float lengthYAxis = heightBorder * .95;
-	float yStartXYAxis = yBuffer + lengthYAxis - 1;
-	float xStartXYAxis = xBuffer - 3;
+	float lengthYAxis = heightBorder * legnthYAxisAdjustment;
+	float yStartXYAxis = yBuffer + lengthYAxis - yStartXYAxisBuffer;
+	float xStartXYAxis = xBuffer - xStartXYAxisBuffer;
 	float yStartPlot = (yBuffer + lengthYAxis) / 2;
-	float xAxisScale = 0.702;
 
 	//used for cursor
 	/*graphWest = border_xBuffer;
@@ -472,7 +485,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	}
 	else {
 		g.setColour(juce::Colours::black);
-		g.fillRoundedRectangle(border_xBuffer, border_yBuffer, widthBorder, heightBorder, 3);
+		g.fillRoundedRectangle(border_xBuffer, border_yBuffer, widthBorder, heightBorder, rectangleCornerSize);
 		g.setColour(juce::Colours::white);
 		g.drawText("Not enough data selected", juce::Rectangle<int>(border_xBuffer, border_yBuffer, widthBorder, heightBorder), juce::Justification::centred, true);
 	}
@@ -483,26 +496,26 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// Plot X Axis Markers
 	for (int i = 1; i <= numXMarkers; i++) {
-		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
-		xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - markerWidth);
+		xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + markerWidth);
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
 
 	// Plot Y Axis Markers
 	for (int i = 1; i <= numYMarkers; i++) {
-		yAxisMarkersUp.startNewSubPath(xStartXYAxis - 5, yStartPlot + (scaleY * i) + yShift);
-		yAxisMarkersUp.lineTo(xStartXYAxis + 5, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-		yAxisMarkersDown.startNewSubPath(xStartXYAxis - 5, yStartPlot - (scaleY * i) + yShift);
-		yAxisMarkersDown.lineTo(xStartXYAxis + 5, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+		yAxisMarkersUp.startNewSubPath(xStartXYAxis - markerWidth, yStartPlot + (scaleY * i) + yShift);
+		yAxisMarkersUp.lineTo(xStartXYAxis + markerWidth, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+		yAxisMarkersDown.startNewSubPath(xStartXYAxis - markerWidth, yStartPlot - (scaleY * i) + yShift);
+		yAxisMarkersDown.lineTo(xStartXYAxis + markerWidth, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
 	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 
 	//Plot zero on Y-axis
-	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
-	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
+	zeroTick.startNewSubPath(xStartXYAxis - zeroMarkerWidth, yStartPlot + yShift);
+	zeroTick.lineTo(xStartXYAxis + zeroMarkerWidth, yStartPlot + yShift);
 	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
 
 	//** draw graph border **//
@@ -516,22 +529,22 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
 
 	//** draw boxes to hide out of bound plots **//
-	int x_LeftBoxOffset = 0;
-	int y_LeftBoxOffset = 0;
+	int x_LeftBoxOffset = origin;
+	int y_LeftBoxOffset = origin;
 	int width_LeftBox = border_xBuffer;
 	int height_LeftBox = getHeight();
 
-	int x_TopBoxOffset = 0;
-	int y_TopBoxOffset = 0;
+	int x_TopBoxOffset = origin;
+	int y_TopBoxOffset = origin;
 	int width_TopBox = getWidth();
 	int height_TopBox = border_yBuffer;
 
-	int x_RightBoxOffset = widthBorder + 0.5;
-	int y_RightBoxOffset = 0;
+	int x_RightBoxOffset = widthBorder + widthBorderBuffer;
+	int y_RightBoxOffset = origin;
 	int width_RightBox = getWidth();
 	int height_RightBox = getHeight();
 
-	int x_BottonBoxOffset = 0;
+	int x_BottonBoxOffset = origin;
 	int y_BottomBoxOffset = heightBorder;
 	int width_BottomBox = getWidth();
 	int height_BottomBox = getHeight();
@@ -550,11 +563,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	//** line to seperate left-side components and right-side components **//
 	g.setColour(juce::Colours::darkgrey);
-	g.fillRect(width_primaryCategoryLabel, 0, 1, windowMaxHeight);
+	g.fillRect(width_primaryCategoryLabel, origin, 1, windowMaxHeight);
 
 	//** white area of plot selection in IMPORT AUDIO**//
 	int yMargin_selectionBox = height_primaryCategoryLabel + yOffsetPrimary_secondaryLabel + height_secondaryLabel + yOffset_selectionBox;
 	int xMargin_checkboxFill = 16;
+	int checkboxFillWidth = xMargin_checkboxFill;
+	int checkboxFillHeight = xMargin_checkboxFill;
 	int yMargin_checkboxFill1 = 74;
 	int yMargin_checkboxFill2 = 120;
 
@@ -565,11 +580,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	// fill in checkboxes
 	if (isVisiblePlot1 == true) {
 		g.setColour(juce::Colours::dodgerblue);
-		g.fillRoundedRectangle(xMargin_checkboxFill, yMargin_checkboxFill1, 16, 16, 4);
+		g.fillRoundedRectangle(xMargin_checkboxFill, yMargin_checkboxFill1, checkboxFillWidth, checkboxFillHeight, 4);
 	}
 	if (isVisiblePlot2 == true) {
 		g.setColour(juce::Colours::dodgerblue);
-		g.fillRoundedRectangle(xMargin_checkboxFill, yMargin_checkboxFill2, 16, 16, 4);
+		g.fillRoundedRectangle(xMargin_checkboxFill, yMargin_checkboxFill2, checkboxFillWidth, checkboxFillHeight, 4);
 	}
 
 	// draw line to seperate plot selections
