@@ -35,6 +35,7 @@ std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferLeft = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft = { 0 };
 std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::binMag;
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::accumulationBuffer;
 
 juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessor::window(0, juce::dsp::WindowingFunction<float>::blackman);
 
@@ -199,6 +200,11 @@ void FFTSpectrumAnalyzerAudioProcessor::prepBuffers(int fftSize) {
     std::fill(windowBufferLeft.begin(), windowBufferLeft.end(), 0.0f);
 }
 
+void FFTSpectrumAnalyzerAudioProcessor::clearAccumulationBuffer() {
+    accumulationBuffer.clear();
+}
+
+
 void FFTSpectrumAnalyzerAudioProcessor::setRowIndex(int plotIndex) {
     rowIndex = plotIndex;
 }
@@ -232,30 +238,44 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
         auto totalNumOutputChannels = getTotalNumOutputChannels();
 
         auto* channelData = buffer.getWritePointer(channel);
-
-        ringBuffer.write(channelData, buffer.getNumSamples());  //fills the content of the object array with a given windowing method
-
-        while (ringBuffer.size() >= stepSize) {
-
-            std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
-            std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
-            std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
-
-            ringBuffer.read(bufferRight.data(), stepSize);
-            std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
-            windowBufferLeft = bufferLeft;
-            window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
-            window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
-            forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
-            fftCounter++;
-
-            for (int i = 0; i < numBins; i++) {
-                binMag[rowIndex][i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
-            }
+  
+        for (int i = 0; i < buffer.getNumSamples(); i++) {
+            accumulationBuffer.push_back(channelData[i]);
         }
+
+        //ringBuffer.write(channelData, buffer.getNumSamples());  //fills the content of the object array with a given windowing method
+
+        //while (ringBuffer.size() >= stepSize) {
+
+        //    std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
+        //    std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
+        //    std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
+
+        //    ringBuffer.read(bufferRight.data(), stepSize);
+        //    std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
+        //    windowBufferLeft = bufferLeft;
+        //    window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
+        //    window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
+        //    forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
+        //    fftCounter++;
+
+        //    for (int i = 0; i < numBins; i++) {
+        //        binMag[rowIndex][i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+        //    }
+        //}
         procBlockCalled = true;
         initialBlock = false;
     }
+}
+
+std::vector<float> FFTSpectrumAnalyzerAudioProcessor::getAccumulationBuffer() const
+{
+    return accumulationBuffer;
+}
+
+RingBuffer<float> FFTSpectrumAnalyzerAudioProcessor::getSampleBuffer() const
+{
+    return ringBuffer;
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::setInitialBlock() {
