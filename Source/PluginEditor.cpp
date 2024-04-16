@@ -207,18 +207,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	size.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	size.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
 	size.onChange = [this] { setBlockSize(); };
-
-	//addAndMakeVisible(cursorFunction);
-	//cursorFunction.setColour(juce::Label::backgroundColourId, juce::Colours::white);
-	//cursorFunction.setColour(juce::Label::textColourId, juce::Colours::black);
-	//cursorFunction.setEditable(false);
-
-	//addAndMakeVisible(peakFunction);
-	//peakFunction.setColour(juce::Label::backgroundColourId, juce::Colours::white);
-	//peakFunction.setColour(juce::Label::textColourId, juce::Colours::black);
-	//peakFunction.setEditable(false);
-
-
 	// new gui elements end
 
 	// buttons to select which of two graphs to plot
