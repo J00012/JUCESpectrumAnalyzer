@@ -30,7 +30,11 @@ public:
     void setVisibility(int plotId);
     void handleNewSelection(int numBins, int rowSize, int rowIndex);
 
-    //void mouseMove(const juce::MouseEvent& event) override;
+    void mouseMove(const juce::MouseEvent& event) override;
+    float findPeak();
+    float screenToGraph(float screenCoord);
+    float graphToScreen(int graphCoord);
+    float getYCoord(int plotNumber, bool log, int index);
     void setFreqData(int fftData, int sampleRate);
     void setWindowFunction();
     void setBlockSize();
@@ -42,6 +46,7 @@ private:
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
+    static bool isGraph;
 
     // gui elements start
     juce::Label gui_importAudio;
@@ -56,7 +61,9 @@ private:
     juce::Label gui_export;
     juce::TextButton gui_exportButton{ "Export .csv" };
     juce::Label cursorLabel;
+    juce::Label cursorPlot;
     juce::Label peakLabel;
+    juce::Label peakPlot;
     juce::Label windowLabel;
     juce::Label axisLabel;
     juce::Label sizeLabel;
@@ -65,11 +72,6 @@ private:
     juce::ComboBox size;
     // gui elements end
 
-    juce::Label cursorPlot1; //mouse
-    juce::Label cursorPlot2; //mouse
-    juce::Label cursorLabel0; //mouse
-    juce::Label cursorLabel1; //mouse
-    juce::Label cursorLabel2; //mouse
     juce::Label inputXmin;
     juce::Label inputXmax;
     juce::Label inputYmin;
@@ -91,6 +93,8 @@ private:
     static int yMaxPrev;
     static int yMax;
     static int plotIndexSelection;
+    static float cursorX;
+    static int cursorPeak;
 
     static int windowWidth;
     static int windowHeight;
