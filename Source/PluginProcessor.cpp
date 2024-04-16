@@ -19,7 +19,7 @@ int FFTSpectrumAnalyzerAudioProcessor::channel = 0;
 int FFTSpectrumAnalyzerAudioProcessor::rowIndex = 0;
 int FFTSpectrumAnalyzerAudioProcessor::rowSize = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftSize = 0;
-int FFTSpectrumAnalyzerAudioProcessor::stepSize = 0;
+int FFTSpectrumAnalyzerAudioProcessor::stepSize = 512;
 int FFTSpectrumAnalyzerAudioProcessor::numBins = 0;
 int FFTSpectrumAnalyzerAudioProcessor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
@@ -27,7 +27,7 @@ int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
 bool FFTSpectrumAnalyzerAudioProcessor::initialBlock = true;
 bool FFTSpectrumAnalyzerAudioProcessor::minBlockSize = true;
 
-juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessor::forwardFFT(0);
+//juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessor::forwardFFT(0);
 
 // Define static member variables
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferRight = { 0 };
@@ -215,7 +215,11 @@ void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {
     numBins = fftSize / 2 + 1;
     numFreqBins = fftSize / 2;
     fftDataSize = 2 * fftSize;
-    forwardFFT = juce::dsp::FFT(std::log2(fftSize));
+    //forwardFFT = juce::dsp::FFT(std::log2(fftSize));
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::setStepSize(int stepS) {
+    stepSize = stepS;
 }
 
 void FFTSpectrumAnalyzerAudioProcessor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {

@@ -62,9 +62,9 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::countPrev = 0;
 
 //Processor statics
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftSize = 1024;
-int FFTSpectrumAnalyzerAudioProcessorEditor::fftS = 1024;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numBins = 513;
 int FFTSpectrumAnalyzerAudioProcessorEditor::maxFreq = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::stepSize = 512;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftCounter = 0;
 
@@ -78,7 +78,7 @@ std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bufferLeft = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferLeft = { 0 };
-juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessorEditor::editFFT(0);
+//juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessorEditor::editFFT(0);
 
 juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessorEditor::editWindow(0, juce::dsp::WindowingFunction<float>::blackman);
 
@@ -95,9 +95,10 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 
 	sampleSelections.resize(2);
 	setPlotIndex(plotIndexSelection);
-	audioProcessor.zeroAllSelections(numBins, rowSize);
-	audioProcessor.prepBuffers(fftS);
-	binMag = audioProcessor.getBinSet();
+	setFreqData(1024);
+	//audioProcessor.zeroAllSelections(numBins, rowSize);
+	//audioProcessor.prepBuffers(fftS);
+	//binMag = audioProcessor.getBinSet();
 	zeroBuffers();
 
 	// new gui elements start
@@ -345,21 +346,17 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::white);
 
 	//PROCESSOR CLASS CODE!!!!!!!!!
-	rowSize = 2;
+	//rowSize = 2;
 
-	int sampleRate = audioProcessor.getBlockSampleRate();
-	setFreqData(fftS, sampleRate);
-	audioProcessor.setFFTSize(fftS);
+	
+	
+	//audioProcessor.setFFTSize(fftSize);
 
 	//handleNewSelection(numBins, rowSize, rowIndex);
 
 	juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
 	audioProcessor.setWindow(windowType);
 
-	//x variable for labeling
-	for (int i = 0; i < numBins; i++) {
-		indexToFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
-	}
 
 	//audioProcessor.zeroAllSelections(numBins, rowSize);
 	//audioProcessor.prepBuffers(fftSize);
@@ -379,6 +376,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				binMag[rowIndex][i] /= fftCounter;
 			}
 		}*/
+		//int sampleRate = audioProcessor.getBlockSampleRate();
+		audioProcessor.setStepSize(stepSize);                             //this needs to be changed when the size is changed
 		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
 		audioProcessor.clearAccumulationBuffer();
 		processBuffer();
@@ -622,7 +621,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 {
 	if (!isRunning && audioProcessor.getProcBlockCalled()) {
 		isRunning = true;
-		audioProcessor.resetProcBlockCalled();
+		//audioProcessor.resetProcBlockCalled();
 	}
 	else if (isRunning && !audioProcessor.getProcBlockCalled()) {
 		isRunning = false;
@@ -631,6 +630,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 		repaint();
 		//audioProcessor.resetScopeDataIndex();
 	}
+	audioProcessor.resetProcBlockCalled();
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex)
@@ -845,13 +845,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	gui_exportButton.setBounds(xMargin_exportButton, yMargin_exportButton, width_exportButton, height_exportButton);
 }
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData, int sampleRate) {
-	fftS = fftData;
-	numBins = fftS / 2 + 1;
-	maxFreq = sampleRate / 2;
-	numFreqBins = fftS / 2;
-	editFFT = juce::dsp::FFT(std::log2(fftS));
-	indexToFreqMap.resize(numBins);
+void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData) {
+	numBins = fftSize / 2 + 1;
+	numFreqBins = fftSize / 2;
+	stepSize = fftSize / 2;
+	//indexToFreqMap.resize(numBins);
 	binMag.resize(rowSize, std::vector<float>(numBins, 0));
 }
 
@@ -993,7 +991,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setWindowFunction() {
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setBlockSize() {
 	auto selection = size.getText();
-	fftS = selection.getIntValue();
+	fftSize = selection.getIntValue();
 	repaint();
 }
 
@@ -1015,24 +1013,34 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setWindow(juce::dsp::WindowingFunc
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 
-	int bufferShift= 0;
-
 	zeroBuffers();
 
-	while(bufferShift <=sampleSelections[rowIndex].size()-numFreqBins){
+	int bufferShift = 0;
+
+	juce::dsp::FFT forwardFFT(std::log2(fftSize));
+
+	int sampleRate = audioProcessor.getBlockSampleRate();
+
+	maxFreq = sampleRate / 2;
+	//x variable for labeling
+	for (int i = 0; i < numBins; i++) {
+		indexToFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
+	}
+
+	while(bufferShift <=sampleSelections[rowIndex].size()-stepSize){
 	//while (buffSize >= numFreqBins) {
 
-		std::copy(bufferLeft.begin(), bufferLeft.begin() + numFreqBins, bufferLeft.begin() + numFreqBins);
-		std::copy(bufferRight.begin() + numFreqBins, bufferRight.end(), bufferLeft.begin());
-		std::copy(bufferRight.begin(), bufferRight.begin() + numFreqBins, bufferRight.begin() + numFreqBins);
+		std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
+		std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
+		std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
 
-		std::copy(sampleSelections[rowIndex].begin()+ bufferShift,sampleSelections[rowIndex].begin()+(bufferShift+numFreqBins),bufferRight.begin());
+		std::copy(sampleSelections[rowIndex].begin()+ bufferShift,sampleSelections[rowIndex].begin()+(bufferShift+ stepSize),bufferRight.begin());
 		//buffer.read(bufferRight.data(), numFreqBins);
 		std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
 		windowBufferLeft = bufferLeft;
 		editWindow.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
 		editWindow.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
-		editFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
+		forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
 		fftCounter++;
 
 		for (int i = 0; i < numBins; i++) {
@@ -1049,6 +1057,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 }
 
 
+
+
 void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 	bufferLeft.resize(fftSize);
 	std::fill(bufferLeft.begin(), bufferLeft.end(), 0.0f);
@@ -1060,6 +1070,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 	std::fill(windowBufferLeft.begin(), windowBufferLeft.end(), 0.0f);
 	binMag[rowIndex].resize(numBins);
 	std::fill(binMag[rowIndex].begin(), binMag[rowIndex].end(), 0.0f);
+	indexToFreqMap.resize(numBins);
+	std::fill(indexToFreqMap.begin(), indexToFreqMap.end(), 0.0f);
 	fftCounter = 0;
 }
 

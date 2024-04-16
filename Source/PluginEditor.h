@@ -38,7 +38,7 @@ public:
     void zeroBinSelection();
 
     //void mouseMove(const juce::MouseEvent& event) override;
-    void setFreqData(int fftData, int sampleRate);
+    void setFreqData(int fftData);
     void setWindowFunction();
     void setBlockSize();
     void setAxisType();
@@ -103,15 +103,15 @@ private:
     static int windowHeight;
     static int windowMaxWidth;
     static int windowMaxHeight;
-    static int fftS;
     static int fftSize;
     static int numBins;
-    static int sampleRate;
+   // static int sampleRate;
     static int maxFreq;
     static int numFreqBins;
     static int rowIndex;
     static int rowSize;
     static int fftCounter;
+    static int stepSize;
 
     static int count;
     static int countPrev;
@@ -120,7 +120,7 @@ private:
     static bool newSelection;
 
     //ProcessBlock 
-    static juce::dsp::FFT editFFT;
+    //static juce::dsp::FFT editFFT;
     static juce::dsp::WindowingFunction<float> editWindow;
     static std::vector<float> bufferRight;
     static std::vector<float> bufferLeft;

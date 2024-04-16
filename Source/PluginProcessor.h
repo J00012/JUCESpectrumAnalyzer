@@ -45,6 +45,7 @@ public:
     void clearAllSelections();
     void prepSelection(int binMagSize, int selectionSize, int selectionIndex);
     void prepBuffers(int fftSize);
+    void setStepSize(int stepS);
     void setInitialBlock();
     void setRowIndex(int plotIndex);
     void setFFTSize(int newFFTSize);
@@ -88,7 +89,7 @@ public:
     static bool minBlockSize;
 
 private:
-    static juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
+    //static juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
 
     //declare the ringBuffer and set its size to 10000
     RingBuffer<float> ringBuffer{ 10000 };
