@@ -10,7 +10,6 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "RingBuffer.h"
 
 //==============================================================================
 class FFTSpectrumAnalyzerAudioProcessorEditor : public juce::AudioProcessorEditor, juce::Timer
@@ -37,7 +36,11 @@ public:
     void zeroBuffers();
     void zeroBinSelection();
 
-    //void mouseMove(const juce::MouseEvent& event) override;
+    void mouseMove(const juce::MouseEvent& event) override;
+    float findPeak();
+    float screenToGraph(float screenCoord);
+    float graphToScreen(int graphCoord);
+    float getYCoord(int plotNumber, bool log, int index);
     void setFreqData(int fftData);
     void setWindowFunction();
     void setBlockSize();
@@ -49,6 +52,9 @@ private:
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
+    static bool isGraph;
+    juce::Label cursorPlot;
+    juce::Label peakPlot;
 
     // gui elements start
     juce::Label gui_importAudio;
@@ -72,11 +78,6 @@ private:
     juce::ComboBox size;
     // gui elements end
 
-    juce::Label cursorPlot1; //mouse
-    juce::Label cursorPlot2; //mouse
-    juce::Label cursorLabel0; //mouse
-    juce::Label cursorLabel1; //mouse
-    juce::Label cursorLabel2; //mouse
     juce::Label inputXmin;
     juce::Label inputXmax;
     juce::Label inputYmin;
@@ -98,6 +99,8 @@ private:
     static int yMaxPrev;
     static int yMax;
     static int plotIndexSelection;
+    static float cursorX;
+    static int cursorPeak;
 
     static int windowWidth;
     static int windowHeight;
