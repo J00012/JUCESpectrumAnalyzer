@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "RingBuffer.h"
 
 //==============================================================================
 class FFTSpectrumAnalyzerAudioProcessorEditor : public juce::AudioProcessorEditor, juce::Timer
@@ -29,6 +30,12 @@ public:
     void updateToggleState(int plotId);
     void setVisibility(int plotId);
     void handleNewSelection(int numBins, int rowSize, int rowIndex);
+    void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
+
+    //processBlock integration
+    void processBuffer();
+    void zeroBuffers();
+    void zeroBinSelection();
 
     //void mouseMove(const juce::MouseEvent& event) override;
     void setFreqData(int fftData, int sampleRate);
@@ -112,8 +119,17 @@ private:
     static bool setToLog;
     static bool newSelection;
 
+    //ProcessBlock 
+    static juce::dsp::FFT editFFT;
+    static juce::dsp::WindowingFunction<float> editWindow;
+    static std::vector<float> bufferRight;
+    static std::vector<float> bufferLeft;
+    static std::vector<float> windowBufferRight;
+    static std::vector<float> windowBufferLeft;
     static std::vector<float> indexToFreqMap;
     static std::vector<std::vector<float>> binMag;
+    static std::vector<std::vector<float>> sampleSelections;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
 };

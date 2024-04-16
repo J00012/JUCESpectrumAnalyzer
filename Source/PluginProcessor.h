@@ -54,6 +54,9 @@ public:
     int getStepSize() const;
     int getFFTCounter() const;
     int getBlockSampleRate() const;
+    void clearAccumulationBuffer();
+    std::vector<float> getAccumulationBuffer() const;
+    RingBuffer<float> getSampleBuffer() const;
     std::vector<float> getBinMag() const;
     std::vector<std::vector<float>> getBinSet() const;
 
@@ -114,6 +117,8 @@ private:
     static std::vector<float> windowBufferRight;
     static std::vector<float> windowBufferLeft;
     static std::vector<std::vector<float>> binMag;
+
+    static std::vector<float> accumulationBuffer;
 
     bool procBlockCalled = false;
 
