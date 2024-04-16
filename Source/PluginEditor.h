@@ -104,11 +104,13 @@ private:
     static int numFreqBins;
     static int rowIndex;
     static int rowSize;
+    static int fftCounter;
 
     static int count;
     static int countPrev;
 
     static bool setToLog;
+    static bool newSelection;
 
     static std::vector<float> indexToFreqMap;
     static std::vector<std::vector<float>> binMag;
