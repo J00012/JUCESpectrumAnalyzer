@@ -21,7 +21,6 @@ public:
     //==============================================================================
 
     void paint(juce::Graphics&) override;
-    void drawFrame(juce::Graphics& g);
     void resized() override;
     void timerCallback() override;
     void getBounds();
@@ -108,7 +107,7 @@ private:
     static int windowMaxHeight;
     static int fftSize;
     static int numBins;
-   // static int sampleRate;
+    // static int sampleRate;
     static int maxFreq;
     static int numFreqBins;
     static int rowIndex;

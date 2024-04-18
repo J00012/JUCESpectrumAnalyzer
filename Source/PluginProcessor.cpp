@@ -18,7 +18,7 @@ int FFTSpectrumAnalyzerAudioProcessor::fftCounter = 0;
 int FFTSpectrumAnalyzerAudioProcessor::channel = 0;
 int FFTSpectrumAnalyzerAudioProcessor::rowIndex = 0;
 int FFTSpectrumAnalyzerAudioProcessor::rowSize = 0;
-int FFTSpectrumAnalyzerAudioProcessor::fftSize = 0;
+int FFTSpectrumAnalyzerAudioProcessor::fftSize = 1024;
 int FFTSpectrumAnalyzerAudioProcessor::stepSize = 512;
 int FFTSpectrumAnalyzerAudioProcessor::numBins = 0;
 int FFTSpectrumAnalyzerAudioProcessor::numFreqBins = 0;
@@ -242,7 +242,7 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
         auto totalNumOutputChannels = getTotalNumOutputChannels();
 
         auto* channelData = buffer.getWritePointer(channel);
-  
+
         for (int i = 0; i < buffer.getNumSamples(); i++) {
             accumulationBuffer.push_back(channelData[i]);
         }
@@ -275,6 +275,10 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::getAccumulationBuffer() const
 {
     return accumulationBuffer;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::setInitialAccBuffer() const {
+    accumulationBuffer.resize(fftSize, 0.0f);
 }
 
 RingBuffer<float> FFTSpectrumAnalyzerAudioProcessor::getSampleBuffer() const

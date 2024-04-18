@@ -47,6 +47,7 @@ public:
     void prepBuffers(int fftSize);
     void setStepSize(int stepS);
     void setInitialBlock();
+    void setInitialAccBuffer() const;
     void setRowIndex(int plotIndex);
     void setFFTSize(int newFFTSize);
     void clearRingBuffer();
