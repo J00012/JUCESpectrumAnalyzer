@@ -15,6 +15,7 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::cursorX;
 int FFTSpectrumAnalyzerAudioProcessorEditor::cursorPeak = 0;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::initialWindow = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isGraph = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
@@ -318,11 +319,46 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
 
+	juce::Path plot1;
+	juce::Path plot2;
+	juce::Path xAxis;
+	juce::Path xAxisMarkers;
+	juce::Path yAxis;
+	juce::Path yAxisMarkersUp;
+	juce::Path yAxisMarkersDown;
+	juce::Path zeroTick;
+
+	//** graph scaling variables **//
+	float border_xBuffer = getWidth() * 0.295;
+	float border_yBuffer = y_componentOffset;
+	float widthBorder = getWidth() - x_componentOffset;
+	float heightBorder = getHeight() - 240;
+	float xBuffer = border_xBuffer + 2;
+	float yBuffer = border_yBuffer + 12;
+	float lengthXAxis = widthBorder;
+	float lengthYAxis = heightBorder * .95;
+	float yStartXYAxis = yBuffer + lengthYAxis - 1;
+	float xStartXYAxis = xBuffer - 3;
+	float yStartPlot = (yBuffer + lengthYAxis) / 2;
+	float xAxisScale = 0.702;
+
+	float xDiff = xMax - xMin;
+	float yDiff = yMax - yMin;
+
+	float scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
+	float xShift = -xMin * scaleX;
+
+	float scaleY = -lengthYAxis / yDiff;  // Scaling Y increments; pixels shown per sample
+	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
+
+	float plotYShift = yStartPlot + yShift;
+
+
 	//PROCESSOR CLASS CODE!!!!!!!!!
 	//rowSize = 2;
 
-	
-	
+
+
 	//audioProcessor.setFFTSize(fftSize);
 
 	//handleNewSelection(numBins, rowSize, rowIndex);
@@ -356,120 +392,122 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		processBuffer();
 		newSelection = false;
 	}
+	if (initialWindow) {
 
-	juce::Path plot1;
-	juce::Path plot2;
-	juce::Path xAxis;
-	juce::Path xAxisMarkers;
-	juce::Path yAxis;
-	juce::Path yAxisMarkersUp;
-	juce::Path yAxisMarkersDown;
-	juce::Path zeroTick;
+		//juce::Path plot1;
+		//juce::Path plot2;
+		//juce::Path xAxis;
+		//juce::Path xAxisMarkers;
+		//juce::Path yAxis;
+		//juce::Path yAxisMarkersUp;
+		//juce::Path yAxisMarkersDown;
+		//juce::Path zeroTick;
 
-	//** graph scaling variables **//
-	float border_xBuffer = getWidth() * 0.295;
-	float border_yBuffer = y_componentOffset;
-	float widthBorder = getWidth() - x_componentOffset;
-	float heightBorder = getHeight() - 240;
-	float xBuffer = border_xBuffer + 2;
-	float yBuffer = border_yBuffer + 12;
-	float lengthXAxis = widthBorder;
-	float lengthYAxis = heightBorder * .95;
-	float yStartXYAxis = yBuffer + lengthYAxis - 1;
-	float xStartXYAxis = xBuffer - 3;
-	float yStartPlot = (yBuffer + lengthYAxis) / 2;
-	float xAxisScale = 0.702;
+		////** graph scaling variables **//
+		//float border_xBuffer = getWidth() * 0.295;
+		//float border_yBuffer = y_componentOffset;
+		//float widthBorder = getWidth() - x_componentOffset;
+		//float heightBorder = getHeight() - 240;
+		//float xBuffer = border_xBuffer + 2;
+		//float yBuffer = border_yBuffer + 12;
+		//float lengthXAxis = widthBorder;
+		//float lengthYAxis = heightBorder * .95;
+		//float yStartXYAxis = yBuffer + lengthYAxis - 1;
+		//float xStartXYAxis = xBuffer - 3;
+		//float yStartPlot = (yBuffer + lengthYAxis) / 2;
+		//float xAxisScale = 0.702;
 
-	//used for cursor
-	/*graphWest = border_xBuffer;
-	graphEast = widthBorder;
-	graphNorth = border_yBuffer;
-	graphSouth = heightBorder;*/
+		//used for cursor
+		/*graphWest = border_xBuffer;
+		graphEast = widthBorder;
+		graphNorth = border_yBuffer;
+		graphSouth = heightBorder;*/
 
-	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
+		int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
-	int zoom_xMax;
+		int zoom_xMax;
 
-	float xDiff = xMax - xMin;
-	if (xDiff <= 0)  // handles divide by zero errors 
-	{
-		xMax = xMaxPrev;
-		xMin = xMinPrev;
-		xDiff = xMaxPrev - xMinPrev;
-		inputXmin.setText(std::to_string(xMinPrev), juce::dontSendNotification);
-		inputXmax.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
-	}
-	else
-	{
-		xMaxPrev = xMax;
-		xMinPrev = xMin;
-	}
-	float scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
-	float xShift = -xMin * scaleX;
+		//float xDiff = xMax - xMin;
+		if (xDiff <= 0)  // handles divide by zero errors 
+		{
+			xMax = xMaxPrev;
+			xMin = xMinPrev;
+			xDiff = xMaxPrev - xMinPrev;
+			inputXmin.setText(std::to_string(xMinPrev), juce::dontSendNotification);
+			inputXmax.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
+		}
+		else
+		{
+			xMaxPrev = xMax;
+			xMinPrev = xMin;
+		}
+		//float scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
+		//float xShift = -xMin * scaleX;
 
-	float yDiff = yMax - yMin;
-	if (yDiff <= 0)  // handles divide by zero errors
-	{
-		yMax = yMaxPrev;
-		yMin = yMinPrev;
-		yDiff = yMaxPrev - yMinPrev;
-		inputYmin.setText(std::to_string(yMinPrev), juce::dontSendNotification);
-		inputYmax.setText(std::to_string(yMaxPrev), juce::dontSendNotification);
-	}
-	else
-	{
-		yMaxPrev = yMax;
-		yMinPrev = yMin;
-	}
-	float scaleY = -lengthYAxis / yDiff;  // Scaling Y increments; pixels shown per sample
-	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
+		//float yDiff = yMax - yMin;
+		if (yDiff <= 0)  // handles divide by zero errors
+		{
+			yMax = yMaxPrev;
+			yMin = yMinPrev;
+			yDiff = yMaxPrev - yMinPrev;
+			inputYmin.setText(std::to_string(yMinPrev), juce::dontSendNotification);
+			inputYmax.setText(std::to_string(yMaxPrev), juce::dontSendNotification);
+		}
+		else
+		{
+			yMaxPrev = yMax;
+			yMinPrev = yMin;
+		}
+		//float scaleY = -lengthYAxis / yDiff;  // Scaling Y increments; pixels shown per sample
+		//float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
 
-	float plotYShift = yStartPlot + yShift;
+		//float plotYShift = yStartPlot + yShift;
 
-	// Graph plots
-	int logScale = 40;
-	if (audioProcessor.minBlockSize) {
-		if (setToLog == true) {
-			xMax = std::log10(xMax);
-			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
-			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift); 
-			for (int i = 1; i < indexToFreqMap.size(); i++)
-			{ 
-				if (isVisiblePlot2 == true) {
-					plot2.lineTo(std::log10(indexToFreqMap[i]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
-				}
-				if (isVisiblePlot1 == true) {
-					plot1.lineTo(std::log10(indexToFreqMap[i])* xAxisScale * scaleX + xStartXYAxis + xShift, logScale* std::log10(binMag[0][i])* scaleY + plotYShift);
+		// Graph plots
+		int logScale = 40;
+		if (audioProcessor.minBlockSize) {
+			if (setToLog == true) {
+				xMax = std::log10(xMax);
+				plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
+				plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
+				for (int i = 1; i < indexToFreqMap.size(); i++)
+				{
+					if (isVisiblePlot2 == true) {
+						plot2.lineTo(std::log10(indexToFreqMap[i]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
+					}
+					if (isVisiblePlot1 == true) {
+						plot1.lineTo(std::log10(indexToFreqMap[i]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[0][i]) * scaleY + plotYShift);
+					}
 				}
 			}
+			else {
+				xMax = maxFreq / 5;
+				plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
+				plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
+				for (int i = 1; i < indexToFreqMap.size(); i++)
+				{
+					if (isVisiblePlot2 == true) {
+						plot2.lineTo(indexToFreqMap[i] * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
+					}
+					if (isVisiblePlot1 == true) {
+						plot1.lineTo(indexToFreqMap[i] * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[0][i]) * scaleY + plotYShift);
+					}
+				}
+			}
+
+			g.setColour(juce::Colours::lightgreen);
+			g.strokePath(plot2, juce::PathStrokeType(3.0f));
+			g.setColour(juce::Colours::cornflowerblue);
+			g.strokePath(plot1, juce::PathStrokeType(3.0f));
 		}
 		else {
-			xMax = maxFreq / 5;
-			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
-			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
-			for (int i = 1; i < indexToFreqMap.size(); i++)
-			{
-				if (isVisiblePlot2 == true) {
-					plot2.lineTo(indexToFreqMap[i] * xAxisScale* scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i])* scaleY + plotYShift);
-				}
-				if (isVisiblePlot1 == true) {
-					plot1.lineTo(indexToFreqMap[i] * xAxisScale* scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[0][i])* scaleY + plotYShift);
-				}
-			}
+			g.setColour(juce::Colours::black);
+			g.fillRoundedRectangle(border_xBuffer, border_yBuffer, widthBorder, heightBorder, 3);
+			g.setColour(juce::Colours::white);
+			g.drawText("Not enough data selected", juce::Rectangle<int>(border_xBuffer, border_yBuffer, widthBorder, heightBorder), juce::Justification::centred, true);
 		}
-
-		g.setColour(juce::Colours::lightgreen); 
-		g.strokePath(plot2, juce::PathStrokeType(3.0f));
-		g.setColour(juce::Colours::cornflowerblue);
-		g.strokePath(plot1, juce::PathStrokeType(3.0f));
+		initialWindow = false;
 	}
-	else {
-		g.setColour(juce::Colours::black);
-		g.fillRoundedRectangle(border_xBuffer, border_yBuffer, widthBorder, heightBorder, 3);
-		g.setColour(juce::Colours::white);
-		g.drawText("Not enough data selected", juce::Rectangle<int>(border_xBuffer, border_yBuffer, widthBorder, heightBorder), juce::Justification::centred, true);
-	}
-
 	// Axis variables
 	//int numXMarkers = zoom_xMax 
 	int numXMarkers = xDiff;
