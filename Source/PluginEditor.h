@@ -120,7 +120,7 @@ private:
 
     static bool setToLog;
     static bool newSelection;
-    static bool initialWindow;
+    static bool displayError;
 
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;

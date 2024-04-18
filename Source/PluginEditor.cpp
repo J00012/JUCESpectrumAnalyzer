@@ -355,6 +355,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		audioProcessor.clearAccumulationBuffer();
 		processBuffer();
 		newSelection = false;
+		repaint();
 	}
 
 	juce::Path plot1;

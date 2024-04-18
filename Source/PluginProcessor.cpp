@@ -25,7 +25,7 @@ int FFTSpectrumAnalyzerAudioProcessor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
 
 bool FFTSpectrumAnalyzerAudioProcessor::initialBlock = true;
-bool FFTSpectrumAnalyzerAudioProcessor::minBlockSize = true;
+bool FFTSpectrumAnalyzerAudioProcessor::minBlockSize = false;
 
 //juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessor::forwardFFT(0);
 
