@@ -18,14 +18,14 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isGraph = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
-int FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 8000;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -90;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 8000;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -90;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
@@ -855,10 +855,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData) {
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 {
-	int minVal = -1000;
-	int maxVal = 24000;
+	float minVal = -1000;
+	float maxVal = 24000;
 	juce::String temp = inputXmin.getText(false);
-	int val = std::atoi(temp.toStdString().c_str());
+	float val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
 		xMin = val;
@@ -866,7 +866,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	else { inputXmin.setText(std::to_string(xMin), juce::dontSendNotification); }
 
 	temp = inputXmax.getText(false);
-	val = std::atoi(temp.toStdString().c_str());
+	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
 		xMax = val;
@@ -874,7 +874,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	else { inputXmax.setText(std::to_string(xMax), juce::dontSendNotification); }
 
 	temp = inputYmin.getText(false);
-	val = std::atoi(temp.toStdString().c_str());
+	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
 		yMin = val;
@@ -882,7 +882,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	else { inputYmin.setText(std::to_string(yMin), juce::dontSendNotification); }
 
 	temp = inputYmax.getText(false);
-	val = std::atoi(temp.toStdString().c_str());
+	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
 		yMax = val;
