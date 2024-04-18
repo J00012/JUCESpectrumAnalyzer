@@ -276,10 +276,10 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
 
-	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
-	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
-	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
-	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
+	inputXmin.setText(std::to_string((int)xMin), juce::dontSendNotification);
+	inputXmax.setText(std::to_string((int)xMax), juce::dontSendNotification);
+	inputYmin.setText(std::to_string((int)yMin), juce::dontSendNotification);
+	inputYmax.setText(std::to_string((int)yMax), juce::dontSendNotification);
 
 	labelPlot1.setText("Plot 1", juce::dontSendNotification);
 	labelPlot1.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
@@ -433,8 +433,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			xMax = xMaxPrev;
 			xMin = xMinPrev;
 			xDiff = xMaxPrev - xMinPrev;
-			inputXmin.setText(std::to_string(xMinPrev), juce::dontSendNotification);
-			inputXmax.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
+			inputXmin.setText(std::to_string((int)xMinPrev), juce::dontSendNotification);
+			inputXmax.setText(std::to_string((int)xMaxPrev), juce::dontSendNotification);
 		}
 		else
 		{
@@ -450,8 +450,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			yMax = yMaxPrev;
 			yMin = yMinPrev;
 			yDiff = yMaxPrev - yMinPrev;
-			inputYmin.setText(std::to_string(yMinPrev), juce::dontSendNotification);
-			inputYmax.setText(std::to_string(yMaxPrev), juce::dontSendNotification);
+			inputYmin.setText(std::to_string((int)yMinPrev), juce::dontSendNotification);
+			inputYmax.setText(std::to_string((int)yMaxPrev), juce::dontSendNotification);
 		}
 		else
 		{
@@ -901,7 +901,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		xMin = val;
 	}
-	else { inputXmin.setText(std::to_string(xMin), juce::dontSendNotification); }
+	else { inputXmin.setText(std::to_string((int)xMin), juce::dontSendNotification); }
 
 	temp = inputXmax.getText(false);
 	val = std::atof(temp.toStdString().c_str());
@@ -909,7 +909,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		xMax = val;
 	}
-	else { inputXmax.setText(std::to_string(xMax), juce::dontSendNotification); }
+	else { inputXmax.setText(std::to_string((int)xMax), juce::dontSendNotification); }
 
 	temp = inputYmin.getText(false);
 	val = std::atof(temp.toStdString().c_str());
@@ -917,7 +917,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		yMin = val;
 	}
-	else { inputYmin.setText(std::to_string(yMin), juce::dontSendNotification); }
+	else { inputYmin.setText(std::to_string((int)yMin), juce::dontSendNotification); }
 
 	temp = inputYmax.getText(false);
 	val = std::atof(temp.toStdString().c_str());
@@ -925,7 +925,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	{
 		yMax = val;
 	}
-	else { inputYmax.setText(std::to_string(yMax), juce::dontSendNotification); }
+	else { inputYmax.setText(std::to_string((int)yMax), juce::dontSendNotification); }
 	repaint();
 }
 
