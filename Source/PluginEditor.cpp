@@ -388,6 +388,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
+	int zoom_xMax;
+
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors 
 	{
@@ -428,10 +430,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	int logScale = 40;
 	if (audioProcessor.minBlockSize) {
 		if (setToLog == true) {
-			xMax = std::log10(maxFreq);
+			xMax = std::log10(xMax);
 			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
 			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift); 
-			for (int i = 1; i <= sampleSize; i++)
+			for (int i = 1; i < indexToFreqMap.size(); i++)
 			{ 
 				if (isVisiblePlot2 == true) {
 					plot2.lineTo(std::log10(indexToFreqMap[i]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
@@ -445,7 +447,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			xMax = maxFreq / 5;
 			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
 			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
-			for (int i = 1; i <= sampleSize; i++)
+			for (int i = 1; i < indexToFreqMap.size(); i++)
 			{
 				if (isVisiblePlot2 == true) {
 					plot2.lineTo(indexToFreqMap[i] * xAxisScale* scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i])* scaleY + plotYShift);
@@ -469,6 +471,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	}
 
 	// Axis variables
+	//int numXMarkers = zoom_xMax 
 	int numXMarkers = xDiff;
 	int numYMarkers = yDiff;
 
@@ -1055,9 +1058,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 		}
 	}
 }
-
-
-
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 	bufferLeft.resize(fftSize);
