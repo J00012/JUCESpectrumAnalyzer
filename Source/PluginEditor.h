@@ -47,22 +47,50 @@ public:
     std::string floatToStringPrecision(float f, int p);
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
     static bool isGraph;
-    juce::Label cursorPlot;
-    juce::Label peakPlot;
+
+    static int fftSize;
+    static int numBins;
+    // static int sampleRate;
+    static int maxFreq;
+    static int numFreqBins;
+    static int rowIndex;
+    static int rowSize;
+    static int fftCounter;
+    static int stepSize;
+
+    static int amountOfPlots;
+    static int prevAmountOfPlots;
+
+    static bool setToLog;
+    static bool newSelection;
+    static bool displayError;
+
+    //ProcessBlock 
+    //static juce::dsp::FFT editFFT;
+    static juce::dsp::WindowingFunction<float> editWindow;
+    static std::vector<float> bufferRight;
+    static std::vector<float> bufferLeft;
+    static std::vector<float> windowBufferRight;
+    static std::vector<float> windowBufferLeft;
+    static std::vector<float> indexToFreqMap;
+    static std::vector<std::vector<float>> binMag;
+    static std::vector<std::vector<float>> sampleSelections;
+
+
 
     // gui elements start
-    juce::Label gui_importAudio;
-    juce::Label gui_selectTrace;
-    juce::Label gui_zoom;
-    juce::Label gui_upper;
-    juce::Label gui_lower;
-    juce::Label gui_xUpper;
-    juce::Label gui_yUpper;
+    juce::Label labelCursorPlot;
+    juce::Label labelPeakPlot;
+    juce::Label labelImportAudio;
+    juce::Label labelSelectTrace;
+    juce::Label labelZoom;
+    juce::Label LabelUpperBounds;
+    juce::Label labelLowerBounds;
+    juce::Label labelXMax;
+    juce::Label labelYMax;
     juce::Label gui_xLower;
     juce::Label gui_yLower;
     juce::Label gui_export;
@@ -101,37 +129,52 @@ private:
     static float cursorX;
     static int cursorPeak;
 
-    static int windowWidth;
-    static int windowHeight;
-    static int windowMaxWidth;
-    static int windowMaxHeight;
-    static int fftSize;
-    static int numBins;
-    // static int sampleRate;
-    static int maxFreq;
-    static int numFreqBins;
-    static int rowIndex;
-    static int rowSize;
-    static int fftCounter;
-    static int stepSize;
+    // height and width for primary category labels (Import Audio, Zoom, Export, etc.) 
+    int widthPrimaryCategoryLabel = 275;
+    int heightPrimaryCategoryLabel = 25;
+    // height and width for secondary labels ("Selected Traces", Upper/Lower, etc.)
+    int width_secondaryLabel = 150;
+    int heightSecondaryLabel = 25;
+    // space between primary labels and secondary labels
+    int yOffsetPrimarySecondaryLabel = 8;
+    // space between secondary components (e.g. white box for plot selection) and physical boundaries
+    int xOffsetComponent = 6;
+    int y_componentOffset = 6;
+    // dimensions of white box for plot selection
+    int yOffsetSelectionBox = 2;
+    int widthSelectionBox = 263;
+    int heightSelectionBox = 90;
 
-    static int count;
-    static int countPrev;
+    // GUI/Window Sizing and values
+    int windowWidth = 950;
+    int windowHeight = 550 + 2;
+    int windowMaxWidth = 2160;
+    int windowMaxHeight = 1080;
+    int lineHeight = 1;
+    //** white area of plot selection in IMPORT AUDIO**//
+    int magic_num9 = 23;
+    int verticalBufferCheckbox = 46;
+    int xMarginCheckboxFill = 16;
+    int yMarginCheckbox1Fill = 74;
+    int xMarginZoomBoundary = 2.5 * xOffsetComponent;
+    int xMarginSelectionBoundary = 2.5 * xOffsetComponent;
 
-    static bool setToLog;
-    static bool newSelection;
-    static bool displayError;
+    int widthCheckbox = 16;
+    int widthSelectionBoundary = 243;
+    int widthZoomBoundary = 245;
 
-    //ProcessBlock 
-    //static juce::dsp::FFT editFFT;
-    static juce::dsp::WindowingFunction<float> editWindow;
-    static std::vector<float> bufferRight;
-    static std::vector<float> bufferLeft;
-    static std::vector<float> windowBufferRight;
-    static std::vector<float> windowBufferLeft;
-    static std::vector<float> indexToFreqMap;
-    static std::vector<std::vector<float>> binMag;
-    static std::vector<std::vector<float>> sampleSelections;
+    int heightSelectionBoundary = 1;
+    int heightCheckbox = 16;
+    int heightZoomBoundary = heightSelectionBoundary;
+
+    int cornerSizeSelectionBox = 3;
+    int cornersizeCheckbox = 4;
+
+    int yMarginSelectionBoundary = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + (magic_num9 * yOffsetSelectionBox);
+    int yMarginSelectionBox = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + yOffsetSelectionBox;
+    int yMarginCheckbox2Fill = yMarginCheckbox1Fill + verticalBufferCheckbox;
+    int yMarginZoomBoundary = (119.5 * yOffsetSelectionBox);
+
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
