@@ -71,6 +71,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	setFreqData(1024);
 	zeroBuffers();
 
+	// Make visible GUI Elements
 	addAndMakeVisible(labelImportAudio);
 	addAndMakeVisible(labelSelectTrace);
 	addAndMakeVisible(labelZoom);
@@ -89,15 +90,19 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(labelPeakPlot);
 	addAndMakeVisible(labelDropdownWindow);
 	addAndMakeVisible(labelDropdownAxis);
-	addAndMakeVisible(labelSizeDropdown);
+	addAndMakeVisible(labelDropdownSize);
 	addAndMakeVisible(comboboxWindowFunction);
-	addAndMakeVisible(comboboxAxis);
-	addAndMakeVisible(comboboxSize);
+	addAndMakeVisible(comboboxAxisType);
+	addAndMakeVisible(comboboxSizeSetting);
 	addAndMakeVisible(buttonExport);
 	addAndMakeVisible(buttonPlot1);
 	addAndMakeVisible(buttonPlot2);
 	addAndMakeVisible(toggleButtonPlot1);
 	addAndMakeVisible(toggleButtonPlot2);
+	addAndMakeVisible(inputXmax);
+	addAndMakeVisible(inputYmax);
+	addAndMakeVisible(inputXmin);
+	addAndMakeVisible(inputYmin);
 
 	// Fonts
 	labelImportAudio.setFont(juce::Font("Arial", 18.0f, juce::Font::bold));
@@ -114,7 +119,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPeak.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
 	labelDropdownWindow.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
 	labelDropdownAxis.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
-	labelSizeDropdown.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
+	labelDropdownSize.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
 
 	// Text
 	labelImportAudio.setText("Import Audio", juce::dontSendNotification);
@@ -133,7 +138,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelCursorValue.setText("(0.0, 0.00)", juce::dontSendNotification);
 	labelPeak.setText("Peak", juce::dontSendNotification);
 	labelDropdownWindow.setText("Function", juce::dontSendNotification);
-	labelSizeDropdown.setText("Size", juce::dontSendNotification);
+	labelDropdownSize.setText("Size", juce::dontSendNotification);
 	labelDropdownAxis.setText("Axis", juce::dontSendNotification);
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
 	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
@@ -149,17 +154,17 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPeak.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
-	labelSizeDropdown.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
 	comboboxWindowFunction.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	comboboxWindowFunction.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	comboboxWindowFunction.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
-	comboboxAxis.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
-	comboboxAxis.setColour(juce::ComboBox::textColourId, juce::Colours::black);
-	comboboxAxis.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
-	comboboxSize.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
-	comboboxSize.setColour(juce::ComboBox::textColourId, juce::Colours::black);
-	comboboxSize.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
+	comboboxAxisType.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
+	comboboxAxisType.setColour(juce::ComboBox::textColourId, juce::Colours::black);
+	comboboxAxisType.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
+	comboboxSizeSetting.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
+	comboboxSizeSetting.setColour(juce::ComboBox::textColourId, juce::Colours::black);
+	comboboxSizeSetting.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
 	buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
 	buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
 	buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
@@ -198,14 +203,17 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	comboboxWindowFunction.addItem("Kaiser", 6);
 	comboboxWindowFunction.addItem("Rectangular window", 7);
 	comboboxWindowFunction.addItem("Triangular window", 8);
-	comboboxAxis.addItem("Linear Frequency", 1);
-	comboboxAxis.addItem("Log Frequency", 2);
-	comboboxSize.addItem("128", 1);
-	comboboxSize.addItem("256", 2);
-	comboboxSize.addItem("512", 3);
-	comboboxSize.addItem("1024", 4);
+	comboboxAxisType.addItem("Linear Frequency", 1);
+	comboboxAxisType.addItem("Log Frequency", 2);
+	comboboxSizeSetting.addItem("128", 1);
+	comboboxSizeSetting.addItem("256", 2);
+	comboboxSizeSetting.addItem("512", 3);
+	comboboxSizeSetting.addItem("1024", 4);
 
-	// Set Toggle State
+	// Set Selections / Toggle State
+	comboboxWindowFunction.setSelectedId(5);
+	comboboxAxisType.setSelectedId(2);
+	comboboxSizeSetting.setSelectedId(4);
 	buttonPlot1.setClickingTogglesState(true);
 	buttonPlot2.setClickingTogglesState(true);
 	toggleButtonPlot1.setClickingTogglesState(true);
@@ -219,12 +227,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 		toggleButtonPlot2.setToggleState(true, true);
 	}
 
-
-	// Set Selection
-	comboboxWindowFunction.setSelectedId(5);
-	comboboxAxis.setSelectedId(2);
-	comboboxSize.setSelectedId(4);
-
 	// On user interaction
 	toggleButtonPlot1.onClick = [this] { updateToggleState(1); };
 	toggleButtonPlot2.onClick = [this] { updateToggleState(2); };
@@ -233,8 +235,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputYmin.onTextChange = [this] { getBounds(); };
 	inputYmax.onTextChange = [this] { getBounds(); };
 	comboboxWindowFunction.onChange = [this] { setWindowFunction(); };
-	comboboxAxis.onChange = [this] { setAxisType(); };
-	comboboxSize.onChange = [this] { setBlockSize(); };
+	comboboxAxisType.onChange = [this] { setAxisType(); };
+	comboboxSizeSetting.onChange = [this] { setBlockSize(); };
 	buttonPlot1.onClick = [&]() {
 		plotIndexSelection = 0;
 		setPlotIndex(0);
@@ -243,9 +245,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 		plotIndexSelection = 1;
 		setPlotIndex(1);
 	};
-
-	
-
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -292,8 +291,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 	int logScale = 40;
-	int tickWidth = 5;
-	int zeroTickWidth = 15;
 
 
 	if (newSelection == true) {
@@ -342,8 +339,46 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	}
 	float scaleY = -lengthYAxis / yDiff;  // Scaling Y increments; pixels shown per sample
 	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
-
 	float plotYShift = yStartPlot + yShift;
+	// Axis variables
+	int numXMarkers = xDiff;
+	int numYMarkers = yDiff;
+
+	//** white box for cursor label **//
+	int xMargin_cursorBox = xStartXYAxis + 138;
+	int yMargin_cursorBox = heightBorder + 55;
+	int width_cursorBox = 180;
+	int height_cursorBox = 26;
+
+	//** white box for peak label **//
+	int xMargin_peakBox = xMargin_cursorBox + 205;
+	int yMargin_peakBox = yMargin_cursorBox;
+	int width_peakBox = 180;
+	int height_peakBox = 26;
+
+	//** draw boxes to hide out of bound plots **//
+	int originPixel = 0;
+
+	int xOffsetLeftBox = originPixel;
+	int xOffsetTopBox = originPixel;
+	int xOffsetRightBox = widthBorder;
+	//int xOffsetRightBox = widthBorder + 0.5;
+	int xOffsetBottonBox = originPixel;
+
+	int yOffsetLeftBox = originPixel;
+	int yOffsetRightBox = originPixel;
+	int yOffsetTopBox = originPixel;
+	int yOffsetBottomBox = heightBorder;
+
+	int widthLeftBox = border_xBuffer;
+	int widthRightBox = getWidth();
+	int widthTopBox = getWidth();
+	int widthBottomBox = getWidth();
+
+	int heightLeftBox = getHeight();
+	int heightRightBox = getHeight();
+	int heightTopBox = border_yBuffer;
+	int heightBottomBox = getHeight();
 
 	// Graph plots
 	if (audioProcessor.minBlockSize) {
@@ -387,10 +422,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		g.drawText("Not enough data selected", juce::Rectangle<int>(border_xBuffer, border_yBuffer, widthBorder, heightBorder), juce::Justification::centred, true);
 	}
 
-	// Axis variables
-	int numXMarkers = xDiff;
-	int numYMarkers = yDiff;
-
 	// Plot X Axis Markers
 	for (int i = 1; i <= numXMarkers; i++) {
 		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - tickWidth);
@@ -426,29 +457,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
 
 	//** draw boxes to hide out of bound plots **//
-	int originPixel = 0;
-
-	int xOffsetLeftBox = originPixel;
-	int xOffsetTopBox = originPixel;
-	int xOffsetRightBox = widthBorder;
-	//int xOffsetRightBox = widthBorder + 0.5;
-	int xOffsetBottonBox = originPixel;
-
-	int yOffsetLeftBox = originPixel;
-	int yOffsetRightBox = originPixel;
-	int yOffsetTopBox = originPixel;
-	int yOffsetBottomBox = heightBorder;
-
-	int widthLeftBox = border_xBuffer;
-	int widthRightBox = getWidth();
-	int widthTopBox = getWidth();
-	int widthBottomBox = getWidth();
-
-	int heightLeftBox = getHeight();
-	int heightRightBox = getHeight();
-	int heightTopBox = border_yBuffer;
-	int heightBottomBox = getHeight();
-	
 	juce::Rectangle<int> leftPanel(xOffsetLeftBox, yOffsetLeftBox, widthLeftBox, heightLeftBox);
 	juce::Rectangle<int> rightPanel(xOffsetRightBox, yOffsetRightBox, widthRightBox, heightRightBox);
 	juce::Rectangle<int> topPanel(xOffsetTopBox, yOffsetTopBox, widthTopBox, heightTopBox);
@@ -463,21 +471,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::darkgrey);
 	g.fillRect(widthPrimaryCategoryLabel, originPixel, lineHeight, windowMaxHeight);
 
-
-
-	//** white box for cursor label **//
-	int xMargin_cursorBox = xStartXYAxis + 138;
-	int yMargin_cursorBox = heightBorder + 55;
-	int width_cursorBox = 180;
-	int height_cursorBox = 26;
-
-	//** white box for peak label **//
-	int xMargin_peakBox = xMargin_cursorBox + 205;
-	int yMargin_peakBox = yMargin_cursorBox;
-	int width_peakBox = 180;
-	int height_peakBox = 26;
-
-	// draw white box
+	// draw white box around selections
 	g.setColour(juce::Colours::white);
 	g.fillRoundedRectangle(xOffsetComponent, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox);
 
@@ -498,7 +492,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	//** line to separate upper and lower x/y bounds in ZOOM **//
 	g.setColour(juce::Colours::darkgrey);
 	g.fillRect(xMarginZoomBoundary, yMarginZoomBoundary, widthZoomBoundary, heightZoomBoundary);
-
 
 	// Peak 
 	float cursorYPeak = findPeak();
@@ -552,9 +545,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, in
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
-	// This is generally where you'll want to lay out the positions of any
-	// subcomponents in your editor..
-
 	//** graph scaling variables **//
 	float border_xBuffer = getWidth() * 0.295;
 	float border_yBuffer = y_componentOffset;
@@ -638,15 +628,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	labelCursorValue.setBounds(xMargin_cursorPlot, yMargin_cursorPlot, width_secondaryLabel, heightSecondaryLabel);
 	labelPeak.setBounds(xMargin_peakLabel, yMargin_peaklabel, width_secondaryLabel, heightSecondaryLabel);
 	labelPeakPlot.setBounds(xMargin_peakPlot, yMargin_peakPlot, width_secondaryLabel, heightSecondaryLabel);
-	labelWindowDropdown.setBounds(xMargin_windowLabel, yMargin_windowLabel, width_secondaryLabel, heightSecondaryLabel);
+	labelDropdownWindow.setBounds(xMargin_windowLabel, yMargin_windowLabel, width_secondaryLabel, heightSecondaryLabel);
 	labelDropdownAxis.setBounds(xMargin_axisLabel, yMargin_axisLabel, width_secondaryLabel, heightSecondaryLabel);
-	labelSizeDropdown.setBounds(xMargin_sizeLabel, yMargin_sizeLabel, width_secondaryLabel, heightSecondaryLabel);
+	labelDropdownSize.setBounds(xMargin_sizeLabel, yMargin_sizeLabel, width_secondaryLabel, heightSecondaryLabel);
 
 	//cursorFunction.setBounds(xMargin_cursorCombo, yMargin_cursorCombo, width_comboBox, height_comboBox);
 	//peakFunction.setBounds(xMargin_peakCombo, yMargin_peakCombo, width_comboBox, height_comboBox);
 	comboboxWindowFunction.setBounds(xMargin_winCombo, yMargin_winCombo, width_comboBox, height_comboBox);
-	comboboxAxis.setBounds(xMargin_axisCombo, yMargin_axisCombo, width_comboBox, height_comboBox);
-	size.setBounds(xMargin_sizeCombo, yMargin_sizeCombo, width_comboBox, height_comboBox);
+	comboboxAxisType.setBounds(xMargin_axisCombo, yMargin_axisCombo, width_comboBox, height_comboBox);
+	comboboxSizeSetting.setBounds(xMargin_sizeCombo, yMargin_sizeCombo, width_comboBox, height_comboBox);
 
 
 	//** plot 1 **//
@@ -733,15 +723,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 
 	labelUpperBounds.setBounds(0, yMargin_upperLabel, width_secondaryLabel, heightSecondaryLabel);
 	inputXmax.setBounds(xMargin_xMax, yMargin_xMax, width_inputTextbox, height_inputTextbox);
-	inputUpperBoundsX.setBounds(xMargin_xMaxLabel, yMargin_xMaxLabel, width_secondaryLabel, heightSecondaryLabel);
+	labelUpperBoundsX.setBounds(xMargin_xMaxLabel, yMargin_xMaxLabel, width_secondaryLabel, heightSecondaryLabel);
 	inputYmax.setBounds(xMargin_yMax, yMargin_yMax, width_inputTextbox, height_inputTextbox);
-	inputUpperBoundsY.setBounds(xMargin_yMaxLabel, yMargin_yMaxLabel, width_inputTextbox, height_inputTextbox);
+	labelUpperBoundsY.setBounds(xMargin_yMaxLabel, yMargin_yMaxLabel, width_inputTextbox, height_inputTextbox);
 
 	labelLowerBounds.setBounds(0, yMargin_lowerLabel, width_secondaryLabel, heightSecondaryLabel);
 	inputXmin.setBounds(xMargin_xMin, yMargin_xMin, width_inputTextbox, height_inputTextbox);
-	inputLowerBoundsX.setBounds(xMargin_xMinLabel, yMargin_xMinLabel, width_secondaryLabel, heightSecondaryLabel);
+	labelLowerBoundsX.setBounds(xMargin_xMinLabel, yMargin_xMinLabel, width_secondaryLabel, heightSecondaryLabel);
 	inputYmin.setBounds(xMargin_yMax, yMargin_yMin, width_inputTextbox, height_inputTextbox);
-	inputLowerBoundsY.setBounds(xMargin_yMinLabel, yMargin_yMinLabel, width_secondaryLabel, heightSecondaryLabel);
+	labelLowerBoundsY.setBounds(xMargin_yMinLabel, yMargin_yMinLabel, width_secondaryLabel, heightSecondaryLabel);
 
 	buttonExport.setBounds(xMargin_exportButton, yMargin_exportButton, width_exportButton, height_exportButton);
 }
@@ -891,11 +881,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setWindowFunction() {
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setBlockSize() {
-	auto selection = size.getText();
+	auto selection = comboboxSizeSetting.getText();
 	fftSize = selection.getIntValue();
 	setFreqData(fftSize);
-	//audioProcessor.setInitialAccBuffer();
-	//processBuffer();
 	repaint();
 }
 

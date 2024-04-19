@@ -103,7 +103,7 @@ private:
     juce::Label labelPeak;
     juce::Label labelDropdownWindow;
     juce::Label labelDropdownAxis;
-    juce::Label labelSizeDropdown;
+    juce::Label labelDropdownSize;
     juce::Label labelPlot1{ "Plot 1" };
     juce::Label labelPlot2{ "Plot 2" };
     juce::Label labelUpperBoundsX;
@@ -115,8 +115,8 @@ private:
     juce::Label inputYmin;
     juce::Label inputYmax;
     juce::ComboBox comboboxWindowFunction;
-    juce::ComboBox comboboxAxis;
-    juce::ComboBox comboboxSize;
+    juce::ComboBox comboboxAxisType;
+    juce::ComboBox comboboxSizeSetting;
     juce::TextButton buttonExport{ "Export .csv" };
     juce::TextButton buttonPlot1{ "Selected" };
     juce::TextButton buttonPlot2{ "Select" };
@@ -169,6 +169,9 @@ private:
     int yMarginSelectionBox = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + yOffsetSelectionBox;
     int yMarginCheckbox2Fill = yMarginCheckbox1Fill + verticalBufferCheckbox;
     int yMarginZoomBoundary = (119.5 * yOffsetSelectionBox);
+
+    int tickWidth = 5;
+    int zeroTickWidth = 15;
 
 
 
