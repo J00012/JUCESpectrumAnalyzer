@@ -405,6 +405,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
 	float xShift = -xMin * scaleX;
 
+	xMax = std::log10(xMax);
+
+	int log_xMax = xMax;
+
 	float yDiff = yMax - yMin;
 	if (yDiff <= 0)  // handles divide by zero errors
 	{
@@ -428,7 +432,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	int logScale = 40;
 	if (audioProcessor.minBlockSize) {
 		if (setToLog == true) {
-			xMax = std::log10(xMax);
 			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
 			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
 			for (int i = 1; i < indexToFreqMap.size(); i++)
@@ -442,7 +445,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			}
 		}
 		else {
-			xMax = maxFreq / 5;
+			//xMax = maxFreq / 5;
 			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
 			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
 			for (int i = 1; i < indexToFreqMap.size(); i++)
