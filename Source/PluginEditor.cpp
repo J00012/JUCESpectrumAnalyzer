@@ -92,9 +92,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	sampleSelections.resize(2);
 	setPlotIndex(plotIndexSelection);
 	setFreqData(1024);
-	//audioProcessor.zeroAllSelections(numBins, rowSize);
-	//audioProcessor.prepBuffers(fftS);
-	//binMag = audioProcessor.getBinSet();
 	zeroBuffers();
 
 	// new gui elements start
@@ -206,13 +203,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	size.addItem("256", 2);
 	size.addItem("512", 3);
 	size.addItem("1024", 4);
-	//size.addItem("2048", 5);
-	//size.addItem("4096", 6);
-	//size.addItem("8192", 7);
-	//size.addItem("16384", 8);
-	//size.addItem("32768", 9);
-	//size.addItem("65536", 10);
-	//size.addItem("131072", 11);
 	size.setSelectedId(4);
 	size.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	size.setColour(juce::ComboBox::textColourId, juce::Colours::black);
@@ -317,39 +307,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillAll(juce::Colours::black);
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
-
-	//PROCESSOR CLASS CODE!!!!!!!!!
-	//rowSize = 2;
-
-
-
-	//audioProcessor.setFFTSize(fftSize);
-
-	//handleNewSelection(numBins, rowSize, rowIndex);
-
-	//juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
-	//audioProcessor.setWindow(windowType);
-
-
-	//audioProcessor.zeroAllSelections(numBins, rowSize);
-	//audioProcessor.prepBuffers(fftSize);
-	//binMag = audioProcessor.getBinMag();
-	//audioProcessor.zeroSelection(rowIndex, numBins);
 	if (newSelection == true) {
-		/*fftCounter = audioProcessor.getFFTCounter();
-		binMag[rowIndex] = audioProcessor.getBinMag();
-		audioProcessor.prepBuffers(fftS);
-		audioProcessor.zeroSelection(rowIndex);
-		audioProcessor.clearRingBuffer();
-		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
-		audioProcessor.clearAccumulationBuffer();
-		if (fftCounter != 0)
-		{
-			for (int i = 0; i < numBins; i++) {
-				binMag[rowIndex][i] /= fftCounter;
-			}
-		}*/
-		//int sampleRate = audioProcessor.getBlockSampleRate();
 		audioProcessor.setStepSize(stepSize);                             //this needs to be changed when the size is changed
 		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
 		audioProcessor.clearAccumulationBuffer();
