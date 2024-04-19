@@ -333,7 +333,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		newSelection = false;
 	}
 	initialAxisState = 0;
-
+	
 	juce::Path plot1;
 	juce::Path plot2;
 	juce::Path xAxis;
@@ -367,7 +367,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	if (setToLog) {
 		xMax = std::log10(xMaxFrequency);
-		//xMin = std::log10(xMinFrequency);
 	}
 	else {
 		xMax = xMaxFrequency;
@@ -838,8 +837,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData) {
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 {
-	//float logMinVal;
-	float minVal = -1000;
+	float minVal = indexToFreqMap[0];
 	float maxVal = 24000;
 	juce::String temp = inputXmin.getText(false);
 	float val = std::atof(temp.toStdString().c_str());
