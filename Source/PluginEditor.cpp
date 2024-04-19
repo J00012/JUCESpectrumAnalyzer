@@ -355,7 +355,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		audioProcessor.clearAccumulationBuffer();
 		processBuffer();
 		newSelection = false;
-		repaint();
 	}
 
 	juce::Path plot1;
@@ -388,8 +387,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	graphSouth = heightBorder;*/
 
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
-
-	int zoom_xMax;
 
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors 
