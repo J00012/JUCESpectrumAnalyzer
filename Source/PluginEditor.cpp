@@ -18,8 +18,9 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isGraph = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
-float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = -1;
-float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = -1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 1;
+//float FFTSpectrumAnalyzerAudioProcessorEditor::xMinFrequency = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 8000;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxFrequency = 8000;
@@ -65,7 +66,7 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::stepSize = 512;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftCounter = 0;
 
-bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog;
 
 //Processor vectors
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::indexToFreqMap = { 0 };
@@ -196,7 +197,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(axis);
 	axis.addItem("Linear Frequency", 1);
 	axis.addItem("Log Frequency", 2);
-	axis.setSelectedId(2);
+	axis.setSelectedId(1);
 	axis.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	axis.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	axis.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
@@ -277,6 +278,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPlot2.setEditable(false);
 
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
+	//inputXmax.setText(std::to_string(xMinFrequency), juce::dontSendNotification);
 	inputXmax.setText(std::to_string(xMaxFrequency), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
 	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
@@ -318,7 +320,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillAll(juce::Colours::black);
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
-
 	//PROCESSOR CLASS CODE!!!!!!!!!
 	//rowSize = 2;
 
@@ -351,6 +352,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			}
 		}*/
 		//int sampleRate = audioProcessor.getBlockSampleRate();
+		setToLog = false;
 		audioProcessor.setStepSize(stepSize);                             //this needs to be changed when the size is changed
 		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
 		audioProcessor.clearAccumulationBuffer();
@@ -391,6 +393,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	if (setToLog) {
 		xMax = std::log10(xMaxFrequency);
+		//xMin = std::log10(xMinFrequency);
 	}
 	else {
 		xMax = xMaxFrequency;
@@ -861,6 +864,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData) {
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 {
+	//float logMinVal;
 	float minVal = -1000;
 	float maxVal = 24000;
 	juce::String temp = inputXmin.getText(false);

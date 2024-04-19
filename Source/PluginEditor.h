@@ -91,6 +91,7 @@ private:
     static bool isVisiblePlot2;
     static float xMinPrev;
     static float xMin;
+    //static float xMinFrequency;
     static float xMaxPrev;
     static float xMax;
     static float xMaxFrequency;
