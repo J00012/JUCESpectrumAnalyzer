@@ -246,27 +246,6 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
         for (int i = 0; i < buffer.getNumSamples(); i++) {
             accumulationBuffer.push_back(channelData[i]);
         }
-
-        //ringBuffer.write(channelData, buffer.getNumSamples());  //fills the content of the object array with a given windowing method
-
-        //while (ringBuffer.size() >= stepSize) {
-
-        //    std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
-        //    std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
-        //    std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
-
-        //    ringBuffer.read(bufferRight.data(), stepSize);
-        //    std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
-        //    windowBufferLeft = bufferLeft;
-        //    window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
-        //    window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
-        //    forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
-        //    fftCounter++;
-
-        //    for (int i = 0; i < numBins; i++) {
-        //        binMag[rowIndex][i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
-        //    }
-        //}
         procBlockCalled = true;
         initialBlock = false;
     }

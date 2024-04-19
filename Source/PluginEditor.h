@@ -50,6 +50,9 @@ private:
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
     static bool isGraph;
+    static bool setToLog;
+    static bool newSelection;
+    static bool displayError;
 
     static int fftSize;
     static int numBins;
@@ -60,13 +63,8 @@ private:
     static int rowSize;
     static int fftCounter;
     static int stepSize;
-
     static int amountOfPlots;
     static int prevAmountOfPlots;
-
-    static bool setToLog;
-    static bool newSelection;
-    static bool displayError;
 
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;
@@ -78,43 +76,6 @@ private:
     static std::vector<float> indexToFreqMap;
     static std::vector<std::vector<float>> binMag;
     static std::vector<std::vector<float>> sampleSelections;
-
-
-
-    // gui elements start
-    juce::Label labelCursorPlot;
-    juce::Label labelPeakPlot;
-    juce::Label labelImportAudio;
-    juce::Label labelSelectTrace;
-    juce::Label labelZoom;
-    juce::Label LabelUpperBounds;
-    juce::Label labelLowerBounds;
-    juce::Label labelXMax;
-    juce::Label labelYMax;
-    juce::Label gui_xLower;
-    juce::Label gui_yLower;
-    juce::Label gui_export;
-    juce::TextButton gui_exportButton{ "Export .csv" };
-    juce::Label cursorLabel;
-    juce::Label peakLabel;
-    juce::Label windowLabel;
-    juce::Label axisLabel;
-    juce::Label sizeLabel;
-    juce::ComboBox windowFunction;
-    juce::ComboBox axis;
-    juce::ComboBox size;
-    // gui elements end
-
-    juce::Label inputXmin;
-    juce::Label inputXmax;
-    juce::Label inputYmin;
-    juce::Label inputYmax;
-    juce::Label labelPlot1{ "Plot 1" };
-    juce::Label labelPlot2{ "Plot 2" };
-    juce::TextButton buttonPlot1{ "Selected" };
-    juce::TextButton buttonPlot2{ "Select" };
-    juce::ToggleButton toggleButtonPlot1;
-    juce::ToggleButton toggleButtonPlot2;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
     static float xMinPrev;
@@ -128,6 +89,40 @@ private:
     static int plotIndexSelection;
     static float cursorX;
     static int cursorPeak;
+
+    // gui elements start
+    juce::Label labelCursor;
+    juce::Label labelCursorValue;
+    juce::Label labelPeakPlot;
+    juce::Label labelImportAudio;
+    juce::Label labelSelectTrace;
+    juce::Label labelZoom;
+    juce::Label labelUpperBounds;
+    juce::Label labelLowerBounds;
+    juce::Label labelExport;
+    juce::Label labelPeak;
+    juce::Label labelDropdownWindow;
+    juce::Label labelDropdownAxis;
+    juce::Label labelSizeDropdown;
+    juce::Label labelPlot1{ "Plot 1" };
+    juce::Label labelPlot2{ "Plot 2" };
+    juce::Label labelUpperBoundsX;
+    juce::Label labelUpperBoundsY;
+    juce::Label labelLowerBoundsX;
+    juce::Label labelLowerBoundsY; 
+    juce::Label inputXmin;
+    juce::Label inputXmax;
+    juce::Label inputYmin;
+    juce::Label inputYmax;
+    juce::ComboBox comboboxWindowFunction;
+    juce::ComboBox comboboxAxis;
+    juce::ComboBox comboboxSize;
+    juce::TextButton buttonExport{ "Export .csv" };
+    juce::TextButton buttonPlot1{ "Selected" };
+    juce::TextButton buttonPlot2{ "Select" };
+    juce::ToggleButton toggleButtonPlot1;
+    juce::ToggleButton toggleButtonPlot2;
+    // gui elements end
 
     // height and width for primary category labels (Import Audio, Zoom, Export, etc.) 
     int widthPrimaryCategoryLabel = 275;
