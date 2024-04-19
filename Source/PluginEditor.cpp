@@ -18,14 +18,15 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isGraph = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
-float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
-float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = -1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = -1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 8000;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxFrequency = 8000;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -90;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
-float FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 1;
 int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
@@ -276,7 +277,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPlot2.setEditable(false);
 
 	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
-	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
+	inputXmax.setText(std::to_string(xMaxFrequency), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
 	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
 
@@ -388,14 +389,23 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
+	if (setToLog) {
+		xMax = std::log10(xMaxFrequency);
+	}
+	else {
+		xMax = xMaxFrequency;
+	}
+
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors 
 	{
-		xMax = xMaxPrev;
-		xMin = xMinPrev;
-		xDiff = xMaxPrev - xMinPrev;
-		inputXmin.setText(std::to_string(xMinPrev), juce::dontSendNotification);
-		inputXmax.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
+		if (xMin == 0 || xMax == 0) {
+			xMax = xMaxPrev;
+			xMin = xMinPrev;
+			xDiff = xMaxPrev - xMinPrev;
+			inputXmin.setText(std::to_string(xMinPrev), juce::dontSendNotification);
+			inputXmax.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
+		}
 	}
 	else
 	{
@@ -404,10 +414,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	}
 	float scaleX = lengthXAxis / xDiff;  // Scaling X increments; pixels shown per sample
 	float xShift = -xMin * scaleX;
-
-	xMax = std::log10(xMax);
-
-	int log_xMax = xMax;
 
 	float yDiff = yMax - yMin;
 	if (yDiff <= 0)  // handles divide by zero errors
@@ -445,7 +451,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			}
 		}
 		else {
-			//xMax = maxFreq / 5;
 			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
 			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
 			for (int i = 1; i < indexToFreqMap.size(); i++)
@@ -862,7 +867,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	float val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
-		xMin = val;
+		if (val != 0) {
+			xMin = val;
+		}
 	}
 	else { inputXmin.setText(std::to_string(xMin), juce::dontSendNotification); }
 
@@ -870,7 +877,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
-		xMax = val;
+		if (val != 0) {
+			xMaxFrequency = val;
+		}
 	}
 	else { inputXmax.setText(std::to_string(xMax), juce::dontSendNotification); }
 

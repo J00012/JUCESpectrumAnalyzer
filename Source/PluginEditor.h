@@ -93,6 +93,7 @@ private:
     static float xMin;
     static float xMaxPrev;
     static float xMax;
+    static float xMaxFrequency;
     static float yMinPrev;
     static float yMin;
     static float yMaxPrev;
