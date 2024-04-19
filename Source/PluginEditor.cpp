@@ -67,6 +67,7 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftCounter = 0;
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog;
+int FFTSpectrumAnalyzerAudioProcessorEditor::initialAxisState = 1;
 
 //Processor vectors
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::indexToFreqMap = { 0 };
@@ -197,7 +198,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(axis);
 	axis.addItem("Linear Frequency", 1);
 	axis.addItem("Log Frequency", 2);
-	axis.setSelectedId(1);
+	axis.setSelectedId(2);
 	axis.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	axis.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	axis.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
@@ -320,45 +321,18 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillAll(juce::Colours::black);
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
-	//PROCESSOR CLASS CODE!!!!!!!!!
-	//rowSize = 2;
-
-
-
-	//audioProcessor.setFFTSize(fftSize);
-
-	//handleNewSelection(numBins, rowSize, rowIndex);
-
-	//juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
-	//audioProcessor.setWindow(windowType);
-
-
-	//audioProcessor.zeroAllSelections(numBins, rowSize);
-	//audioProcessor.prepBuffers(fftSize);
-	//binMag = audioProcessor.getBinMag();
-	//audioProcessor.zeroSelection(rowIndex, numBins);
+	
 	if (newSelection == true) {
-		/*fftCounter = audioProcessor.getFFTCounter();
-		binMag[rowIndex] = audioProcessor.getBinMag();
-		audioProcessor.prepBuffers(fftS);
-		audioProcessor.zeroSelection(rowIndex);
-		audioProcessor.clearRingBuffer();
-		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
-		audioProcessor.clearAccumulationBuffer();
-		if (fftCounter != 0)
-		{
-			for (int i = 0; i < numBins; i++) {
-				binMag[rowIndex][i] /= fftCounter;
-			}
-		}*/
-		//int sampleRate = audioProcessor.getBlockSampleRate();
-		setToLog = false;
+		if (initialAxisState == 1) {
+			setToLog = false;
+		}
 		audioProcessor.setStepSize(stepSize);                             //this needs to be changed when the size is changed
 		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
 		audioProcessor.clearAccumulationBuffer();
 		processBuffer();
 		newSelection = false;
 	}
+	initialAxisState = 0;
 
 	juce::Path plot1;
 	juce::Path plot2;

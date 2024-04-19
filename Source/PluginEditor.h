@@ -121,6 +121,7 @@ private:
     static int countPrev;
 
     static bool setToLog;
+    static int initialAxisState;
     static bool newSelection;
     static bool displayError;
 
