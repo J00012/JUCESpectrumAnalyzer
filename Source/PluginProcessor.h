@@ -11,8 +11,6 @@
 #include <JuceHeader.h>
 #include "RingBuffer.h"
 //==============================================================================
-/**
-*/
 class FFTSpectrumAnalyzerAudioProcessor : public juce::AudioProcessor
 {
 
@@ -32,10 +30,6 @@ public:
 
     bool getProcBlockCalled();
     void resetProcBlockCalled();
-    //void resetScopeDataIndex();
-    //void setPlotIndex(int rowIndex);
-    //int getPlotIndex();
-    //int getPlotSize();
 
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
