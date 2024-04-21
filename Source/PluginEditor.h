@@ -29,6 +29,7 @@ public:
     void setVisibility(int plotId);
     void handleNewSelection(int numBins, int rowSize, int rowIndex);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
+    float calculateX(bool log, int index);
 
     //processBlock integration
     void processBuffer();
@@ -36,7 +37,7 @@ public:
     void zeroBinSelection();
 
     void mouseMove(const juce::MouseEvent& event) override;
-    float findPeak();
+    int findPeak();
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
@@ -67,6 +68,7 @@ private:
     static int stepSize;
     static int amountOfPlots;
     static int prevAmountOfPlots;
+    static int initialAxisState;
 
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;
@@ -91,6 +93,8 @@ private:
     static int plotIndexSelection;
     static float cursorX;
     static int cursorPeak;
+    static float xMaxFrequency;
+    static float xMinFrequency;
 
     // gui elements start
     juce::Label labelCursor;
