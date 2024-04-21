@@ -494,6 +494,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		if (setToLog) {
 			xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
 			xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+			int xLabelNum = std::pow(10, i);
+			auto xLabel = juce::String(xLabelNum);
+			g.setColour(juce::Colours::white); 
+			g.setFont(12); 
+			g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true); 
 		}
 		else {
 		// set to linear
@@ -670,8 +675,14 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), y_componentOffset, 1, lengthYAxis);
 		g.fillRect(peakLine);
 		g.setColour(juce::Colours::white);
-		if (isVisiblePlot1 || isVisiblePlot2)
-			peakPlot.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), 2) + ", " + floatToStringPrecision(cursorYPeak, 2) + ")", juce::dontSendNotification);
+		if (setToLog) {
+			if (isVisiblePlot1 || isVisiblePlot2)
+				peakPlot.setText("(" + floatToStringPrecision(std::pow(10, screenToGraph(calculateX(setToLog, cursorPeak))), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
+		}
+		else {
+			if(isVisiblePlot1 || isVisiblePlot2)
+				peakPlot.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
+		}
 	}
 }
 
@@ -1166,7 +1177,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 	float cursorY = event.getMouseDownY();
 	//invalid bounds
 	if (cursorX < graphWest || cursorX > graphEast || cursorY < graphNorth || cursorY > graphSouth) {
-		cursorPlot.setText("(0.0, 0.00)", juce::dontSendNotification);
+		cursorPlot.setText("(0.0 Hz, 0.00 dB)", juce::dontSendNotification);
 	}
 	//valid bounds
 	else {
@@ -1176,9 +1187,17 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 			while (calculateX(setToLog, i) < cursorX) {
 				i++;
 			}
-			float xCoord = screenToGraph(cursorX);
-			if (isVisiblePlot2 || isVisiblePlot1) {
-				cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + ", " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + ")", juce::dontSendNotification);
+			if (setToLog) {
+				float xCoord = std::pow(10, screenToGraph(cursorX));
+				if (isVisiblePlot2 || isVisiblePlot1) {
+					cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + " dB)", juce::dontSendNotification);
+				}
+			}
+			else {
+				float xCoord = screenToGraph(cursorX);
+				if (isVisiblePlot2 || isVisiblePlot1) {
+					cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + " dB)", juce::dontSendNotification);
+				}
 			}
 		}
 	}
