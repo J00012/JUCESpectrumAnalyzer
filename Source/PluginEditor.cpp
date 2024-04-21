@@ -454,6 +454,37 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		g.drawText("Not enough data selected", juce::Rectangle<int>(border_xBuffer, border_yBuffer, widthBorder, heightBorder), juce::Justification::centred, true);
 	}
 
+	//** draw boxes to hide out of bound plots **//
+	int x_LeftBoxOffset = 0;
+	int y_LeftBoxOffset = 0;
+	int width_LeftBox = border_xBuffer;
+	int height_LeftBox = getHeight();
+
+	int x_TopBoxOffset = 0;
+	int y_TopBoxOffset = 0;
+	int width_TopBox = getWidth();
+	int height_TopBox = border_yBuffer;
+
+	int x_RightBoxOffset = widthBorder + 0.5;
+	int y_RightBoxOffset = 0;
+	int width_RightBox = getWidth();
+	int height_RightBox = getHeight();
+
+	int x_BottonBoxOffset = 0;
+	int y_BottomBoxOffset = heightBorder;
+	int width_BottomBox = getWidth();
+	int height_BottomBox = getHeight();
+
+	juce::Rectangle<int> leftPanel(x_LeftBoxOffset, y_LeftBoxOffset, width_LeftBox, height_LeftBox);
+	juce::Rectangle<int> rightPanel(x_RightBoxOffset, y_RightBoxOffset, width_RightBox, height_RightBox);
+	juce::Rectangle<int> topPanel(x_TopBoxOffset, y_TopBoxOffset, width_TopBox, height_TopBox);
+	juce::Rectangle<int> bottomPanel(x_BottonBoxOffset, y_BottomBoxOffset, width_BottomBox, height_BottomBox);
+	g.setColour(juce::Colours::black);
+	g.fillRect(leftPanel);
+	g.fillRect(rightPanel);
+	g.fillRect(topPanel);
+	g.fillRect(bottomPanel);
+
 	// Axis variables
 	//int numXMarkers = zoom_xMax 
 	int numXMarkers = xDiff;
@@ -461,8 +492,87 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// Plot X Axis Markers
 	for (int i = 1; i <= numXMarkers; i++) {
-		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
-		xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+		if (setToLog) {
+			xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+			xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+		}
+		else {
+		// set to linear
+			int linear_xDiv;
+			if (xDiff <= 1000) {
+				linear_xDiv = i % 100;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+			if (xDiff > 1000 && xDiff <= 4000) {
+				linear_xDiv = i % 500;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+			else if (xDiff > 4000 && xDiff <= 9000) {
+				linear_xDiv = i % 1000;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+			else if (xDiff > 9000 && xDiff <= 16000) {
+				linear_xDiv = i % 2000;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+			else if (xDiff > 16000) {
+				linear_xDiv = i % 5000;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+
+
+			/*
+			if (xDiv == 0) {
+				xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+				xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+				int xLabelNum = i;
+				auto xLabel = juce::String(xLabelNum);
+				g.setColour(juce::Colours::white);
+				g.setFont(12);
+				g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+			}
+			*/
+		}
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
@@ -496,7 +606,26 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::slategrey);
 	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
 
-	//** draw boxes to hide out of bound plots **//
+	//** draw boxes to hide out of bound plots 
+	int x_LeftBoxOffset2 = 0;
+	int y_LeftBoxOffset2 = 0;
+	int width_LeftBox2 = border_xBuffer;
+	int height_LeftBox2 = getHeight();
+
+	int x_BottonBoxOffset2 = 0;
+	int y_BottomBoxOffset2 = heightBorder;
+	int width_BottomBox2 = getWidth();
+	int height_BottomBox2 = 10;
+
+	juce::Rectangle<int> leftPanel2(x_LeftBoxOffset2, y_LeftBoxOffset2, width_LeftBox2, height_LeftBox2);
+	juce::Rectangle<int> bottomPanel2(x_BottonBoxOffset2, y_BottomBoxOffset2, width_BottomBox2, height_BottomBox2);
+
+	g.setColour(juce::Colours::black);
+	g.fillRect(leftPanel2);
+	g.fillRect(bottomPanel2);
+
+	/*
+	//** draw boxes to hide out of bound plots 
 	int x_LeftBoxOffset = 0;
 	int y_LeftBoxOffset = 0;
 	int width_LeftBox = border_xBuffer;
@@ -526,7 +655,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillRect(rightPanel);
 	g.fillRect(topPanel);
 	g.fillRect(bottomPanel);
-
+	*/
 	// ** NEW STUFF ** //
 
 	//** line to seperate left-side components and right-side components **//
@@ -844,8 +973,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 {
 	float minVal = indexToFreqMap[0];
 	float maxVal = 24000;
-	float yMaxVal = 0;
-	float yMinVal = -90;
+	float yMaxVal = 12;
+	float yMinVal = -96;
 	juce::String temp = inputXmin.getText(false);
 	float val = std::atof(temp.toStdString().c_str());
 	if (setToLog) {
