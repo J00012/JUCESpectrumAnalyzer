@@ -667,11 +667,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float cursorYPeak = findPeak();
 	if (cursorYPeak != 0) {
 		g.setColour(juce::Colours::red);
-		juce::Rectangle<int> peakLine(calculateX(cursorPeak), y_componentOffset, 1, lengthYAxis);
+		juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), y_componentOffset, 1, lengthYAxis);
 		g.fillRect(peakLine);
 		g.setColour(juce::Colours::white);
 		if (isVisiblePlot1 || isVisiblePlot2)
-			peakPlot.setText("(" + floatToStringPrecision(screenToGraph(calculateX(cursorPeak)), 2) + ", " + floatToStringPrecision(cursorYPeak, 2) + ")", juce::dontSendNotification);
+			peakPlot.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), 2) + ", " + floatToStringPrecision(cursorYPeak, 2) + ")", juce::dontSendNotification);
 	}
 }
 
@@ -1170,27 +1170,34 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 	}
 	//valid bounds
 	else {
-		//get index based on cursor
-		int i = 0;
-		while (calculateX(i) < cursorX) {
-			i++;
-		}
-		float xCoord = screenToGraph(cursorX);
-		if (isVisiblePlot2 || isVisiblePlot1) {
-			cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + ", " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + ")", juce::dontSendNotification);
+		if (audioProcessor.minBlockSize) {
+			//get index based on cursor
+			int i = 1;
+			while (calculateX(setToLog, i) < cursorX) {
+				i++;
+			}
+			float xCoord = screenToGraph(cursorX);
+			if (isVisiblePlot2 || isVisiblePlot1) {
+				cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + ", " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + ")", juce::dontSendNotification);
+			}
 		}
 	}
 	repaint();
 }
 
-float FFTSpectrumAnalyzerAudioProcessorEditor::calculateX(int index) {
+float FFTSpectrumAnalyzerAudioProcessorEditor::calculateX(bool log, int index) {
 	float start = getWidth() * 0.295 - 1;
 	float lengthAxis = getWidth() - x_componentOffset;
 	float range = xMax - xMin;
 	float ratio = lengthAxis / range;
 	float shift = -xMin * ratio;
 
-	return indexToFreqMap[index] * 0.702 * ratio + start + shift;
+	if (log) {
+		return std::log10(indexToFreqMap[index]) * 0.702 * ratio + start + shift;
+	}
+	else {
+		return indexToFreqMap[index] * 0.702 * ratio + start + shift;
+	}
 }
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::findPeak() {

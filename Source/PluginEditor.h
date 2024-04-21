@@ -40,7 +40,7 @@ public:
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
-    float calculateX(int index);
+    float calculateX(bool log, int index);
     void setFreqData(int fftData);
     void setWindowFunction();
     void setBlockSize();
