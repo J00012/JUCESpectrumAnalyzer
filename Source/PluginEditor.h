@@ -36,10 +36,11 @@ public:
     void zeroBinSelection();
 
     void mouseMove(const juce::MouseEvent& event) override;
-    float findPeak();
+    int findPeak();
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
+    float calculateX(int index);
     void setFreqData(int fftData);
     void setWindowFunction();
     void setBlockSize();
@@ -51,7 +52,6 @@ private:
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
-    static bool isGraph;
     juce::Label cursorPlot;
     juce::Label peakPlot;
 
