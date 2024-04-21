@@ -47,6 +47,8 @@ public:
     std::string floatToStringPrecision(float f, int p);
 
 private:
+    // This reference is provided as a quick way for your editor to
+    // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
     static bool isGraph;
