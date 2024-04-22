@@ -12,6 +12,8 @@
 #include <algorithm>
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::cursorX;
+float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY;
+int FFTSpectrumAnalyzerAudioProcessorEditor::cursorIndex;
 int FFTSpectrumAnalyzerAudioProcessorEditor::cursorPeak = 0;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
@@ -355,12 +357,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float yStartPlot = (yBuffer + lengthYAxis) / 2;
 	float xAxisScale = 0.702;
 
-	//used for cursor
-	/*graphWest = border_xBuffer;
-	graphEast = widthBorder;
-	graphNorth = border_yBuffer;
-	graphSouth = heightBorder;*/
-
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
 	if (setToLog) {
@@ -671,7 +667,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float cursorYPeak = findPeak();
 	if (cursorYPeak != 0) {
 		g.setColour(juce::Colours::red);
-		juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), y_componentOffset, 1, lengthYAxis);
+		juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), y_componentOffset, 1, heightBorder - y_componentOffset);
 		g.fillRect(peakLine);
 		g.setColour(juce::Colours::white);
 		if (setToLog) {
@@ -683,6 +679,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				peakPlot.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
 		}
 	}
+
+	//Graph Plot Marker
+	float circleX = calculateX(setToLog, cursorIndex);
+	float circleY = calculateY(plotIndexSelection, cursorIndex);
+	if (inBounds(circleX, circleY))
+		g.drawEllipse(circleX, circleY, 1, 1, 8);
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
@@ -1165,17 +1167,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 }
 
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
-{
-	float graphWest = (getWidth() * 0.295) - 1;
-	float graphNorth = y_componentOffset;
-	float graphEast = (getWidth() - x_componentOffset) + 0.5;
-	float graphSouth = (getHeight() - 240) * 0.95;
+void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event) {
 
 	cursorX = event.getMouseDownX();
-	float cursorY = event.getMouseDownY();
+	cursorY = event.getMouseDownY();
 	//invalid bounds
-	if (cursorX < graphWest || cursorX > graphEast || cursorY < graphNorth || cursorY > graphSouth) {
+	if (!inBounds(cursorX, cursorY)) {
 		cursorPlot.setText("(0.0 Hz, 0.00 dB)", juce::dontSendNotification);
 	}
 	//valid bounds
@@ -1186,14 +1183,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 			while (calculateX(setToLog, i) < cursorX) {
 				i++;
 			}
+			cursorIndex = i;
 			if (setToLog) {
-				float xCoord = std::pow(10, screenToGraph(cursorX));
+				float xCoord = std::pow(10, screenToGraph(calculateX(setToLog, i)));
 				if (isVisiblePlot2 || isVisiblePlot1) {
 					cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + " dB)", juce::dontSendNotification);
 				}
 			}
 			else {
-				float xCoord = screenToGraph(cursorX);
+				float xCoord = screenToGraph(calculateX(setToLog, i));
 				if (isVisiblePlot2 || isVisiblePlot1) {
 					cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + " dB)", juce::dontSendNotification);
 				}
@@ -1204,6 +1202,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 }
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::calculateX(bool log, int index) {
+
 	float start = getWidth() * 0.295 - 1;
 	float lengthAxis = getWidth() - x_componentOffset;
 	float range = xMax - xMin;
@@ -1216,6 +1215,17 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::calculateX(bool log, int index) {
 	else {
 		return indexToFreqMap[index] * 0.702 * ratio + start + shift;
 	}
+}
+
+float FFTSpectrumAnalyzerAudioProcessorEditor::calculateY(int plotSelection, int index) {
+
+	float lengthAxis = (getHeight() - 240) * .95;
+	float range = yMax - yMin;
+	float ratio = -lengthAxis / range;
+	float shift = (range - 2.0f * yMax) * ratio / 2.0f;
+	float start = (y_componentOffset + lengthAxis + 12) / 2;
+
+	return std::log10(binMag[plotSelection][index]) * 40 * ratio + shift + start;
 }
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::findPeak() {
@@ -1236,6 +1246,19 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::findPeak() {
 	return maxValue;
 }
 
+bool FFTSpectrumAnalyzerAudioProcessorEditor::inBounds(float x, float y) {
+
+	float graphWest = (getWidth() * 0.295) - 1;
+	float graphNorth = y_componentOffset;
+	float graphEast = (getWidth() - x_componentOffset) + 0.5;
+	float graphSouth = getHeight() - 240 - graphNorth;
+
+	if (x < graphWest || x > graphEast || y < graphNorth || y > graphSouth) {
+		return false;
+	}
+	return true;
+}
+
 float FFTSpectrumAnalyzerAudioProcessorEditor::getYCoord(int plotNumber, bool log, int index) {
 	
 	return 40 * std::log10(binMag[plotNumber][index]);
@@ -1253,6 +1276,7 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::screenToGraph(float screenCoord) 
 }
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::graphToScreen(int graphCoord) {
+
 	float start = getWidth() * 0.295 - 1;
 	float lengthAxis = getWidth() - x_componentOffset;
 	float range = xMax - xMin;

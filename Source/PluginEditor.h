@@ -41,6 +41,8 @@ public:
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
     float calculateX(bool log, int index);
+    float calculateY(int plotSelection, int index);
+    bool inBounds(float x, float y);
     void setFreqData(int fftData);
     void setWindowFunction();
     void setBlockSize();
@@ -101,6 +103,8 @@ private:
     static float yMax;
     static int plotIndexSelection;
     static float cursorX;
+    static float cursorY;
+    static int cursorIndex;
     static int cursorPeak;
 
     static int windowWidth;
