@@ -134,13 +134,13 @@ private:
     int widthPrimaryCategoryLabel = 275;
     int heightPrimaryCategoryLabel = 25;
     // height and width for secondary labels ("Selected Traces", Upper/Lower, etc.)
-    int width_secondaryLabel = 150;
+    int widthSecondaryLabel = 150;
     int heightSecondaryLabel = 25;
     // space between primary labels and secondary labels
     int yOffsetPrimarySecondaryLabel = 8;
     // space between secondary components (e.g. white box for plot selection) and physical boundaries
     int xOffsetComponent = 6;
-    int y_componentOffset = 6;
+    int yOffsetComponent = 6;
     // dimensions of white box for plot selection
     int yOffsetSelectionBox = 2;
     int widthSelectionBox = 263;
@@ -153,7 +153,6 @@ private:
     int windowMaxHeight = 1080;
     int lineHeight = 1;
     //** white area of plot selection in IMPORT AUDIO**//
-    int magic_num9 = 23;
     int verticalBufferCheckbox = 46;
     int xMarginCheckboxFill = 16;
     int yMarginCheckbox1Fill = 74;
@@ -171,7 +170,7 @@ private:
     int cornerSizeSelectionBox = 3;
     int cornersizeCheckbox = 4;
 
-    int yMarginSelectionBoundary = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + (magic_num9 * yOffsetSelectionBox);
+    int yMarginSelectionBoundary = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + (23 * yOffsetSelectionBox);
     int yMarginSelectionBox = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + yOffsetSelectionBox;
     int yMarginCheckbox2Fill = yMarginCheckbox1Fill + verticalBufferCheckbox;
     int yMarginZoomBoundary = (119.5 * yOffsetSelectionBox);
@@ -179,8 +178,15 @@ private:
     int tickWidth = 5;
     int zeroTickWidth = 15;
 
-    float borderXBuffer = widthPrimaryCategoryLabel + graphBorderXBuffer;
-    //float borderXBuffer = 285;
+    //float widthLeftMenuPanel = widthPrimaryCategoryLabel + graphBorderXBuffer;
+    float leftMarginRightMenu = widthPrimaryCategoryLabel + graphBorderXBuffer;
+
+   
+
+
+    //** graph scaling variables **// resize
+    float dropdownsLeftMargin = getWidth() * .295;
+
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
