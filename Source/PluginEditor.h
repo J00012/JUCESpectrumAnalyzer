@@ -25,8 +25,8 @@ public:
     void timerCallback() override;
     void getBounds();
     void setPlotIndex(int plotIndex);
-    void updateToggleState(int plotId);
-    void setVisibility(int plotId);
+   // void updateToggleState(int plotId);
+    void setPlotVisibility(int plotId);
     void handleNewSelection(int numBins, int rowSize, int rowIndex);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
 
@@ -41,10 +41,13 @@ public:
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
     void setFreqData(int fftData);
+    juce::Colour setColor(int row);
+    void initializeBinMag();
     void setWindowFunction();
     void setBlockSize();
     void setAxisType();
     std::string floatToStringPrecision(float f, int p);
+
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -81,12 +84,31 @@ private:
     juce::Label inputXmax;
     juce::Label inputYmin;
     juce::Label inputYmax;
+
     juce::Label labelPlot1{ "Plot 1" };
     juce::Label labelPlot2{ "Plot 2" };
+    juce::Label labelPlot3{ "Plot 3" };
+    juce::Label labelPlot4{ "Plot 4" };
+    juce::Label labelPlot5{ "Plot 5" };
+    juce::Label labelPlot6{ "Plot 6" };
+    juce::Label labelPlot7{ "Plot 7" };
+   
     juce::TextButton buttonPlot1{ "Selected" };
     juce::TextButton buttonPlot2{ "Select" };
+    juce::TextButton buttonPlot3{ "Select" };
+    juce::TextButton buttonPlot4{ "Select" };
+    juce::TextButton buttonPlot5{ "Select" };
+    juce::TextButton buttonPlot6{ "Select" };
+    juce::TextButton buttonPlot7{ "Select" };
+    
     juce::ToggleButton toggleButtonPlot1;
     juce::ToggleButton toggleButtonPlot2;
+    juce::ToggleButton toggleButtonPlot3;
+    juce::ToggleButton toggleButtonPlot4;
+    juce::ToggleButton toggleButtonPlot5;
+    juce::ToggleButton toggleButtonPlot6;
+    juce::ToggleButton toggleButtonPlot7;
+ 
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
     static float xMinPrev;
@@ -100,6 +122,8 @@ private:
     static int plotIndexSelection;
     static float cursorX;
     static int cursorPeak;
+    static float xMaxFrequency;
+    static float xMinFrequency;
 
     static int windowWidth;
     static int windowHeight;
@@ -115,12 +139,25 @@ private:
     static int fftCounter;
     static int stepSize;
 
+
+
     static int count;
     static int countPrev;
+
+   
+
+    struct plotItem {
+        bool isVisible;
+        juce::Colour color;
+        int checkBoxPos;
+    };
+    
+    static plotItem plotInfo[7];
 
     static bool setToLog;
     static bool newSelection;
     static bool displayError;
+    static bool conCall;
 
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;
