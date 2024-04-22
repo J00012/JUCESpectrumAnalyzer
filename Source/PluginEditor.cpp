@@ -1180,7 +1180,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 	}
 	//valid bounds
 	else {
-		if (binMag.size() == 3) {
+		if (audioProcessor.minBlockSize) {
 			//get index based on cursor
 			int i = 1;
 			while (calculateX(setToLog, i) < cursorX) {
