@@ -145,7 +145,7 @@ private:
     int yOffsetSelectionBox = 2;
     int widthSelectionBox = 263;
     int heightSelectionBox = 90;
-
+    int graphBorderXBuffer = 10;
     // GUI/Window Sizing and values
     int windowWidth = 950;
     int windowHeight = 550 + 2;
@@ -179,6 +179,8 @@ private:
     int tickWidth = 5;
     int zeroTickWidth = 15;
 
+    float borderXBuffer = widthPrimaryCategoryLabel + graphBorderXBuffer;
+    //float borderXBuffer = 285;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
