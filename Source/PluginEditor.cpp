@@ -26,7 +26,8 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -90;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxFrequency = 8000;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMinFrequency = 1;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 550 + 2;
@@ -65,18 +66,31 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftCounter = 0;
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::conCall = true;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::blockProcessed = false;
 
 //Processor vectors
-std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::indexToFreqMap = { 0 };
+
+//i changed index to freq map
+std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::indexToFreqMap;
 std::vector< std::vector<float>> FFTSpectrumAnalyzerAudioProcessorEditor::binMag;
 std::vector< std::vector<float>> FFTSpectrumAnalyzerAudioProcessorEditor::sampleSelections;
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bufferLeft = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferLeft = { 0 };
-//juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessorEditor::editFFT(0);
 
-juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessorEditor::editWindow(0, juce::dsp::WindowingFunction<float>::blackman);
+FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[7] = {
+	{false, juce::Colours::lightgreen, juce::Path(), 74},
+	{false, juce::Colours::cornflowerblue,juce::Path(), 120},
+	{false, juce::Colours::purple},
+	{false, juce::Colours::cyan},
+	{false, juce::Colours::coral},
+	{false, juce::Colours::goldenrod},
+	{false, juce::Colours::slateblue}
+};
+
+juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessorEditor::window(0, juce::dsp::WindowingFunction<float>::hann);
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
@@ -90,8 +104,9 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	setResizeLimits(windowWidth, windowHeight, windowMaxWidth, windowMaxHeight);
 
 	sampleSelections.resize(2);
-	setPlotIndex(plotIndexSelection);
-	setFreqData(1024);
+	setPlotIndex(rowIndex);
+	setFreqData(fftSize);
+	initializeBinMag();
 	//audioProcessor.zeroAllSelections(numBins, rowSize);
 	//audioProcessor.prepBuffers(fftS);
 	//binMag = audioProcessor.getBinSet();
@@ -190,7 +205,17 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	windowFunction.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	windowFunction.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	windowFunction.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
-	windowFunction.onChange = [this] { setWindowFunction(); };
+	windowFunction.onChange = [this] { setWindowFunction();
+	if (blockProcessed) {
+		int temp = rowIndex;
+		for (int i = 0; i < rowSize; i++) {
+			if (sampleSelections[i].size() != 0) {  //check if there is data in acc buffer
+				rowIndex = i;
+				processBuffer();
+			}
+		}
+		rowIndex = temp;
+	}};
 
 	addAndMakeVisible(axis);
 	axis.addItem("Linear Frequency", 1);
@@ -217,7 +242,17 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	size.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	size.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	size.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
-	size.onChange = [this] { setBlockSize(); };
+	size.onChange = [this] { setBlockSize(); zeroBuffers();
+	if (blockProcessed) {
+		int temp = rowIndex;
+		for (int i = 0; i < rowSize; i++) {
+			if (sampleSelections[i].size() != 0) {   //check if there is data in acc buffer
+				rowIndex = i;
+				processBuffer();
+			}
+		}
+		rowIndex = temp;
+	} repaint(); };
 
 
 	// new gui elements end
@@ -227,38 +262,136 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonPlot1.setClickingTogglesState(true);
 	buttonPlot1.onClick = [&]()
 		{
-			plotIndexSelection = 0;
+			rowIndex = 0;
 			setPlotIndex(0);
 		};
+
 	addAndMakeVisible(buttonPlot2);
 	buttonPlot2.setClickingTogglesState(true);
 	buttonPlot2.onClick = [&]()
 		{
-			plotIndexSelection = 1;
+			rowIndex = 1;
 			setPlotIndex(1);
 		};
+
+	addAndMakeVisible(buttonPlot3);
+	buttonPlot3.setClickingTogglesState(true);
+	buttonPlot3.onClick = [&]()
+		{
+			rowIndex = 2;
+			setPlotIndex(2);
+		};
+
+	addAndMakeVisible(buttonPlot4);
+	buttonPlot4.setClickingTogglesState(true);
+	buttonPlot4.onClick = [&]()
+		{
+			rowIndex = 3;
+			setPlotIndex(3);
+		};
+
+	addAndMakeVisible(buttonPlot5);
+	buttonPlot5.setClickingTogglesState(true);
+	buttonPlot5.onClick = [&]()
+		{
+			rowIndex = 4;
+			setPlotIndex(4);
+		};
+
+	addAndMakeVisible(buttonPlot6);
+	buttonPlot6.setClickingTogglesState(true);
+	buttonPlot6.onClick = [&]()
+		{
+			rowIndex = 5;
+			setPlotIndex(5);
+		};
+
+	addAndMakeVisible(buttonPlot7);
+	buttonPlot7.setClickingTogglesState(true);
+	buttonPlot7.onClick = [&]()
+		{
+			rowIndex = 6;
+			setPlotIndex(6);
+		};
+
 
 	// toggle button for plot 1
 	addAndMakeVisible(toggleButtonPlot1);
 	toggleButtonPlot1.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
 	toggleButtonPlot1.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	if (isVisiblePlot1 == true)
+	if (plotInfo[0].isVisible == true)
 	{
 		toggleButtonPlot1.setToggleState(true, true);
 	}
-	toggleButtonPlot1.onClick = [this] { updateToggleState(1); };
+	toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
 	toggleButtonPlot1.setClickingTogglesState(true);
 
 	// toggle button for plot 2
 	addAndMakeVisible(toggleButtonPlot2);
 	toggleButtonPlot2.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
 	toggleButtonPlot2.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	if (isVisiblePlot2 == true)
+	if (plotInfo[1].isVisible == true)
 	{
 		toggleButtonPlot2.setToggleState(true, true);
 	}
-	toggleButtonPlot2.onClick = [this] { updateToggleState(2); };
+	toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
 	toggleButtonPlot2.setClickingTogglesState(true);
+
+	// toggle button for plot 3
+	addAndMakeVisible(toggleButtonPlot3);
+	toggleButtonPlot3.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot3.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
+	if (plotInfo[2].isVisible == true)
+	{
+		toggleButtonPlot3.setToggleState(true, true);
+	}
+	toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
+	toggleButtonPlot3.setClickingTogglesState(true);
+
+	// toggle button for plot 4
+	addAndMakeVisible(toggleButtonPlot4);
+	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot4.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
+	if (plotInfo[3].isVisible == true)
+	{
+		toggleButtonPlot4.setToggleState(true, true);
+	}
+	toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
+	toggleButtonPlot4.setClickingTogglesState(true);
+
+	// toggle button for plot 5
+	addAndMakeVisible(toggleButtonPlot5);
+	toggleButtonPlot5.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot5.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
+	if (plotInfo[4].isVisible == true)
+	{
+		toggleButtonPlot5.setToggleState(true, true);
+	}
+	toggleButtonPlot5.onClick = [this] { setPlotVisibility(4); };
+	toggleButtonPlot5.setClickingTogglesState(true);
+
+	// toggle button for plot 6
+	addAndMakeVisible(toggleButtonPlot6);
+	toggleButtonPlot6.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot6.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
+	if (plotInfo[5].isVisible == true)
+	{
+		toggleButtonPlot6.setToggleState(true, true);
+	}
+	toggleButtonPlot6.onClick = [this] { setPlotVisibility(5); };
+	toggleButtonPlot6.setClickingTogglesState(true);
+
+	// toggle button for plot 7
+	addAndMakeVisible(toggleButtonPlot7);
+	toggleButtonPlot7.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot1.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
+	if (plotInfo[6].isVisible == true)
+	{
+		toggleButtonPlot7.setToggleState(true, true);
+	}
+	toggleButtonPlot7.onClick = [this] { setPlotVisibility(6); };
+	toggleButtonPlot7.setClickingTogglesState(true);
+
 
 	addAndMakeVisible(inputXmin);
 	addAndMakeVisible(inputXmax);
@@ -275,8 +408,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
 
-	inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
-	inputXmax.setText(std::to_string(xMax), juce::dontSendNotification);
+	inputXmin.setText(std::to_string(xMinFrequency), juce::dontSendNotification);
+	inputXmax.setText(std::to_string(xMaxFrequency), juce::dontSendNotification);
 	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
 	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
 
@@ -318,43 +451,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
 
-	//PROCESSOR CLASS CODE!!!!!!!!!
-	//rowSize = 2;
-
-
-
-	//audioProcessor.setFFTSize(fftSize);
-
-	//handleNewSelection(numBins, rowSize, rowIndex);
-
-	//juce::dsp::WindowingFunction<float>::WindowingMethod windowType = juce::dsp::WindowingFunction<float>::WindowingMethod::hann;
-	//audioProcessor.setWindow(windowType);
-
-
-	//audioProcessor.zeroAllSelections(numBins, rowSize);
-	//audioProcessor.prepBuffers(fftSize);
-	//binMag = audioProcessor.getBinMag();
-	//audioProcessor.zeroSelection(rowIndex, numBins);
 	if (newSelection == true) {
-		/*fftCounter = audioProcessor.getFFTCounter();
-		binMag[rowIndex] = audioProcessor.getBinMag();
-		audioProcessor.prepBuffers(fftS);
-		audioProcessor.zeroSelection(rowIndex);
-		audioProcessor.clearRingBuffer();
-		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
-		audioProcessor.clearAccumulationBuffer();
-		if (fftCounter != 0)
-		{
-			for (int i = 0; i < numBins; i++) {
-				binMag[rowIndex][i] /= fftCounter;
-			}
-		}*/
-		//int sampleRate = audioProcessor.getBlockSampleRate();
 		audioProcessor.setStepSize(stepSize);                             //this needs to be changed when the size is changed
 		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
 		audioProcessor.clearAccumulationBuffer();
 		processBuffer();
 		newSelection = false;
+		repaint();
 	}
 
 	juce::Path plot1;
@@ -387,6 +490,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	graphSouth = heightBorder;*/
 
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
+
+	if (setToLog) {
+		xMax = std::log10(xMaxFrequency);
+		xMin = std::log10(xMinFrequency);
+	}
+	else {
+		xMax = xMaxFrequency;
+		xMin = xMinFrequency;
+	}
+
 
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors 
@@ -425,42 +538,34 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float plotYShift = yStartPlot + yShift;
 
 	// Graph plots
-	int logScale = 40;
-	if (audioProcessor.minBlockSize) {
-		if (setToLog == true) {
-			xMax = std::log10(xMax);
-			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
-			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
-			for (int i = 1; i < indexToFreqMap.size(); i++)
-			{
-				if (isVisiblePlot2 == true) {
-					plot2.lineTo(std::log10(indexToFreqMap[i]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
-				}
-				if (isVisiblePlot1 == true) {
-					plot1.lineTo(std::log10(indexToFreqMap[i]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[0][i]) * scaleY + plotYShift);
-				}
-			}
-		}
-		else {
-			xMax = maxFreq / 5;
-			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
-			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
-			for (int i = 1; i < indexToFreqMap.size(); i++)
-			{
-				if (isVisiblePlot2 == true) {
-					plot2.lineTo(indexToFreqMap[i] * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
-				}
-				if (isVisiblePlot1 == true) {
-					plot1.lineTo(indexToFreqMap[i] * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[0][i]) * scaleY + plotYShift);
-				}
-			}
-		}
 
-		g.setColour(juce::Colours::lightgreen);
-		g.strokePath(plot2, juce::PathStrokeType(3.0f));
-		g.setColour(juce::Colours::cornflowerblue);
-		g.strokePath(plot1, juce::PathStrokeType(3.0f));
+	int logScale = 40;
+	//juce::Path plot;
+	if (audioProcessor.minBlockSize) {
+		for (int i = 0; i < rowSize; i++) {
+			
+			if (plotInfo[i].isVisible == true) {
+				plotInfo[i].path.clear();
+				plotInfo[i].path.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[i][0]) * scaleY + yShift);
+
+				if (setToLog == true) {
+					//if (plotInfo[i].isVisible == true) {
+					for (int j = 1; j < indexToFreqMap.size(); j++) {
+						plotInfo[i].path.lineTo(std::log10(indexToFreqMap[j]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[i][j]) * scaleY + plotYShift);
+					}
+				}
+				else {
+					//if (plotInfo[i].isVisible == true) {
+					for (int j = 1; j < indexToFreqMap.size(); j++) {
+						plotInfo[i].path.lineTo(indexToFreqMap[j] * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[i][j]) * scaleY + plotYShift);
+					}
+				}
+				g.setColour(plotInfo[i].color);
+				g.strokePath(plotInfo[i].path, juce::PathStrokeType(3.0f));
+			}
+		}
 	}
+	
 	else {
 		g.setColour(juce::Colours::black);
 		g.fillRoundedRectangle(border_xBuffer, border_yBuffer, widthBorder, heightBorder, 3);
@@ -554,15 +659,18 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::white);
 	g.fillRoundedRectangle(x_componentOffset, yMargin_selectionBox, width_selectionBox, height_selectionBox, 3);
 
-	// fill in checkboxes
-	if (isVisiblePlot1 == true) {
+	for (int i = 0; i < rowSize; i++) {
+		// fill in checkboxes
+		if (plotInfo[i].isVisible == true) {
+			g.setColour(juce::Colours::dodgerblue);
+			g.fillRoundedRectangle(xMargin_checkboxFill, plotInfo[i].checkBoxPos, 16, 16, 4);
+		}
+	}
+
+	/*if (isVisiblePlot1 == true) {
 		g.setColour(juce::Colours::dodgerblue);
 		g.fillRoundedRectangle(xMargin_checkboxFill, yMargin_checkboxFill1, 16, 16, 4);
-	}
-	if (isVisiblePlot2 == true) {
-		g.setColour(juce::Colours::dodgerblue);
-		g.fillRoundedRectangle(xMargin_checkboxFill, yMargin_checkboxFill2, 16, 16, 4);
-	}
+	}*/
 
 	// draw line to seperate plot selections
 	int xMargin_selectionBoundary = 2.5 * x_componentOffset;
@@ -602,10 +710,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		juce::Rectangle<int> peakLine(graphToScreen(cursorPeak), y_componentOffset, 1, lengthYAxis);
 		g.fillRect(peakLine);
 		g.setColour(juce::Colours::white);
-		if (isVisiblePlot1)
-			peakPlot.setText("(" + floatToStringPrecision((float)cursorPeak, 1) + ", " + floatToStringPrecision(cursorYPeak, 2) + ")", juce::dontSendNotification);
-		if (isVisiblePlot2)
-			peakPlot.setText("(" + floatToStringPrecision((float)cursorPeak, 1) + ", " + floatToStringPrecision(cursorYPeak, 2) + ")", juce::dontSendNotification);
+
+		for (int i = 0; i < rowSize; i++)
+			if (plotInfo[i].isVisible) {
+				peakPlot.setText("(" + floatToStringPrecision((float)cursorPeak, 1) + ", " + floatToStringPrecision(cursorYPeak, 2) + ")", juce::dontSendNotification);
+			}
 	}
 }
 
@@ -618,6 +727,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 	else if (isRunning && !audioProcessor.getProcBlockCalled()) {
 		isRunning = false;
 		newSelection = true;
+		blockProcessed = true;
 		audioProcessor.setInitialBlock();
 		repaint();
 		//audioProcessor.resetScopeDataIndex();
@@ -625,27 +735,27 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 	audioProcessor.resetProcBlockCalled();
 }
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex)
-{
-	if (count == 0) {  //prepping all existing rows
-		for (int r = 0; r < rowSize; r++) {
-			audioProcessor.prepSelection(numBins, rowSize, r);
-		}
-	}
-
-	else if (count > countPrev)
-	{  //handling new row selection
-		if (rowIndex > rowSize)
-		{
-			audioProcessor.prepSelection(numBins, rowSize, rowIndex);
-		}
-		else {
-			return;
-		}  //there is no selection made, return
-	}
-	countPrev = count;
-	count++;
-}
+//void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex)
+//{
+//	if (count == 0) {  //prepping all existing rows
+//		for (int r = 0; r < rowSize; r++) {
+//			audioProcessor.prepSelection(numBins, rowSize, r);
+//		}
+//	}
+//
+//	else if (count > countPrev)
+//	{  //handling new row selection
+//		if (rowIndex > rowSize)
+//		{
+//			audioProcessor.prepSelection(numBins, rowSize, rowIndex);
+//		}
+//		else {
+//			return;
+//		}  //there is no selection made, return
+//	}
+//	countPrev = count;
+//	count++;
+//}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
@@ -844,11 +954,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData) {
+	fftSize = fftData;
 	numBins = fftSize / 2 + 1;
 	numFreqBins = fftSize / 2;
 	stepSize = fftSize / 2;
-	//indexToFreqMap.resize(numBins);
-	binMag.resize(rowSize, std::vector<float>(numBins, std::numeric_limits<float>::epsilon()));
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
@@ -892,52 +1001,84 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 {
-	rowIndex = plotIndex;
-	audioProcessor.setRowIndex(rowIndex);
+	audioProcessor.setRowIndex(plotIndex);
 	if (plotIndex == 0)
 	{
 		buttonPlot1.setButtonText("Selected");
 		buttonPlot2.setButtonText("Select");
+		buttonPlot3.setButtonText("Select");
+		buttonPlot4.setButtonText("Select");
+		buttonPlot5.setButtonText("Select");
+		buttonPlot6.setButtonText("Select");
+		buttonPlot7.setButtonText("Select");
 	}
 	else if (plotIndex == 1)
 	{
-		buttonPlot2.setButtonText("Selected");
 		buttonPlot1.setButtonText("Select");
+		buttonPlot2.setButtonText("Selected");
+		buttonPlot3.setButtonText("Select");
+		buttonPlot4.setButtonText("Select");
+		buttonPlot5.setButtonText("Select");
+		buttonPlot6.setButtonText("Select");
+		buttonPlot7.setButtonText("Select");
+	}
+	else if (plotIndex == 2)
+	{
+		buttonPlot1.setButtonText("Select");
+		buttonPlot2.setButtonText("Select");
+		buttonPlot3.setButtonText("Selected");
+		buttonPlot4.setButtonText("Select");
+		buttonPlot5.setButtonText("Select");
+		buttonPlot6.setButtonText("Select");
+		buttonPlot7.setButtonText("Select");
+	}
+	else if (plotIndex == 3)
+	{
+		buttonPlot1.setButtonText("Select");
+		buttonPlot2.setButtonText("Select");
+		buttonPlot3.setButtonText("Select");
+		buttonPlot4.setButtonText("Selected");
+		buttonPlot5.setButtonText("Select");
+		buttonPlot6.setButtonText("Select");
+		buttonPlot7.setButtonText("Select");
+	}
+	else if (plotIndex == 4)
+	{
+		buttonPlot1.setButtonText("Select");
+		buttonPlot2.setButtonText("Select");
+		buttonPlot3.setButtonText("Select");
+		buttonPlot4.setButtonText("Select");
+		buttonPlot5.setButtonText("Selected");
+		buttonPlot6.setButtonText("Select");
+		buttonPlot7.setButtonText("Select");
+	}
+	else if (plotIndex == 5)
+	{
+		buttonPlot1.setButtonText("Select");
+		buttonPlot2.setButtonText("Select");
+		buttonPlot3.setButtonText("Select");
+		buttonPlot4.setButtonText("Select");
+		buttonPlot5.setButtonText("Select");
+		buttonPlot6.setButtonText("Selected");
+		buttonPlot7.setButtonText("Select");
+	}
+	else if (plotIndex == 6)
+	{
+		buttonPlot1.setButtonText("Select");
+		buttonPlot2.setButtonText("Select");
+		buttonPlot3.setButtonText("Select");
+		buttonPlot4.setButtonText("Select");
+		buttonPlot5.setButtonText("Select");
+		buttonPlot6.setButtonText("Select");
+		buttonPlot7.setButtonText("Selected");
 	}
 }
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::updateToggleState(int plotId)
+
+void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotVisibility(int plotId)
 {
-	if (plotId == 1)
-	{
-		setVisibility(1);
-	}
-	else
-		setVisibility(2);
+	plotInfo[plotId].isVisible = !plotInfo[plotId].isVisible;
 	repaint();
-}
-
-
-void FFTSpectrumAnalyzerAudioProcessorEditor::setVisibility(int plotId)
-{
-	if (plotId == 1)
-	{
-		if (isVisiblePlot1 == false) {
-			isVisiblePlot1 = true;
-		}
-		else if (isVisiblePlot1 == true) {
-			isVisiblePlot1 = false;
-		}
-	}
-	else
-	{
-		if (isVisiblePlot2 == false) {
-			isVisiblePlot2 = true;
-		}
-		else if (isVisiblePlot2 == true) {
-			isVisiblePlot2 = false;
-		}
-	}
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setWindowFunction() {
@@ -991,9 +1132,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setBlockSize() {
 	auto selection = size.getText();
 	fftSize = selection.getIntValue();
 	setFreqData(fftSize);
-	//audioProcessor.setInitialAccBuffer();
-	//processBuffer();
-	repaint();
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setAxisType() {
@@ -1007,9 +1145,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setAxisType() {
 	}
 }
 
+void FFTSpectrumAnalyzerAudioProcessorEditor::initializeBinMag() {
+	binMag.resize(2, std::vector<float>(numBins, std::numeric_limits<float>::epsilon()));
+}
+
 void FFTSpectrumAnalyzerAudioProcessorEditor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {
-	juce::dsp::WindowingFunction<float> window(fftSize, type);
-	window.fillWindowingTables(fftSize, type);
+	//juce::dsp::WindowingFunction<float> window(fftSize, type);
+	//window.fillWindowingTables(fftSize, type);
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
@@ -1029,18 +1171,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 	}
 
 	while (bufferShift <= sampleSelections[rowIndex].size() - stepSize) {
-		//while (buffSize >= numFreqBins) {
 
 		std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
 		std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
 		std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
 
 		std::copy(sampleSelections[rowIndex].begin() + bufferShift, sampleSelections[rowIndex].begin() + (bufferShift + stepSize), bufferRight.begin());
-		//buffer.read(bufferRight.data(), numFreqBins);
 		std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
 		windowBufferLeft = bufferLeft;
-		editWindow.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
-		editWindow.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
+		window.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
+		window.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
 		forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
 		fftCounter++;
 
@@ -1092,10 +1232,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 	else {
 		isGraph = true;
 		cursorX = screenToGraph(cursorX);
-		if (plotIndexSelection == 1 && isVisiblePlot2) {
+		if (rowIndex == 1 && plotInfo[1].isVisible) {
 			cursorPlot.setText("(" + floatToStringPrecision(cursorX, 1) + ", " + floatToStringPrecision(getYCoord(1, setToLog, (int)cursorX), 2) + ")", juce::dontSendNotification);
 		}
-		if (plotIndexSelection == 0 && isVisiblePlot1) {
+		if (rowIndex == 0 && plotInfo[0].isVisible) {
 			cursorPlot.setText("(" + floatToStringPrecision(cursorX, 1) + ", " + floatToStringPrecision(getYCoord(0, setToLog, (int)cursorX), 2) + ")", juce::dontSendNotification);
 		}
 	}
@@ -1104,7 +1244,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::findPeak()
 {
-	int p = plotIndexSelection;
+	int p = rowIndex;
 
 	float maxValue = getYCoord(p, setToLog, 0);
 	for (size_t i = 1; i < binMag[p].size(); ++i) {
@@ -1113,8 +1253,6 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::findPeak()
 			cursorPeak = i;
 		}
 	}
-	//rob sucks
-	//rian swallows
 	return maxValue;
 }
 
