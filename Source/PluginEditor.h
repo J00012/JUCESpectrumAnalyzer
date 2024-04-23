@@ -99,93 +99,64 @@ private:
     // gui elements start
     juce::Label labelCursor;
     juce::Label labelCursorValue;
-    juce::Label labelPeakPlot;
+    juce::Label labelPeak;
+    juce::Label labelPeakValue;
     juce::Label labelImportAudio;
     juce::Label labelSelectTrace;
     juce::Label labelZoom;
     juce::Label labelUpperBounds;
     juce::Label labelLowerBounds;
     juce::Label labelExport;
-    juce::Label labelPeak;
-    juce::Label labelDropdownWindow;
     juce::Label labelDropdownAxis;
     juce::Label labelDropdownSize;
+    juce::Label labelDropdownWindow;
     juce::Label labelPlot1{ "Plot 1" };
     juce::Label labelPlot2{ "Plot 2" };
     juce::Label labelUpperBoundsX;
     juce::Label labelUpperBoundsY;
     juce::Label labelLowerBoundsX;
     juce::Label labelLowerBoundsY; 
-    juce::Label inputXmin;
-    juce::Label inputXmax;
-    juce::Label inputYmin;
-    juce::Label inputYmax;
-    juce::ComboBox comboboxWindowFunction;
+    juce::Label inputLowerBoundsX;
+    juce::Label inputUpperBoundsX;
+    juce::Label inputLowerBoundsY;
+    juce::Label inputUpperBoundsY;
     juce::ComboBox comboboxAxisType;
     juce::ComboBox comboboxSizeSetting;
+    juce::ComboBox comboboxWindowFunction;
     juce::TextButton buttonExport{ "Export .csv" };
-    juce::TextButton buttonPlot1{ "Selected" };
-    juce::TextButton buttonPlot2{ "Select" };
+    juce::TextButton buttonSelectPlot1{ "Selected" };
+    juce::TextButton buttonSelectPlot2{ "Select" };
     juce::ToggleButton toggleButtonPlot1;
     juce::ToggleButton toggleButtonPlot2;
     // gui elements end
 
-    // height and width for primary category labels (Import Audio, Zoom, Export, etc.) 
-    int widthPrimaryCategoryLabel = 275;
-    int heightPrimaryCategoryLabel = 25;
-    // height and width for secondary labels ("Selected Traces", Upper/Lower, etc.)
-    int widthSecondaryLabel = 150;
-    int heightSecondaryLabel = 25;
-    // space between primary labels and secondary labels
-    int yOffsetPrimarySecondaryLabel = 8;
-    // space between secondary components (e.g. white box for plot selection) and physical boundaries
-    int xOffsetComponent = 6;
-    int yOffsetComponent = 6;
-    // dimensions of white box for plot selection
-    int yOffsetSelectionBox = 2;
-    int widthSelectionBox = 263;
-    int heightSelectionBox = 90;
-    int graphBorderXBuffer = 10;
-    // GUI/Window Sizing and values
+    int bufferXComponent = 6;
+    int bufferYComponent = 6;
+    int bufferXGraphBorder = 10;
+    int bufferYPrimarySecondaryLabel = 8;
+    int bufferYCheckbox = 46;
+    int bufferX = xMarginRightMenu + 2;
+    int bufferY = bufferYComponent + 12;
+    int bufferDrawingWindowBorder = 20;
+
     int windowWidth = 950;
     int windowHeight = 550 + 2;
     int windowMaxWidth = 2160;
     int windowMaxHeight = 1080;
+    int widthPrimaryCategoryLabel = 275;
+    int widthSecondaryLabel = 150;
+
     int lineHeight = 1;
-    //** white area of plot selection in IMPORT AUDIO**//
-    int verticalBufferCheckbox = 46;
-    int xMarginCheckboxFill = 16;
-    int yMarginCheckbox1Fill = 74;
-    int xMarginZoomBoundary = 2.5 * xOffsetComponent;
-    int xMarginSelectionBoundary = 2.5 * xOffsetComponent;
+    int heightPrimaryCategoryLabel = 25;
+    int heightSecondaryLabel = 25;
 
-    int widthCheckbox = 16;
-    int widthSelectionBoundary = 243;
-    int widthZoomBoundary = 245;
+    int xMarginRightMenu = widthPrimaryCategoryLabel + bufferXGraphBorder;
+    int xMarginOrigin = 0;
+    int xMarginXYAxis = xMarginRightMenu + bufferDrawingWindowBorder;
 
-    int heightSelectionBoundary = 1;
-    int heightCheckbox = 16;
-    int heightZoomBoundary = heightSelectionBoundary;
+    int yMarginOrigin = 0;
+    int yMarginSelectionBox = heightPrimaryCategoryLabel + bufferYPrimarySecondaryLabel + heightSecondaryLabel + yMarginSelectionBox;
 
-    int cornerSizeSelectionBox = 3;
-    int cornersizeCheckbox = 4;
-
-    int yMarginSelectionBoundary = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + (23 * yOffsetSelectionBox);
-    int yMarginSelectionBox = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + yOffsetSelectionBox;
-    int yMarginCheckbox2Fill = yMarginCheckbox1Fill + verticalBufferCheckbox;
-    int yMarginZoomBoundary = (119.5 * yOffsetSelectionBox);
-
-    int tickWidth = 5;
-    int zeroTickWidth = 15;
-
-    //float widthLeftMenuPanel = widthPrimaryCategoryLabel + graphBorderXBuffer;
-    float leftMarginRightMenu = widthPrimaryCategoryLabel + graphBorderXBuffer;
-
-   
-
-
-    //** graph scaling variables **// resize
-    float dropdownsLeftMargin = getWidth() * .295;
 
 
 

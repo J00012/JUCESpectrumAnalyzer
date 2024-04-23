@@ -91,7 +91,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(labelCursor);
 	addAndMakeVisible(labelCursorValue);
 	addAndMakeVisible(labelPeak);
-	addAndMakeVisible(labelPeakPlot);
+	addAndMakeVisible(labelPeakValue);
 	addAndMakeVisible(labelDropdownWindow);
 	addAndMakeVisible(labelDropdownAxis);
 	addAndMakeVisible(labelDropdownSize);
@@ -99,14 +99,14 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(comboboxAxisType);
 	addAndMakeVisible(comboboxSizeSetting);
 	addAndMakeVisible(buttonExport);
-	addAndMakeVisible(buttonPlot1);
-	addAndMakeVisible(buttonPlot2);
+	addAndMakeVisible(buttonSelectPlot1);
+	addAndMakeVisible(buttonSelectPlot2);
 	addAndMakeVisible(toggleButtonPlot1);
 	addAndMakeVisible(toggleButtonPlot2);
-	addAndMakeVisible(inputXmax);
-	addAndMakeVisible(inputYmax);
-	addAndMakeVisible(inputXmin);
-	addAndMakeVisible(inputYmin);
+	addAndMakeVisible(inputLowerBoundsX);
+	addAndMakeVisible(inputUpperBoundsX);
+	addAndMakeVisible(inputLowerBoundsY);
+	addAndMakeVisible(inputUpperBoundsY);
 
 	// Fonts
 	labelImportAudio.setFont(juce::Font("Arial", 18.0f, juce::Font::bold));
@@ -145,10 +145,10 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelDropdownSize.setText("Size", juce::dontSendNotification);
 	labelDropdownAxis.setText("Axis", juce::dontSendNotification);
 	//inputXmin.setText(std::to_string(xMin), juce::dontSendNotification);
-	inputXmax.setText(std::to_string(xMinFrequency), juce::dontSendNotification);
-	inputXmax.setText(std::to_string(xMaxFrequency), juce::dontSendNotification);
-	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
-	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
+	inputLowerBoundsX.setText(std::to_string(xMinFrequency), juce::dontSendNotification);
+	inputUpperBoundsX.setText(std::to_string(xMaxFrequency), juce::dontSendNotification);
+	inputLowerBoundsY.setText(std::to_string(yMin), juce::dontSendNotification);
+	inputUpperBoundsY.setText(std::to_string(yMax), juce::dontSendNotification);
 
 	// Colour
 	labelPlot1.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
@@ -177,25 +177,25 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	toggleButtonPlot1.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
 	toggleButtonPlot2.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
 	toggleButtonPlot2.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	inputXmin.setColour(juce::Label::backgroundColourId, juce::Colours::white);
-	inputXmin.setColour(juce::Label::textColourId, juce::Colours::black);
-	inputXmin.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
-	inputXmax.setColour(juce::Label::backgroundColourId, juce::Colours::white);
-	inputXmax.setColour(juce::Label::textColourId, juce::Colours::black);
-	inputXmax.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
-	inputYmin.setColour(juce::Label::backgroundColourId, juce::Colours::white);
-	inputYmin.setColour(juce::Label::textColourId, juce::Colours::black);
-	inputYmin.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
-	inputYmax.setColour(juce::Label::backgroundColourId, juce::Colours::white);
-	inputYmax.setColour(juce::Label::textColourId, juce::Colours::black);
-	inputYmax.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
+	inputLowerBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white);
+	inputLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::black);
+	inputLowerBoundsX.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
+	inputUpperBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white);
+	inputUpperBoundsX.setColour(juce::Label::textColourId, juce::Colours::black);
+	inputUpperBoundsX.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
+	inputLowerBoundsY.setColour(juce::Label::backgroundColourId, juce::Colours::white);
+	inputLowerBoundsY.setColour(juce::Label::textColourId, juce::Colours::black);
+	inputLowerBoundsY.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
+	inputUpperBoundsY.setColour(juce::Label::backgroundColourId, juce::Colours::white);
+	inputUpperBoundsY.setColour(juce::Label::textColourId, juce::Colours::black);
+	inputUpperBoundsY.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
 
 	// Editable
 	labelCursorValue.setEditable(false);
-	inputXmin.setEditable(true);
-	inputXmax.setEditable(true);
-	inputYmin.setEditable(true);
-	inputYmax.setEditable(true);
+	inputLowerBoundsX.setEditable(true);
+	inputUpperBoundsX.setEditable(true);
+	inputLowerBoundsY.setEditable(true);
+	inputUpperBoundsY.setEditable(true);
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
 
@@ -219,8 +219,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	comboboxWindowFunction.setSelectedId(5);
 	comboboxAxisType.setSelectedId(2);
 	comboboxSizeSetting.setSelectedId(4);
-	buttonPlot1.setClickingTogglesState(true);
-	buttonPlot2.setClickingTogglesState(true);
+	buttonSelectPlot1.setClickingTogglesState(true);
+	buttonSelectPlot2.setClickingTogglesState(true);
 	toggleButtonPlot1.setClickingTogglesState(true);
 	toggleButtonPlot2.setClickingTogglesState(true);
 	if (isVisiblePlot1 == true)
@@ -235,18 +235,18 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	// On user interaction
 	toggleButtonPlot1.onClick = [this] { updateToggleState(1); };
 	toggleButtonPlot2.onClick = [this] { updateToggleState(2); };
-	inputXmin.onTextChange = [this] { getBounds(); };
-	inputXmax.onTextChange = [this] { getBounds(); };
-	inputYmin.onTextChange = [this] { getBounds(); };
-	inputYmax.onTextChange = [this] { getBounds(); };
+	inputLowerBoundsX.onTextChange = [this] { getBounds(); };
+	inputUpperBoundsX.onTextChange = [this] { getBounds(); };
+	inputLowerBoundsY.onTextChange = [this] { getBounds(); };
+	inputUpperBoundsY.onTextChange = [this] { getBounds(); };
 	comboboxWindowFunction.onChange = [this] { setWindowFunction(); };
 	comboboxAxisType.onChange = [this] { setAxisType(); };
 	comboboxSizeSetting.onChange = [this] { setBlockSize(); };
-	buttonPlot1.onClick = [&]() {
+	buttonSelectPlot1.onClick = [&]() {
 		plotIndexSelection = 0;
 		setPlotIndex(0);
 	};
-	buttonPlot2.onClick = [&]() {
+	buttonSelectPlot2.onClick = [&]() {
 		plotIndexSelection = 1;
 		setPlotIndex(1);
 	};
@@ -270,74 +270,77 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Path yAxisMarkersDown;
 	juce::Path zeroTick; 
 
-
-	float leftMarginRightMenu = widthPrimaryCategoryLabel + graphBorderXBuffer;
-	//float yStartXYAxis = yBuffer + lengthYAxis - 1;
-	//float xStartXYAxis = xBuffer - 3;
-	//float xStartXYAxis = leftMarginRightMenu + xBufferDrawingWindow;
-	int heightBottomMenu = 240; // bottom menu that contains cursor, peak, fucntion, size, axis dropdowns
-	int drawingWindowBorderBuffer = 20; // space between the content in the drawing window and the elements surrounding them
-	float widthDrawingWindowBorder = getWidth() - xOffsetComponent;
-	float heightDrawingWindowBorder = getHeight() - heightBottomMenu;
-	float yBuffer = yOffsetComponent + 12;
-	float lengthXAxis = getWidth() - leftMarginRightMenu;
-	float lengthYAxis = heightDrawingWindowBorder - drawingWindowBorderBuffer;
-	//float yStartXYAxis = yBuffer + lengthYAxis - 1;
-	float yStartXYAxis = yBuffer + lengthYAxis;
-	float xStartXYAxis = leftMarginRightMenu + drawingWindowBorderBuffer;
-	float yStartPlot = (yBuffer + lengthYAxis) / 2;
-
-	//** white box for cursor label **//
-	int widthWhiteBox = 180;
-	int widthCursorBox = widthWhiteBox;
-	int widthPeakBox = widthWhiteBox;
-	
-	int heightWhiteBox = 26;
-	int heightPeakBox = heightWhiteBox;
-	int heightCursorBox = heightWhiteBox;
-
-	int xMarginCursorBox = xStartXYAxis + 138;
-	int xMarginPeakBox = xMarginCursorBox + 205;
-
-	int yMarginCursorBox = heightDrawingWindowBorder + 55;
-	int yMarginPeakBox = yMarginCursorBox;
-
-	//** draw boxes to hide out of bound plots **//
-	int originLeftMargin = 0;
-	int xOffsetLeftBox = originLeftMargin;
-	int xOffsetTopBox = originLeftMargin;
-	int xOffsetRightBox = widthDrawingWindowBorder;
-	//int xOffsetRightBox = widthBorder + 0.5;
-	int xOffsetBottonBox = originLeftMargin;
-	int xOffsetLeftBox2 = originLeftMargin;
-	int xOffsetBottomBox2 = originLeftMargin;
-
-	int yOffsetLeftBox = originLeftMargin;
-	int yOffsetRightBox = originLeftMargin;
-	int yOffsetTopBox = originLeftMargin;
-	int yOffsetBottomBox = heightDrawingWindowBorder;
-	int yOffsetLeftBox2 = originLeftMargin;
-	int yOffsetBottomBox2 = heightDrawingWindowBorder;
-
-	int widthLeftBox = leftMarginRightMenu + drawingWindowBorderBuffer;
-	int widthRightBox = getWidth();
-	int widthTopBox = getWidth();
-	int widthBottomBox = getWidth();
-	int widthLeftBox2 = leftMarginRightMenu;
-	int widthBottomBox2 = getWidth();
-
-	int heightLeftBox = getHeight();
-	int heightRightBox = getHeight();
-	int heightTopBox = 3;
-	int heightBottomBox = getHeight();
-	int heightLeftBox2 = getHeight();
-	int heightBottomBox2 = 10;
-	
-	
+	int cornerSizeSelectionBox = 3;
+	int cornersizeCheckbox = 4;
+	int tickWidth = 5;
+	int zeroTickWidth = 15;
 
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 	int logScale = 40;
 	int axisFontSize = 12;
+
+	int widthSelectionBox = 263;
+	int widthCheckbox = 16;
+	int widthSelectionBoundary = 243;
+	int widthZoomBoundary = 245;
+	int widthWhiteBox = 180;
+	int widthDrawingWindowBorder = getWidth() - bufferXComponent;
+	int widthCursorBox = widthWhiteBox;
+	int widthPeakBox = widthWhiteBox;
+	int widthLeftBox = xMarginRightMenu + bufferDrawingWindowBorder;
+	int widthRightBox = getWidth();
+	int widthTopBox = getWidth();
+	int widthBottomBox = getWidth();
+	int widthLeftBox2 = xMarginRightMenu;
+	int widthBottomBox2 = getWidth();
+
+	int heightSelectionBoundary = 1;
+	int heightCheckbox = 16;
+	int heightSelectionBox = 90;
+	int heightBottomMenu = 240; // bottom menu that contains cursor, peak, fucntion, size, axis dropdowns
+	int heightWhiteBox = 26;
+	int heightTopBox = 3;
+	int heightBottomBox2 = 10;
+	int heightZoomBoundary = heightSelectionBoundary;
+	int heightPeakBox = heightWhiteBox;
+	int heightCursorBox = heightWhiteBox;
+	int heightLeftBox = getHeight();
+	int heightRightBox = getHeight();
+	int heightBottomBox = getHeight();
+	int heightLeftBox2 = getHeight();
+	int heightDrawingWindowBorder = getHeight() - heightBottomMenu;
+
+	int lengthXAxis = getWidth() - xMarginRightMenu;
+	int lengthYAxis = heightDrawingWindowBorder - bufferDrawingWindowBorder;
+
+	int xMarginCheckboxFill = 16;
+	int xMarginZoomBoundary = 2.5 * bufferXComponent;
+	int xMarginSelectionBoundary = 2.5 * bufferXComponent;
+	int xMarginLeftBox = xMarginOrigin;
+	int xMarginTopBox = xMarginOrigin;
+	int xMarginRightBox = widthDrawingWindowBorder;
+	//int xMarginRightBox = widthDrawingWindowBorder + 0.5;
+	int xMarginBottonBox = xMarginOrigin;
+	int xMarginLeftBox2 = xMarginOrigin;
+	int xMarginBottomBox2 = xMarginOrigin;
+	int xMarginCursorBox = xMarginXYAxis + 138;
+	int xMarginPeakBox = xMarginCursorBox + 205;
+
+	int yMarginSelectionBox = 2;
+	int yMarginCheckbox1Fill = 74;
+	int yMarginSelectionBoundary = heightPrimaryCategoryLabel + bufferYPrimarySecondaryLabel + heightSecondaryLabel + (23 * yMarginSelectionBox);
+	int yMarginCheckbox2Fill = yMarginCheckbox1Fill + bufferYCheckbox;
+	int yMarginZoomBoundary = (119.5 * yMarginSelectionBox);
+	int yMarginStartPlot = (bufferY + lengthYAxis) / 2;
+	int yMarginXYAxis = bufferY + lengthYAxis - 1;
+	int yMarginLeftBox = xMarginOrigin;
+	int yMarginRightBox = xMarginOrigin;
+	int yMarginTopBox = xMarginOrigin;
+	int yMarginBottomBox = heightDrawingWindowBorder;
+	int yMarginLeftBox2 = xMarginOrigin;
+	int yMarginBottomBox2 = heightDrawingWindowBorder;
+	int yMarginCursorBox = heightDrawingWindowBorder + 55;
+	int yMarginPeakBox = yMarginCursorBox;
 
 	if (newSelection == true) {
 		audioProcessor.setStepSize(stepSize);                             //this needs to be changed when the size is changed
@@ -358,13 +361,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors 
-	{
+	{			
 		if (xMin == 0 || xMax == 0) {
 			xMax = xMaxPrev;
 			xMin = xMinPrev;
 			xDiff = xMaxPrev - xMinPrev;
-			inputXmin.setText(std::to_string(xMinPrev), juce::dontSendNotification);
-			inputXmax.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
+			inputLowerBoundsX.setText(std::to_string(xMinPrev), juce::dontSendNotification);
+			inputUpperBoundsX.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
 		}
 	}
 	else
@@ -381,8 +384,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		yMax = yMaxPrev;
 		yMin = yMinPrev;
 		yDiff = yMaxPrev - yMinPrev;
-		inputYmin.setText(std::to_string(yMinPrev), juce::dontSendNotification);
-		inputYmax.setText(std::to_string(yMaxPrev), juce::dontSendNotification);
+		inputLowerBoundsY.setText(std::to_string(yMinPrev), juce::dontSendNotification);
+		inputUpperBoundsY.setText(std::to_string(yMaxPrev), juce::dontSendNotification);
 	}
 	else
 	{
@@ -392,33 +395,33 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float scaleY = -lengthYAxis / yDiff;  // Scaling Y increments; pixels shown per sample
 	float yShift = (yDiff - 2.0f * yMax) * scaleY / 2.0f;
 
-	float plotYShift = yStartPlot + yShift;
+	float plotYShift = yMarginStartPlot + yShift;
 
 
 	if (audioProcessor.minBlockSize) {
 		if (setToLog == true) {
-			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
-			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
+			plot2.startNewSubPath(xMarginXYAxis + xShift, yMarginStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
+			plot1.startNewSubPath(xMarginXYAxis + xShift, yMarginStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
 			for (int i = 1; i < indexToFreqMap.size(); i++)
 			{
 				if (isVisiblePlot2 == true) {
-					plot2.lineTo(std::log10(indexToFreqMap[i]) * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
+					plot2.lineTo(std::log10(indexToFreqMap[i]) * scaleX + xMarginXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
 				}
 				if (isVisiblePlot1 == true) {
-					plot1.lineTo(std::log10(indexToFreqMap[i]) * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[0][i]) * scaleY + plotYShift);
+					plot1.lineTo(std::log10(indexToFreqMap[i]) * scaleX + xMarginXYAxis + xShift, logScale * std::log10(binMag[0][i]) * scaleY + plotYShift);
 				}
 			}
 		}
 		else {
-			plot2.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
-			plot1.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
+			plot2.startNewSubPath(xMarginXYAxis + xShift, yMarginStartPlot + logScale * std::log10(binMag[1][0]) * scaleY + yShift);
+			plot1.startNewSubPath(xMarginXYAxis + xShift, yMarginStartPlot + logScale * std::log10(binMag[0][0]) * scaleY + yShift);
 			for (int i = 1; i < indexToFreqMap.size(); i++)
 			{
 				if (isVisiblePlot2 == true) {
-					plot2.lineTo(indexToFreqMap[i] * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
+					plot2.lineTo(indexToFreqMap[i] * scaleX + xMarginXYAxis + xShift, logScale * std::log10(binMag[1][i]) * scaleY + plotYShift);
 				}
 				if (isVisiblePlot1 == true) {
-					plot1.lineTo(indexToFreqMap[i] * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[0][i]) * scaleY + plotYShift);
+					plot1.lineTo(indexToFreqMap[i] * scaleX + xMarginXYAxis + xShift, logScale * std::log10(binMag[0][i]) * scaleY + plotYShift);
 				}
 			}
 		}
@@ -430,22 +433,21 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	}
 	else {
 		g.setColour(juce::Colours::black);
-		g.fillRoundedRectangle(leftMarginRightMenu, yOffsetComponent, widthDrawingWindowBorder, heightDrawingWindowBorder, 3);
+		g.fillRoundedRectangle(xMarginRightMenu, bufferYComponent, widthDrawingWindowBorder, heightDrawingWindowBorder, 3);
 		g.setColour(juce::Colours::white);
-		g.drawText("Not enough data selected", juce::Rectangle<int>(leftMarginRightMenu, yOffsetComponent, widthDrawingWindowBorder, heightDrawingWindowBorder), juce::Justification::centred, true);
+		g.drawText("Not enough data selected", juce::Rectangle<int>(xMarginRightMenu, bufferYComponent, widthDrawingWindowBorder, heightDrawingWindowBorder), juce::Justification::centred, true);
 	}
-
 
 	// Plot X Axis Markers
 	for (int i = 1; i <= xDiff; i++) {
 		if (setToLog) {
-			xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - tickWidth);
-			xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + tickWidth);
+			xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginXYAxis - tickWidth);
+			xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginXYAxis + tickWidth);
 			int xLabelNum = std::pow(10, i);
 			auto xLabel = juce::String(xLabelNum);
 			g.setColour(juce::Colours::white);
 			g.setFont(axisFontSize);
-			g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+			g.drawText(xLabel + "hZ", juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - 10, yMarginXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
 		}
 		else {
 			// set to linear
@@ -453,61 +455,61 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			if (xDiff <= 1000) {
 				xDivLinear = i % 100;
 				if (xDivLinear == 0) {
-					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - tickWidth);
-					xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + tickWidth);
+					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginXYAxis - tickWidth);
+					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginXYAxis + tickWidth);
 					int xLabelNum = i;
 					auto xLabel = juce::String(xLabelNum);
 					g.setColour(juce::Colours::white);
 					g.setFont(axisFontSize);
-					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - 10, yMarginXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
 				}
 			}
 			if (xDiff > 1000 && xDiff <= 4000) {
 				xDivLinear = i % 500;
 				if (xDivLinear == 0) {
-					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - tickWidth);
-					xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + tickWidth);
+					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginXYAxis - tickWidth);
+					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginXYAxis + tickWidth);
 					int xLabelNum = i;
 					auto xLabel = juce::String(xLabelNum);
 					g.setColour(juce::Colours::white);
 					g.setFont(axisFontSize);
-					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - 10, yMarginXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
 				}
 			}
 			else if (xDiff > 4000 && xDiff <= 9000) {
 				xDivLinear = i % 1000;
 				if (xDivLinear == 0) {
-					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - tickWidth);
-					xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + tickWidth);
+					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginXYAxis - tickWidth);
+					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginXYAxis + tickWidth);
 					int xLabelNum = i;
 					auto xLabel = juce::String(xLabelNum);
 					g.setColour(juce::Colours::white);
 					g.setFont(axisFontSize);
-					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - 10, yMarginXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
 				}
 			}
 			else if (xDiff > 9000 && xDiff <= 16000) {
 				xDivLinear = i % 2000;
 				if (xDivLinear == 0) {
-					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - tickWidth);
-					xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + tickWidth);
+					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginXYAxis - tickWidth);
+					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginXYAxis + tickWidth);
 					int xLabelNum = i;
 					auto xLabel = juce::String(xLabelNum);
 					g.setColour(juce::Colours::white);
 					g.setFont(axisFontSize);
-					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(yMarginXYAxis + (i * scaleX) - 10, yMarginXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
 				}
 			}
 			else if (xDiff > 16000) {
 				xDivLinear = i % 5000;
 				if (xDivLinear == 0) {
-					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * scaleX), yStartXYAxis - tickWidth);
-					xAxisMarkers.lineTo(xStartXYAxis + (i * scaleX), yStartXYAxis + tickWidth);
+					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginXYAxis - tickWidth);
+					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginXYAxis + tickWidth);
 					int xLabelNum = i;
 					auto xLabel = juce::String(xLabelNum);
 					g.setColour(juce::Colours::white);
 					g.setFont(axisFontSize);
-					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - 10, yMarginXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
 				}
 			}
 		}
@@ -519,10 +521,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	for (int i = 1; i <= yDiff; i++) {
 		int yDiv = i % 6;
 		if (yDiv == 0) {
-			yAxisMarkersUp.startNewSubPath(xStartXYAxis - tickWidth, yStartPlot + (scaleY * i) + yShift);
-			yAxisMarkersUp.lineTo(xStartXYAxis + tickWidth, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-			yAxisMarkersDown.startNewSubPath(xStartXYAxis - tickWidth, yStartPlot - (scaleY * i) + yShift);
-			yAxisMarkersDown.lineTo(xStartXYAxis + tickWidth, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+			yAxisMarkersUp.startNewSubPath(xMarginXYAxis - tickWidth, yMarginStartPlot + (scaleY * i) + yShift);
+			yAxisMarkersUp.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+			yAxisMarkersDown.startNewSubPath(xMarginXYAxis - tickWidth, yMarginStartPlot - (scaleY * i) + yShift);
+			yAxisMarkersDown.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
 		}
 	}
 	g.setColour(juce::Colours::white);
@@ -530,16 +532,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 
 	//Plot zero on Y-axis
-	zeroTick.startNewSubPath(xStartXYAxis - zeroTickWidth, yStartPlot + yShift);
-	zeroTick.lineTo(xStartXYAxis + zeroTickWidth, yStartPlot + yShift);
+	zeroTick.startNewSubPath(xMarginXYAxis - zeroTickWidth, yMarginStartPlot + yShift);
+	zeroTick.lineTo(xMarginXYAxis + zeroTickWidth, yMarginStartPlot + yShift);
 	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
 
 
 	//** draw boxes to hide out of bound plots **//
-	juce::Rectangle<int> leftPanel(xOffsetLeftBox, yOffsetLeftBox, widthLeftBox, heightLeftBox);
-	juce::Rectangle<int> rightPanel(xOffsetRightBox, yOffsetRightBox, widthRightBox, heightRightBox);
-	juce::Rectangle<int> topPanel(xOffsetTopBox, yOffsetTopBox, widthTopBox, heightTopBox);
-	juce::Rectangle<int> bottomPanel(xOffsetBottonBox, yOffsetBottomBox, widthBottomBox, heightBottomBox);
+	juce::Rectangle<int> leftPanel(xMarginLeftBox, yMarginLeftBox, widthLeftBox, heightLeftBox);
+	juce::Rectangle<int> rightPanel(xMarginRightBox, yMarginRightBox, widthRightBox, heightRightBox);
+	juce::Rectangle<int> topPanel(xMarginTopBox, yMarginTopBox, widthTopBox, heightTopBox);
+	juce::Rectangle<int> bottomPanel(xMarginBottonBox, yMarginBottomBox, widthBottomBox, heightBottomBox);
 	g.setColour(juce::Colours::black);
 	g.fillRect(leftPanel);
 	g.fillRect(rightPanel);
@@ -548,30 +550,30 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	//** draw graph border **//
 	juce::Path graphBoundary;
-	graphBoundary.startNewSubPath(xStartXYAxis, yOffsetComponent);
-	graphBoundary.lineTo(widthDrawingWindowBorder, yOffsetComponent);
+	graphBoundary.startNewSubPath(xMarginXYAxis, bufferYComponent);
+	graphBoundary.lineTo(widthDrawingWindowBorder, bufferYComponent);
 	graphBoundary.lineTo(widthDrawingWindowBorder, heightDrawingWindowBorder);
-	graphBoundary.lineTo(xStartXYAxis, heightDrawingWindowBorder);
-	graphBoundary.lineTo(xStartXYAxis, yOffsetComponent);
+	graphBoundary.lineTo(xMarginXYAxis, heightDrawingWindowBorder);
+	graphBoundary.lineTo(xMarginXYAxis, bufferYComponent);
 	g.setColour(juce::Colours::slategrey);
 	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
 
 	//** draw boxes to hide out of bound plots 
-	juce::Rectangle<int> leftPanel2(xOffsetLeftBox2, yOffsetLeftBox2, widthLeftBox2, heightLeftBox2);
-	juce::Rectangle<int> bottomPanel2(xOffsetBottomBox2, yOffsetBottomBox2, widthBottomBox2, heightBottomBox2);
+	juce::Rectangle<int> leftPanel2(xMarginLeftBox2, yMarginLeftBox2, widthLeftBox2, heightLeftBox2);
+	juce::Rectangle<int> bottomPanel2(xMarginBottomBox2, yMarginBottomBox2, widthBottomBox2, heightBottomBox2);
 
 	g.setColour(juce::Colours::black);
 	g.fillRect(leftPanel2);
 	g.fillRect(bottomPanel2);
 
 	//** line to separate left-side components and right-side components **/
-	juce::Rectangle<int> LeftRightMenuSeparator (leftMarginRightMenu, originLeftMargin, lineHeight, windowMaxHeight);
+	juce::Rectangle<int> LeftRightMenuSeparator (xMarginRightMenu, xMarginOrigin, lineHeight, windowMaxHeight);
 	g.setColour(juce::Colours::darkgrey);
 	g.fillRect(LeftRightMenuSeparator);
 
 	// draw white box around selections
 	g.setColour(juce::Colours::white);
-	g.fillRoundedRectangle(xOffsetComponent, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox);
+	g.fillRoundedRectangle(bufferXComponent, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox);
 
 	// fill in checkboxes
 	if (isVisiblePlot1 == true) {
@@ -596,16 +598,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float cursorYPeak = findPeak();
 	if (cursorYPeak != 0) {
 		g.setColour(juce::Colours::red);
-		juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), yOffsetComponent, 1, lengthYAxis);
+		juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), bufferYComponent, 1, lengthYAxis);
 		g.fillRect(peakLine);
 		g.setColour(juce::Colours::white);
 		if (setToLog) {
 			if (isVisiblePlot1 || isVisiblePlot2)
-				labelPeakPlot.setText("(" + floatToStringPrecision(std::pow(10, screenToGraph(calculateX(setToLog, cursorPeak))), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
+				labelPeakValue.setText("(" + floatToStringPrecision(std::pow(10, screenToGraph(calculateX(setToLog, cursorPeak))), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
 		}
 		else {
 			if(isVisiblePlot1 || isVisiblePlot2)
-				labelPeakPlot.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
+				labelPeakValue.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
 		}
 	}
 }
@@ -648,196 +650,122 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, in
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
-	float leftMarginRightMenu = widthPrimaryCategoryLabel + graphBorderXBuffer;
-	//** graph scaling variables **//
-	float widthBorder = getWidth() - xOffsetComponent;
-	float heightBorder = getHeight() - 240;
-	float xBuffer = dropdownsLeftMargin + 2;
-	float yBuffer = yOffsetComponent + 12;
-	float lengthXAxis = widthBorder;
-	float lengthYAxis = heightBorder * .95;
-	//float dropdownsLeftMargin = lengthXAxis/2 + leftMarginRightMenu;
-	float dropdownsLeftMargin = leftMarginRightMenu;
-	float yStartXYAxis = yBuffer + lengthYAxis - 1;
-	float xStartXYAxis = xBuffer - 3;
-	float yStartPlot = (yBuffer + lengthYAxis) / 2;
+	int widthBorder = getWidth() - bufferXComponent;
+	int widthDrawingWindowBorder = getWidth() - bufferXComponent;
+	int widthButtonExport = 95;
+	int widthButtonSelect = 90;
+	int widthButtonToggle = 30;
+	int widthComboBox = 160;
+	int widthInputTextbox = 60;
+	int widthLabelPlot = 50;
 
-	//** margins for primary labels **//
-	int yMargin_selectTraceLabel = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel;
-	int yMargin_zoomLabel = yMargin_selectTraceLabel + (22.5 * yOffsetComponent);
-	int yMargin_exportLabel = yMargin_selectTraceLabel + (42 * yOffsetComponent);
-
-	// secondary gui element width
-	int width_toggleButton = 30;
-	int width_plotLabel = 50;
-	int width_selectButton = 90;
-	int width_inputTextbox = 60;
-	int width_exportButton = 95;
-	int width_comboBox = 160;
-
-	// secondary gui element height
 	int heightControlWidget = 24;
-	int height_toggleButton = heightControlWidget;
-	int height_plotLabel = heightControlWidget;
-	int height_selectButton = heightControlWidget;
-	int height_inputTextbox = heightControlWidget - 2;
-	int height_exportButton = heightControlWidget + 4;
-	int height_comboBox = 30;
+	int heightBottomMenu = 240;
+	int heightDrawingWindowBorder = getHeight() - heightBottomMenu;
+	int heightButtonExport = heightControlWidget + 4;
+	int heightButtonSelect = heightControlWidget;
+	int heightButtonToggle = heightControlWidget;
+	int heightComboBox = 30;
+	int heightInputTextbox = heightControlWidget - 2;
+	int heightLabelPlot = heightControlWidget;
 
-	//** margins for combo
+	int lengthXAxis = getWidth() - xMarginRightMenu;
+	int lengthYAxis = heightDrawingWindowBorder - bufferDrawingWindowBorder;
 
-	//** cursor *//
-	// label
-	int xMargin_cursorLabel = dropdownsLeftMargin + 133;
-	int yMargin_cursorLabel = heightBorder + 30;
-	int xMargin_cursorPlot = xMargin_cursorLabel;
-	int yMargin_cursorPlot = yMargin_cursorLabel + 22;
+	int xMarginDropdownMenus = xMarginRightMenu;
+	int xMarginLabelCursor = xMarginDropdownMenus + 133;
+	int xMarginLabelCursorValue = xMarginLabelCursor;
+	int xMarginLabelPeak = xMarginLabelCursor + 205;
+	int xMarginLabelDropdownWindow = xMarginDropdownMenus + 65;
+	int xMarginLabelPeakValue = xMarginLabelPeak;
+	int xMarginComboboxWindowFunction = xMarginLabelDropdownWindow + 4;
+	int xMarginLabelDropdownAxis = xMarginComboboxWindowFunction + 180;
+	int xMarginLabelDropdownSize = xMarginLabelDropdownAxis + 180;
+	int xMarginComboboxAxisType = xMarginLabelDropdownAxis + 4;
+	int xMarginComboboxSizeSetting = xMarginLabelDropdownSize + 4; 
+	int xMarginToggleButtonPlot1 = 2 * bufferXComponent;
+	int xMarginToggleButtonPlot2 = xMarginToggleButtonPlot1;
+	int xMarginLabelPlot1 = 4 * xMarginToggleButtonPlot1;
+	int xMarginLabelPlot2 = xMarginLabelPlot1;
+	int xMarginButtonSelectPlot1 = 3.5 * xMarginLabelPlot1;
+	int xMarginButtonSelectPlot2 = xMarginButtonSelectPlot1;
+	int xMarginButtonExport = bufferXComponent;
+	int xMarginLabelUpperBoundsX = 20.5 * bufferXComponent;
+	int xMarginLabelUpperBoundsY = 40.5 * bufferXComponent;
+	int xMarginInputUpperBoundsX = 10 * bufferXComponent;
+	int xMarginInputUpperBoundsY = 30 * bufferXComponent;
+	int xMarginInputLowerBoundsX = xMarginInputUpperBoundsX;
+	int xMarginLabelLowerBoundsX = xMarginLabelUpperBoundsX;
+	int xMarginInputLowerBoundsY = xMarginInputUpperBoundsY;
+	int xMarginLabelLowerBoundsY = xMarginLabelUpperBoundsY;
 
+	float yMarginXYAxis = bufferY + lengthYAxis - 1;
+	//float yMarginPlot = (yBuffer + lengthYAxis) / 2;
+	int yMarginLabelSelectTrace = heightPrimaryCategoryLabel + bufferYPrimarySecondaryLabel;
+	int yMarginLabelZoom = yMarginLabelSelectTrace + (22.5 * bufferYComponent);
+	int yMarginLabelExport = yMarginLabelSelectTrace + (42 * bufferYComponent);
+	int yMarginLabelCursor = heightDrawingWindowBorder + 30;
+	int yMarginLabelCursorValue = yMarginLabelCursor + 22;
+	int yMarginLabelPeak = yMarginLabelCursor;
+	int yNarginLabelPeakValue = yMarginLabelCursorValue;
+	int yMarginLabelDropdownWindow = yMarginLabelPeak + 62;
+	int yMarginComboboxWindowFunction = yMarginLabelDropdownWindow + 22;
+	int yMarginLabelDropdownAxis = yMarginLabelDropdownWindow;
+	int yMarginComboboxAxisType = yMarginComboboxWindowFunction;
+	int yMarginLabelDropdownSize = yMarginLabelDropdownAxis;
+	int yMarginComboboxSizeSetting = yMarginComboboxWindowFunction;
+	int yMarginToggleButtonPlot1 = heightPrimaryCategoryLabel + bufferYPrimarySecondaryLabel + heightSecondaryLabel + (6 * yMarginSelectionBox);
+	int yMarginToggleButtonPlot2 = yMarginToggleButtonPlot1 + (23 * yMarginSelectionBox);
+	int yMarginLabelPlot1 = yMarginToggleButtonPlot1;
+	int yMarginLabelPlot2 = yMarginToggleButtonPlot2;
+	int yMarginButtonSelectPlot1 = yMarginToggleButtonPlot1;
+	int yMarginButtonSelectPlot2 = yMarginToggleButtonPlot2;
+	int yMarginButtonExport = yMarginLabelExport + heightPrimaryCategoryLabel + (1.5 * bufferYPrimarySecondaryLabel);
+	int yMarginLabelUpperBounds = yMarginLabelZoom + heightPrimaryCategoryLabel + bufferYPrimarySecondaryLabel;
+	int yMarginLabelLowerBounds = yMarginLabelUpperBounds + (8 * bufferYComponent);
+	int yMarginLabelUpperBoundsX = yMarginLabelUpperBounds;
+	int yMarginLabelUpperBoundsY = yMarginLabelUpperBounds;
+	int yMarginInputUpperBoundsX = yMarginLabelUpperBounds + 2;
+	int yMarginInputUpperBoundsY = yMarginLabelUpperBounds + 2;
+	int yMarginInputLowerBoundsX = yMarginLabelLowerBounds + 2;
+	int yMarginLabelLowerBoundsX = yMarginLabelLowerBounds;
+	int yMarginInputLowerBoundsY = yMarginLabelLowerBounds + 2;
+	int yMarginLabelLowerBoundsY = yMarginLabelLowerBounds;
 
-	//** peak **//
-	// label
-	int xMargin_peakLabel = xMargin_cursorLabel + 205;
-	int yMargin_peaklabel = yMargin_cursorLabel;
-	int xMargin_peakPlot = xMargin_peakLabel;
-	int yMargin_peakPlot = yMargin_cursorPlot;
+	labelPlot1.setBounds(xMarginLabelPlot1, yMarginLabelPlot1, widthLabelPlot, heightLabelPlot);
+	labelPlot2.setBounds(xMarginLabelPlot2, yMarginLabelPlot2, widthLabelPlot, heightLabelPlot);
+	labelUpperBounds.setBounds(xMarginOrigin, yMarginLabelUpperBounds, widthSecondaryLabel, heightSecondaryLabel);
+	labelLowerBounds.setBounds(xMarginOrigin, yMarginLabelLowerBounds, widthSecondaryLabel, heightSecondaryLabel);
+	labelUpperBoundsX.setBounds(xMarginLabelUpperBoundsX, yMarginLabelUpperBoundsX, widthSecondaryLabel, heightSecondaryLabel);
+	labelUpperBoundsY.setBounds(xMarginLabelUpperBoundsY, yMarginLabelUpperBoundsY, widthInputTextbox, heightInputTextbox);
+	labelLowerBoundsX.setBounds(xMarginLabelLowerBoundsX, yMarginLabelLowerBoundsX, widthSecondaryLabel, heightSecondaryLabel);
+	labelLowerBoundsY.setBounds(xMarginLabelLowerBoundsY, yMarginLabelLowerBoundsY, widthSecondaryLabel, heightSecondaryLabel);
+	labelExport.setBounds(xMarginOrigin, yMarginLabelExport, xMarginRightMenu, heightPrimaryCategoryLabel);
+	labelImportAudio.setBounds(xMarginOrigin, yMarginOrigin, xMarginRightMenu, heightPrimaryCategoryLabel);
+	labelSelectTrace.setBounds(xMarginOrigin, yMarginLabelSelectTrace, widthSecondaryLabel, heightSecondaryLabel);
+	labelZoom.setBounds(xMarginOrigin, yMarginLabelZoom, xMarginRightMenu, heightPrimaryCategoryLabel);
+	labelCursor.setBounds(xMarginLabelCursor, yMarginLabelCursor, widthSecondaryLabel, heightSecondaryLabel);
+	labelCursorValue.setBounds(xMarginLabelCursorValue, yMarginLabelCursorValue, widthSecondaryLabel, heightSecondaryLabel);
+	labelPeak.setBounds(xMarginLabelPeak, yMarginLabelPeak, widthSecondaryLabel, heightSecondaryLabel);
+	labelPeakValue.setBounds(xMarginLabelPeakValue, yNarginLabelPeakValue, widthSecondaryLabel, heightSecondaryLabel);
+	labelDropdownWindow.setBounds(xMarginLabelDropdownWindow, yMarginLabelDropdownWindow, widthSecondaryLabel, heightSecondaryLabel);
+	labelDropdownAxis.setBounds(xMarginLabelDropdownAxis, yMarginLabelDropdownAxis, widthSecondaryLabel, heightSecondaryLabel);
+	labelDropdownSize.setBounds(xMarginLabelDropdownSize, yMarginLabelDropdownSize, widthSecondaryLabel, heightSecondaryLabel);
+	comboboxWindowFunction.setBounds(xMarginComboboxWindowFunction, yMarginComboboxWindowFunction, widthComboBox, heightComboBox);
+	comboboxAxisType.setBounds(xMarginComboboxAxisType, yMarginComboboxAxisType, widthComboBox, heightComboBox);
+	comboboxSizeSetting.setBounds(xMarginComboboxSizeSetting, yMarginComboboxSizeSetting, widthComboBox, heightComboBox);
 
+	inputUpperBoundsX.setBounds(xMarginInputUpperBoundsX, yMarginInputUpperBoundsX, widthInputTextbox, heightInputTextbox);
+	inputUpperBoundsY.setBounds(xMarginInputUpperBoundsY, yMarginInputUpperBoundsY, widthInputTextbox, heightInputTextbox);
+	inputLowerBoundsX.setBounds(xMarginInputLowerBoundsX, yMarginInputLowerBoundsX, widthInputTextbox, heightInputTextbox);
+	inputLowerBoundsY.setBounds(xMarginInputUpperBoundsY, yMarginInputLowerBoundsY, widthInputTextbox, heightInputTextbox);
+	
+	buttonSelectPlot1.setBounds(xMarginButtonSelectPlot1, yMarginButtonSelectPlot1, widthButtonSelect, heightButtonSelect);
+	buttonSelectPlot2.setBounds(xMarginButtonSelectPlot2, yMarginButtonSelectPlot2, widthButtonSelect, heightButtonSelect);
+	buttonExport.setBounds(xMarginButtonExport, yMarginButtonExport, widthButtonExport, heightButtonExport);
+	toggleButtonPlot1.setBounds(xMarginToggleButtonPlot1, yMarginToggleButtonPlot1, widthButtonToggle, heightButtonToggle);
+	toggleButtonPlot2.setBounds(xMarginToggleButtonPlot2, yMarginToggleButtonPlot2, widthButtonToggle, heightButtonToggle);
 
-	//** window function **//
-	//label
-	int xMargin_windowLabel = dropdownsLeftMargin + 65;
-	int yMargin_windowLabel = yMargin_peaklabel + 62;
-	// combobox
-	int xMargin_winCombo = xMargin_windowLabel + 4;
-	int yMargin_winCombo = yMargin_windowLabel + 22;
-
-	//** axis **//
-	// label
-	int xMargin_axisLabel = xMargin_winCombo + 180;
-	int yMargin_axisLabel = yMargin_windowLabel;
-	// combobox
-	int xMargin_axisCombo = xMargin_axisLabel + 4;
-	int yMargin_axisCombo = yMargin_winCombo;
-
-
-	//** size **//
-	// label
-	int xMargin_sizeLabel = xMargin_axisLabel + 180;
-	int yMargin_sizeLabel = yMargin_axisLabel;
-	// combobox
-	int xMargin_sizeCombo = xMargin_sizeLabel + 4;
-	int yMargin_sizeCombo = yMargin_winCombo;
-
-	//** Set bounds for right side elements **//
-	labelCursor.setBounds(xMargin_cursorLabel, yMargin_cursorLabel, widthSecondaryLabel, heightSecondaryLabel);
-	labelCursorValue.setBounds(xMargin_cursorPlot, yMargin_cursorPlot, widthSecondaryLabel, heightSecondaryLabel);
-	labelPeak.setBounds(xMargin_peakLabel, yMargin_peaklabel, widthSecondaryLabel, heightSecondaryLabel);
-	labelPeakPlot.setBounds(xMargin_peakPlot, yMargin_peakPlot, widthSecondaryLabel, heightSecondaryLabel);
-	labelDropdownWindow.setBounds(xMargin_windowLabel, yMargin_windowLabel, widthSecondaryLabel, heightSecondaryLabel);
-	labelDropdownAxis.setBounds(xMargin_axisLabel, yMargin_axisLabel, widthSecondaryLabel, heightSecondaryLabel);
-	labelDropdownSize.setBounds(xMargin_sizeLabel, yMargin_sizeLabel, widthSecondaryLabel, heightSecondaryLabel);
-
-	//cursorFunction.setBounds(xMargin_cursorCombo, yMargin_cursorCombo, width_comboBox, height_comboBox);
-	//peakFunction.setBounds(xMargin_peakCombo, yMargin_peakCombo, width_comboBox, height_comboBox);
-	comboboxWindowFunction.setBounds(xMargin_winCombo, yMargin_winCombo, width_comboBox, height_comboBox);
-	comboboxAxisType.setBounds(xMargin_axisCombo, yMargin_axisCombo, width_comboBox, height_comboBox);
-	comboboxSizeSetting.setBounds(xMargin_sizeCombo, yMargin_sizeCombo, width_comboBox, height_comboBox);
-
-
-	//** plot 1 **//
-	// toggle button 1
-	int xMargin_toggleButton1 = 2 * xOffsetComponent;
-	int yMargin_toggleButton1 = heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel + heightSecondaryLabel + (6 * yOffsetSelectionBox);
-	// plot label 1
-	int xMargin_plotLabel1 = 4 * xMargin_toggleButton1;
-	int yMargin_plotLabel1 = yMargin_toggleButton1;
-	// selection button 1
-	int xMargin_selectButton1 = 3.5 * xMargin_plotLabel1;
-	int yMargin_selectButton1 = yMargin_toggleButton1;
-
-	//** plot 2 **//
-	// toggle button 2
-	int xMargin_toggleButton2 = xMargin_toggleButton1;
-	int yMargin_toggleBotton2 = yMargin_toggleButton1 + (23 * yOffsetSelectionBox);
-	// plot label 2
-	int xMargin_plotLabel2 = xMargin_plotLabel1;
-	int yMargin_plotLabel2 = yMargin_toggleBotton2;
-	// selection button 2
-	int xMargin_selectButton2 = xMargin_selectButton1;
-	int yMargin_selectButton2 = yMargin_toggleBotton2;
-
-	//** upper bounds **//
-	// upper label
-	int yMargin_upperLabel = yMargin_zoomLabel + heightPrimaryCategoryLabel + yOffsetPrimarySecondaryLabel;
-
-	// xMax input
-	int xMargin_xMax = 10 * xOffsetComponent;
-	int yMargin_xMax = yMargin_upperLabel + 2;
-
-	// x label
-	int xMargin_xMaxLabel = 20.5 * xOffsetComponent;
-	int yMargin_xMaxLabel = yMargin_upperLabel;
-
-	// yMax input
-	int xMargin_yMax = 30 * xOffsetComponent;
-	int yMargin_yMax = yMargin_upperLabel + 2;
-
-	// y label
-	int xMargin_yMaxLabel = 40.5 * xOffsetComponent;;
-	int yMargin_yMaxLabel = yMargin_upperLabel;
-
-	//** lower bounds **//
-	// lower label
-	int yMargin_lowerLabel = yMargin_upperLabel + (8 * yOffsetComponent);
-
-	// xMin input
-	int xMargin_xMin = xMargin_xMax;
-	int yMargin_xMin = yMargin_lowerLabel + 2;
-
-	// x label
-	int xMargin_xMinLabel = xMargin_xMaxLabel;
-	int yMargin_xMinLabel = yMargin_lowerLabel;
-
-	// yMin input
-	int xMargin_yMin = xMargin_yMax;
-	int yMargin_yMin = yMargin_lowerLabel + 2;
-
-	// y label
-	int xMargin_yMinLabel = xMargin_yMaxLabel;
-	int yMargin_yMinLabel = yMargin_lowerLabel;
-
-	//** export button **//
-	int xMargin_exportButton = xOffsetComponent;
-	int yMargin_exportButton = yMargin_exportLabel + heightPrimaryCategoryLabel + (1.5 * yOffsetPrimarySecondaryLabel);
-
-	//** set bounds for GUI elements **//
-	labelImportAudio.setBounds(0, 0, leftMarginRightMenu, heightPrimaryCategoryLabel);
-	labelSelectTrace.setBounds(0, yMargin_selectTraceLabel, widthSecondaryLabel, heightSecondaryLabel);
-	labelZoom.setBounds(0, yMargin_zoomLabel, leftMarginRightMenu, heightPrimaryCategoryLabel);
-	labelExport.setBounds(0, yMargin_exportLabel, leftMarginRightMenu, heightPrimaryCategoryLabel);
-
-	//** set bounds for secondary GUI elements **//
-	toggleButtonPlot1.setBounds(xMargin_toggleButton1, yMargin_toggleButton1, width_toggleButton, height_toggleButton);
-	toggleButtonPlot2.setBounds(xMargin_toggleButton2, yMargin_toggleBotton2, width_toggleButton, height_toggleButton);
-
-	labelPlot1.setBounds(xMargin_plotLabel1, yMargin_plotLabel1, width_plotLabel, height_plotLabel);
-	labelPlot2.setBounds(xMargin_plotLabel2, yMargin_plotLabel2, width_plotLabel, height_plotLabel);
-
-	buttonPlot1.setBounds(xMargin_selectButton1, yMargin_selectButton1, width_selectButton, height_selectButton);
-	buttonPlot2.setBounds(xMargin_selectButton2, yMargin_selectButton2, width_selectButton, height_selectButton);
-
-	labelUpperBounds.setBounds(0, yMargin_upperLabel, widthSecondaryLabel, heightSecondaryLabel);
-	inputXmax.setBounds(xMargin_xMax, yMargin_xMax, width_inputTextbox, height_inputTextbox);
-	labelUpperBoundsX.setBounds(xMargin_xMaxLabel, yMargin_xMaxLabel, widthSecondaryLabel, heightSecondaryLabel);
-	inputYmax.setBounds(xMargin_yMax, yMargin_yMax, width_inputTextbox, height_inputTextbox);
-	labelUpperBoundsY.setBounds(xMargin_yMaxLabel, yMargin_yMaxLabel, width_inputTextbox, height_inputTextbox);
-
-	labelLowerBounds.setBounds(0, yMargin_lowerLabel, widthSecondaryLabel, heightSecondaryLabel);
-	inputXmin.setBounds(xMargin_xMin, yMargin_xMin, width_inputTextbox, height_inputTextbox);
-	labelLowerBoundsX.setBounds(xMargin_xMinLabel, yMargin_xMinLabel, widthSecondaryLabel, heightSecondaryLabel);
-	inputYmin.setBounds(xMargin_yMax, yMargin_yMin, width_inputTextbox, height_inputTextbox);
-	labelLowerBoundsY.setBounds(xMargin_yMinLabel, yMargin_yMinLabel, widthSecondaryLabel, heightSecondaryLabel);
-
-	buttonExport.setBounds(xMargin_exportButton, yMargin_exportButton, width_exportButton, height_exportButton);
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData) {
@@ -854,7 +782,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	float maxVal = 24000;
 	float yMaxVal = 12;
 	float yMinVal = -96;
-	juce::String temp = inputXmin.getText(false);
+	juce::String temp = inputLowerBoundsX.getText(false);
 	float val = std::atof(temp.toStdString().c_str());
 	if (setToLog) {
 		if (val >= minVal && val <= maxVal)
@@ -863,17 +791,17 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 				xMinFrequency = val;
 			}
 		}
-		else { inputXmin.setText(std::to_string(xMin), juce::dontSendNotification); }
+		else { inputLowerBoundsX.setText(std::to_string(xMin), juce::dontSendNotification); }
 	}
 	else {
 		if (val >= minVal && val <= maxVal)
 		{
 			xMinFrequency = val;
 		}
-		else { inputXmin.setText(std::to_string(xMin), juce::dontSendNotification); }
+		else { inputLowerBoundsX.setText(std::to_string(xMin), juce::dontSendNotification); }
 	}
 
-	temp = inputXmax.getText(false);
+	temp = inputUpperBoundsX.getText(false);
 	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
@@ -881,23 +809,23 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 			xMaxFrequency = val;
 		}
 	}
-	else { inputXmax.setText(std::to_string(xMax), juce::dontSendNotification); }
+	else { inputUpperBoundsX.setText(std::to_string(xMax), juce::dontSendNotification); }
 
-	temp = inputYmin.getText(false);
+	temp = inputLowerBoundsY.getText(false);
 	val = std::atof(temp.toStdString().c_str());
 	if (val >= yMinVal && val <= yMaxVal)
 	{
 		yMin = val;
 	}
-	else { inputYmin.setText(std::to_string(yMin), juce::dontSendNotification); }
+	else { inputLowerBoundsY.setText(std::to_string(yMin), juce::dontSendNotification); }
 
-	temp = inputYmax.getText(false);
+	temp = inputUpperBoundsY.getText(false);
 	val = std::atof(temp.toStdString().c_str());
 	if (val >= yMinVal && val <= yMaxVal)
 	{
 		yMax = val;
 	}
-	else { inputYmax.setText(std::to_string(yMax), juce::dontSendNotification); }
+	else { inputUpperBoundsY.setText(std::to_string(yMax), juce::dontSendNotification); }
 	repaint();
 }
 
@@ -908,13 +836,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 	audioProcessor.setRowIndex(rowIndex);
 	if (plotIndex == 0)
 	{
-		buttonPlot1.setButtonText("Selected");
-		buttonPlot2.setButtonText("Select");
+		buttonSelectPlot1.setButtonText("Selected");
+		buttonSelectPlot2.setButtonText("Select");
 	}
 	else if (plotIndex == 1)
 	{
-		buttonPlot2.setButtonText("Selected");
-		buttonPlot1.setButtonText("Select");
+		buttonSelectPlot2.setButtonText("Selected");
+		buttonSelectPlot1.setButtonText("Select");
 	}
 }
 
@@ -1087,8 +1015,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
 {
 	float graphWest = (getWidth() * 0.295) - 1;
-	float graphNorth = yOffsetComponent;
-	float graphEast = (getWidth() - xOffsetComponent) + 0.5;
+	float graphNorth = bufferYComponent;
+	float graphEast = (getWidth() - bufferXComponent) + 0.5;
 	float graphSouth = (getHeight() - 240) * 0.95;
 
 	cursorX = event.getMouseDownX();
@@ -1124,7 +1052,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::calculateX(bool log, int index) {
 	float start = getWidth() * 0.295 - 1;
-	float lengthAxis = getWidth() - xOffsetComponent;
+	float lengthAxis = getWidth() - bufferXComponent;
 	float range = xMax - xMin;
 	float ratio = lengthAxis / range;
 	float shift = -xMin * ratio;
@@ -1159,7 +1087,7 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::getYCoord(int plotNumber, bool lo
 float FFTSpectrumAnalyzerAudioProcessorEditor::screenToGraph(float screenCoord) {
 
 	float start = getWidth() * 0.295 - 1;
-	float lengthAxis = getWidth() - xOffsetComponent;
+	float lengthAxis = getWidth() - bufferXComponent;
 	float range = xMax - xMin;
 	float ratio = lengthAxis / range;
 	float shift = -xMin * ratio;
@@ -1169,7 +1097,7 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::screenToGraph(float screenCoord) 
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::graphToScreen(int graphCoord) {
 	float start = getWidth() * 0.295 - 1;
-	float lengthAxis = getWidth() - xOffsetComponent;
+	float lengthAxis = getWidth() - bufferXComponent;
 	float range = xMax - xMin;
 	float ratio = lengthAxis / range;
 	float shift = -xMin * ratio;
