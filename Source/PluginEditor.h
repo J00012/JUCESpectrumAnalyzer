@@ -35,7 +35,6 @@ public:
     void processBuffer();
     void zeroBuffers();
     void zeroBinSelection();
-
     void mouseMove(const juce::MouseEvent& event) override;
     int findPeak();
     float screenToGraph(float screenCoord);
@@ -130,35 +129,72 @@ private:
     juce::ToggleButton toggleButtonPlot2;
     // gui elements end
 
-    int bufferXComponent = 6;
-    int bufferYComponent = 6;
-    int bufferXGraphBorder = 10;
-    int bufferYPrimarySecondaryLabel = 8;
-    int bufferYCheckbox = 46;
-    int bufferX = xMarginRightMenu + 2;
-    int bufferY = bufferYComponent + 12;
-    int bufferDrawingWindowBorder = 20;
+    int const originPixel = 0;
+    int const bufferXxSmall = 2;
+    int const bufferYxSmall = 2; 
+    int const bufferXSmall = 6; 
+    int const bufferYSmall = 6; 
+    int const bufferXMedium = 10;
+    int const bufferYMedium = 10;
+    int const bufferXLarge = 40;
+    int const bufferYLarge = 40;
+    int const bufferXxLarge = 55;
+    int const bufferYxLarge = 55;
+    int const bufferYPrimarySecondaryLabel = 8;
+    int const bufferDrawingWindowBorder = bufferXLarge;
+    int const bufferSurroundingBox = bufferXSmall; 
 
-    int windowWidth = 950;
-    int windowHeight = 550 + 2;
-    int windowMaxWidth = 2160;
-    int windowMaxHeight = 1080;
-    int widthPrimaryCategoryLabel = 275;
-    int widthSecondaryLabel = 150;
+    int const widthWindowMin = 950;
+    int const widthWindowMax = 2160;
+    int const widthPrimaryCategoryLabel = 275;
+    int const widthSecondaryLabel = 150;
+    int const widthColumnGap = 120;
+    int const widthSecondThirdColumnGap = widthColumnGap;
+    int const widthxSmallWidget = 16;
+    int const widthSmallWidget = 24;
+    int const widthMediumWidget = 60;
+    int const widthLargeWidget = 90;
+    int const widthxLargeWidget = 180;
+    int const widthBoundary = 243;
+    int const widthSelectionBox = 263;
+    int const widthSelectionBoundary = widthBoundary;
+    int const widthZoomBoundary = widthBoundary;
+    int const widthInputTextbox = widthMediumWidget;
 
-    int lineHeight = 1;
-    int heightPrimaryCategoryLabel = 25;
-    int heightSecondaryLabel = 25;
+    int const thicknessLine = 1;
+    int const heightSmallWidget = 16;
+    int const heightMediumWidget = 24;
+    int const heightSmallWindow = 90;
+    int const heightMediumWindow = 240; 
+    int const heightBottomMenu = heightMediumWindow;
+    int const heightImportAudioWindow = bufferYSmall + heightCategoryLabel + bufferYSmall + heightSelectionBox + bufferYSmall;
+    //int heightZoomWindow = heightImportAudioWindow;
+    int const heightZoomWindow = heightSmallWindow;
+    int const heightExportWindow = heightBottomMenu;
+    int const heightSelectionBox = heightSmallWindow;
 
-    int xMarginRightMenu = widthPrimaryCategoryLabel + bufferXGraphBorder;
-    int xMarginOrigin = 0;
-    int xMarginXYAxis = xMarginRightMenu + bufferDrawingWindowBorder;
+    int const heightWindowMin = 550 + 2;
+    int const heightWindowMax = 1080;
+    int const heightCategoryLabel = heightMediumWidget;
 
-    int yMarginOrigin = 0;
-    int yMarginSelectionBox = heightPrimaryCategoryLabel + bufferYPrimarySecondaryLabel + heightSecondaryLabel + yMarginSelectionBox;
+    int const xMarginOrigin = originPixel;
+    int const xMarginFirstLeftMenuWidget = bufferXMedium;
+    int const xMarginRightMenu = widthPrimaryCategoryLabel;
+    int const xMarginXYAxis = xMarginRightMenu + bufferDrawingWindowBorder;
+    int const xMarginXBoundsColumn = xMarginFirstLeftMenuWidget + bufferXxLarge;
+    int const xMarginYBoundsColumn = xMarginXBoundsColumn + widthColumnGap;
+    int const xMarginSelectionBoundary = (widthSelectionBox - widthSelectionBoundary) - (widthSelectionBox - widthSelectionBoundary) / 4;
+    int const xMarginZoomBoundary = xMarginSelectionBoundary;
 
-
-
+    int const yMarginOrigin = originPixel;
+    int const yMarginFirstLeftMenuWidget = bufferYMedium + heightCategoryLabel;
+    int const yMarginLabelSelectTrace = heightCategoryLabel + bufferYSmall;
+    int const yMarginLabelZoom = yMarginLabelSelectTrace + heightCategoryLabel + bufferYMedium + heightSelectionBox + bufferYSmall;
+    int const yMarginZoomBoundary = yMarginLabelZoom + heightCategoryLabel + heightZoomWindow / 2;
+    int const yMarginSelectionBoundary = yMarginLabelSelectTrace + heightCategoryLabel + bufferYSmall + heightSelectionBox / 2;
+    int const yMarginSelectionBox = yMarginLabelSelectTrace + heightCategoryLabel + bufferYSmall;
+    int const yMarginRowPlot1 = yMarginSelectionBox + heightSelectionBox / 4 - heightSmallWidget / 2;
+    int const yMarginRowPlot2 = yMarginSelectionBoundary + heightSelectionBox / 4 - heightSmallWidget / 2;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
 };
