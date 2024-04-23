@@ -159,10 +159,11 @@ private:
     static bool newSelection;
     static bool displayError;
     static bool conCall;
+    static bool blockProcessed;
 
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;
-    static juce::dsp::WindowingFunction<float> editWindow;
+    static juce::dsp::WindowingFunction<float> window;
     static std::vector<float> bufferRight;
     static std::vector<float> bufferLeft;
     static std::vector<float> windowBufferRight;
