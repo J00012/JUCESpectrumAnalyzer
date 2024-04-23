@@ -28,7 +28,6 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 0;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxFrequency = 8000;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinFrequency = 1;
-int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 550 + 2;
@@ -79,8 +78,8 @@ std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferRight = 
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferLeft = { 0 };
 
 FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[7] = {
-	{false, juce::Colours::lightgreen, 74},
-	{false, juce::Colours::cornflowerblue, 120},
+	{false, juce::Colours::lightgreen, juce::Path(), 74},
+	{false, juce::Colours::cornflowerblue,juce::Path(), 120},
 	{false, juce::Colours::purple},
 	{false, juce::Colours::cyan},
 	{false, juce::Colours::coral},
@@ -97,14 +96,14 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	: AudioProcessorEditor(&p), audioProcessor(p)
 {
 	setOpaque(true);
-	startTimer(500000);
+	startTimer(500);
 
 	setSize(windowWidth, windowHeight);
 	setResizable(true, true);
 	setResizeLimits(windowWidth, windowHeight, windowMaxWidth, windowMaxHeight);
 
 	sampleSelections.resize(2);
-	setPlotIndex(plotIndexSelection);
+	setPlotIndex(rowIndex);
 	setFreqData(1024);
 	initializeBinMag();
 	//audioProcessor.zeroAllSelections(numBins, rowSize);
@@ -242,7 +241,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonPlot1.setClickingTogglesState(true);
 	buttonPlot1.onClick = [&]()
 		{
-			plotIndexSelection = 0;
+			rowIndex = 0;
 			setPlotIndex(0);
 		};
 
@@ -250,7 +249,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonPlot2.setClickingTogglesState(true);
 	buttonPlot2.onClick = [&]()
 		{
-			plotIndexSelection = 1;
+			rowIndex = 1;
 			setPlotIndex(1);
 		};
 
@@ -258,7 +257,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonPlot3.setClickingTogglesState(true);
 	buttonPlot3.onClick = [&]()
 		{
-			plotIndexSelection = 2;
+			rowIndex = 2;
 			setPlotIndex(2);
 		};
 
@@ -266,7 +265,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonPlot4.setClickingTogglesState(true);
 	buttonPlot4.onClick = [&]()
 		{
-			plotIndexSelection = 3;
+			rowIndex = 3;
 			setPlotIndex(3);
 		};
 
@@ -274,7 +273,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonPlot5.setClickingTogglesState(true);
 	buttonPlot5.onClick = [&]()
 		{
-			plotIndexSelection = 4;
+			rowIndex = 4;
 			setPlotIndex(4);
 		};
 
@@ -282,7 +281,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonPlot6.setClickingTogglesState(true);
 	buttonPlot6.onClick = [&]()
 		{
-			plotIndexSelection = 5;
+			rowIndex = 5;
 			setPlotIndex(5);
 		};
 
@@ -290,7 +289,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonPlot7.setClickingTogglesState(true);
 	buttonPlot7.onClick = [&]()
 		{
-			plotIndexSelection = 6;
+			rowIndex = 6;
 			setPlotIndex(6);
 		};
 
@@ -520,15 +519,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	// Graph plots
 
 	int logScale = 40;
+	//juce::Path plot;
 	if (audioProcessor.minBlockSize) {
 		for (int i = 0; i < rowSize; i++) {
-			juce::Path plot;
-			plot.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[i][0]) * scaleY + yShift);
+			//juce::Path plot;
+			plotInfo[i].path.startNewSubPath(xStartXYAxis + xShift, yStartPlot + logScale * std::log10(binMag[i][0]) * scaleY + yShift);
 
 			if (setToLog == true) {
 				for (int j = 1; j < indexToFreqMap.size(); j++) {
 					if (plotInfo[i].isVisible == true) {
-						plot.lineTo(std::log10(indexToFreqMap[j]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[i][j]) * scaleY + plotYShift);
+						plotInfo[i].path.lineTo(std::log10(indexToFreqMap[j]) * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[i][j]) * scaleY + plotYShift);
 					}
 				}
 			}
@@ -536,14 +536,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			else {
 				for (int j = 1; j < indexToFreqMap.size(); j++) {
 					if (plotInfo[i].isVisible == true) {
-						plot.lineTo(indexToFreqMap[j] * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[i][j]) * scaleY + plotYShift);
+						plotInfo[i].path.lineTo(indexToFreqMap[j] * xAxisScale * scaleX + xStartXYAxis + xShift, logScale * std::log10(binMag[i][j]) * scaleY + plotYShift);
 					}
 				}
 			}
 			g.setColour(plotInfo[i].color);
-			g.strokePath(plot, juce::PathStrokeType(3.0f));
+			g.strokePath(plotInfo[i].path, juce::PathStrokeType(3.0f));
 		}
 	}
+	
+	
 
 	/*if (setToLog == true) {
 		xMax = std::log10(xMax);
@@ -1309,10 +1311,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 	else {
 		isGraph = true;
 		cursorX = screenToGraph(cursorX);
-		if (plotIndexSelection == 1 && isVisiblePlot2) {
+		if (rowIndex == 1 && plotInfo[1].isVisible) {
 			cursorPlot.setText("(" + floatToStringPrecision(cursorX, 1) + ", " + floatToStringPrecision(getYCoord(1, setToLog, (int)cursorX), 2) + ")", juce::dontSendNotification);
 		}
-		if (plotIndexSelection == 0 && isVisiblePlot1) {
+		if (rowIndex == 0 && plotInfo[0].isVisible) {
 			cursorPlot.setText("(" + floatToStringPrecision(cursorX, 1) + ", " + floatToStringPrecision(getYCoord(0, setToLog, (int)cursorX), 2) + ")", juce::dontSendNotification);
 		}
 	}
@@ -1321,7 +1323,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::findPeak()
 {
-	int p = plotIndexSelection;
+	int p = rowIndex;
 
 	float maxValue = getYCoord(p, setToLog, 0);
 	for (size_t i = 1; i < binMag[p].size(); ++i) {

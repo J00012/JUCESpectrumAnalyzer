@@ -149,6 +149,7 @@ private:
     struct plotItem {
         bool isVisible;
         juce::Colour color;
+        juce::Path path;
         int checkBoxPos;
     };
     
