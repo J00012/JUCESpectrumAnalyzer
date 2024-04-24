@@ -12,22 +12,25 @@
 #include <algorithm>
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::cursorX;
+float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY;
+int FFTSpectrumAnalyzerAudioProcessorEditor::cursorIndex;
 int FFTSpectrumAnalyzerAudioProcessorEditor::cursorPeak = 0;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isGraph = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
-float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 0;
-float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMinFrequency = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxPrev = 100;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 8000;
-float FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -1;
+float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxFrequency = 8000;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -90;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -90;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 0;
-float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxFrequency = 8000;
-float FFTSpectrumAnalyzerAudioProcessorEditor::xMinFrequency = 1;
+int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowWidth = 950;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowHeight = 550 + 2;
@@ -79,6 +82,7 @@ std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bufferLeft = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferLeft = { 0 };
+//juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessorEditor::editFFT(0);
 
 FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[7] = {
 	{false, juce::Colours::lightgreen, juce::Path(), 74},
@@ -265,7 +269,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 			rowIndex = 0;
 			setPlotIndex(0);
 		};
-
 	addAndMakeVisible(buttonPlot2);
 	buttonPlot2.setClickingTogglesState(true);
 	buttonPlot2.onClick = [&]()
@@ -408,10 +411,10 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
 
-	inputXmin.setText(std::to_string(xMinFrequency), juce::dontSendNotification);
-	inputXmax.setText(std::to_string(xMaxFrequency), juce::dontSendNotification);
-	inputYmin.setText(std::to_string(yMin), juce::dontSendNotification);
-	inputYmax.setText(std::to_string(yMax), juce::dontSendNotification);
+	inputXmin.setText(std::to_string((int)xMinFrequency), juce::dontSendNotification);
+	inputXmax.setText(std::to_string((int)xMaxFrequency), juce::dontSendNotification);
+	inputYmin.setText(std::to_string((int)yMin), juce::dontSendNotification);
+	inputYmax.setText(std::to_string((int)yMax), juce::dontSendNotification);
 
 	labelPlot1.setText("Plot 1", juce::dontSendNotification);
 	labelPlot1.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
@@ -457,7 +460,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		audioProcessor.clearAccumulationBuffer();
 		processBuffer();
 		newSelection = false;
-		repaint();
 	}
 
 	juce::Path plot1;
@@ -483,12 +485,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float yStartPlot = (yBuffer + lengthYAxis) / 2;
 	float xAxisScale = 0.702;
 
-	//used for cursor
-	/*graphWest = border_xBuffer;
-	graphEast = widthBorder;
-	graphNorth = border_yBuffer;
-	graphSouth = heightBorder;*/
-
 	int sampleSize = 100;  // Adjust the number of samples being displayed as needed
 
 	if (setToLog) {
@@ -500,15 +496,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		xMin = xMinFrequency;
 	}
 
-
 	float xDiff = xMax - xMin;
 	if (xDiff <= 0)  // handles divide by zero errors 
 	{
-		xMax = xMaxPrev;
-		xMin = xMinPrev;
-		xDiff = xMaxPrev - xMinPrev;
-		inputXmin.setText(std::to_string(xMinPrev), juce::dontSendNotification);
-		inputXmax.setText(std::to_string(xMaxPrev), juce::dontSendNotification);
+		if (xMin == 0 || xMax == 0) {
+			xMax = xMaxPrev;
+			xMin = xMinPrev;
+			xDiff = xMaxPrev - xMinPrev;
+			inputXmin.setText(std::to_string((int)xMinPrev), juce::dontSendNotification);
+			inputXmax.setText(std::to_string((int)xMaxPrev), juce::dontSendNotification);
+		}
 	}
 	else
 	{
@@ -524,8 +521,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		yMax = yMaxPrev;
 		yMin = yMinPrev;
 		yDiff = yMaxPrev - yMinPrev;
-		inputYmin.setText(std::to_string(yMinPrev), juce::dontSendNotification);
-		inputYmax.setText(std::to_string(yMaxPrev), juce::dontSendNotification);
+		inputYmin.setText(std::to_string((int)yMinPrev), juce::dontSendNotification);
+		inputYmax.setText(std::to_string((int)yMaxPrev), juce::dontSendNotification);
 	}
 	else
 	{
@@ -538,9 +535,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float plotYShift = yStartPlot + yShift;
 
 	// Graph plots
-
 	int logScale = 40;
-	//juce::Path plot;
 	if (audioProcessor.minBlockSize) {
 		for (int i = 0; i < rowSize; i++) {
 			
@@ -565,7 +560,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			}
 		}
 	}
-	
 	else {
 		g.setColour(juce::Colours::black);
 		g.fillRoundedRectangle(border_xBuffer, border_yBuffer, widthBorder, heightBorder, 3);
@@ -573,46 +567,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		g.drawText("Not enough data selected", juce::Rectangle<int>(border_xBuffer, border_yBuffer, widthBorder, heightBorder), juce::Justification::centred, true);
 	}
 
-	// Axis variables
-	//int numXMarkers = zoom_xMax 
-	int numXMarkers = xDiff;
-	int numYMarkers = yDiff;
-
-	// Plot X Axis Markers
-	for (int i = 1; i <= numXMarkers; i++) {
-		xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
-		xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
-	}
-	g.setColour(juce::Colours::white);
-	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
-
-	// Plot Y Axis Markers
-	for (int i = 1; i <= numYMarkers; i++) {
-		yAxisMarkersUp.startNewSubPath(xStartXYAxis - 5, yStartPlot + (scaleY * i) + yShift);
-		yAxisMarkersUp.lineTo(xStartXYAxis + 5, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-		yAxisMarkersDown.startNewSubPath(xStartXYAxis - 5, yStartPlot - (scaleY * i) + yShift);
-		yAxisMarkersDown.lineTo(xStartXYAxis + 5, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-	}
-	g.setColour(juce::Colours::white);
-	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
-	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
-
-	//Plot zero on Y-axis
-	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
-	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
-	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
-
-	//** draw graph border **//
-	juce::Path graphBoundary;
-	graphBoundary.startNewSubPath(border_xBuffer, border_yBuffer);
-	graphBoundary.lineTo(widthBorder, border_yBuffer);
-	graphBoundary.lineTo(widthBorder, heightBorder);
-	graphBoundary.lineTo(border_xBuffer, heightBorder);
-	graphBoundary.lineTo(border_xBuffer, border_yBuffer);
-	g.setColour(juce::Colours::slategrey);
-	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
-
-	//** draw boxes to hide out of bound plots **//
 	int x_LeftBoxOffset = 0;
 	int y_LeftBoxOffset = 0;
 	int width_LeftBox = border_xBuffer;
@@ -637,11 +591,142 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Rectangle<int> rightPanel(x_RightBoxOffset, y_RightBoxOffset, width_RightBox, height_RightBox);
 	juce::Rectangle<int> topPanel(x_TopBoxOffset, y_TopBoxOffset, width_TopBox, height_TopBox);
 	juce::Rectangle<int> bottomPanel(x_BottonBoxOffset, y_BottomBoxOffset, width_BottomBox, height_BottomBox);
+
 	g.setColour(juce::Colours::black);
 	g.fillRect(leftPanel);
 	g.fillRect(rightPanel);
 	g.fillRect(topPanel);
 	g.fillRect(bottomPanel);
+	// Axis variables
+	//int numXMarkers = zoom_xMax 
+	int numXMarkers = xDiff;
+	int numYMarkers = yDiff;
+
+	// Plot X Axis Markers
+	for (int i = 1; i <= numXMarkers; i++) {
+		if (setToLog) {
+			xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+			xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+			int xLabelNum = std::pow(10, i);
+			auto xLabel = juce::String(xLabelNum);
+			g.setColour(juce::Colours::white); 
+			g.setFont(12); 
+			g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true); 
+		}
+		else {
+		// set to linear
+			int linear_xDiv;
+			if (xDiff <= 1000) {
+				linear_xDiv = i % 100;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+			if (xDiff > 1000 && xDiff <= 4000) {
+				linear_xDiv = i % 500;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+			else if (xDiff > 4000 && xDiff <= 9000) {
+				linear_xDiv = i % 1000;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+			else if (xDiff > 9000 && xDiff <= 16000) {
+				linear_xDiv = i % 2000;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+			else if (xDiff > 16000) {
+				linear_xDiv = i % 5000;
+				if (linear_xDiv == 0) {
+					xAxisMarkers.startNewSubPath(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis - 5);
+					xAxisMarkers.lineTo(xStartXYAxis + (i * xAxisScale * scaleX), yStartXYAxis + 5);
+					int xLabelNum = i;
+					auto xLabel = juce::String(xLabelNum);
+					g.setColour(juce::Colours::white);
+					g.setFont(12);
+					g.drawText(xLabel + "hZ", juce::Rectangle<int>(xStartXYAxis + (i * xAxisScale * scaleX) - 10, yStartXYAxis + 6, 60, 20), juce::Justification::centredLeft, true);
+				}
+			}
+		}
+	}
+	g.setColour(juce::Colours::white);
+	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
+
+	// Plot Y Axis Markers
+	for (int i = 1; i <= numYMarkers; i++) {
+		int div = i % 6;
+		if (div == 0) {
+			yAxisMarkersUp.startNewSubPath(xStartXYAxis - 5, yStartPlot + (scaleY * i) + yShift);
+			yAxisMarkersUp.lineTo(xStartXYAxis + 5, yStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+			yAxisMarkersDown.startNewSubPath(xStartXYAxis - 5, yStartPlot - (scaleY * i) + yShift);
+			yAxisMarkersDown.lineTo(xStartXYAxis + 5, yStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
+		}
+	}
+	g.setColour(juce::Colours::white);
+	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
+	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
+
+	//Plot zero on Y-axis
+	zeroTick.startNewSubPath(xStartXYAxis - 15, yStartPlot + yShift);
+	zeroTick.lineTo(xStartXYAxis + 15, yStartPlot + yShift);
+	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
+
+	//** draw graph border **//
+	juce::Path graphBoundary;
+	graphBoundary.startNewSubPath(border_xBuffer, border_yBuffer);
+	graphBoundary.lineTo(widthBorder, border_yBuffer);
+	graphBoundary.lineTo(widthBorder, heightBorder);
+	graphBoundary.lineTo(border_xBuffer, heightBorder);
+	graphBoundary.lineTo(border_xBuffer, border_yBuffer);
+	g.setColour(juce::Colours::slategrey);
+	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
+
+	//** draw boxes to hide out of bound plots 
+	int x_LeftBoxOffset2 = 0;
+	int y_LeftBoxOffset2 = 0;
+	int width_LeftBox2 = border_xBuffer;
+	int height_LeftBox2 = getHeight();
+
+	int x_BottonBoxOffset2 = 0;
+	int y_BottomBoxOffset2 = heightBorder;
+	int width_BottomBox2 = getWidth();
+	int height_BottomBox2 = 10;
+
+	juce::Rectangle<int> leftPanel2(x_LeftBoxOffset2, y_LeftBoxOffset2, width_LeftBox2, height_LeftBox2);
+	juce::Rectangle<int> bottomPanel2(x_BottonBoxOffset2, y_BottomBoxOffset2, width_BottomBox2, height_BottomBox2);
+
+	g.setColour(juce::Colours::black);
+	g.fillRect(leftPanel2);
+	g.fillRect(bottomPanel2);
 
 	// ** NEW STUFF ** //
 
@@ -707,15 +792,23 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	float cursorYPeak = findPeak();
 	if (cursorYPeak != 0) {
 		g.setColour(juce::Colours::red);
-		juce::Rectangle<int> peakLine(graphToScreen(cursorPeak), y_componentOffset, 1, lengthYAxis);
+		juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), y_componentOffset, 1, heightBorder - y_componentOffset);
 		g.fillRect(peakLine);
 		g.setColour(juce::Colours::white);
-
-		for (int i = 0; i < rowSize; i++)
+		for (int i = 0; i < rowSize; i++) {
 			if (plotInfo[i].isVisible) {
-				peakPlot.setText("(" + floatToStringPrecision((float)cursorPeak, 1) + ", " + floatToStringPrecision(cursorYPeak, 2) + ")", juce::dontSendNotification);
+				if (setToLog) {
+					peakPlot.setText("(" + floatToStringPrecision(std::pow(10, screenToGraph(calculateX(setToLog, cursorPeak))), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
+				}
+				else {
+					peakPlot.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), 2) + " Hz, " + floatToStringPrecision(cursorYPeak, 2) + " dB)", juce::dontSendNotification);
 			}
-	}
+		}
+	//Graph Plot Marker
+	float circleX = calculateX(setToLog, cursorIndex);
+	float circleY = calculateY(plotIndexSelection, cursorIndex);
+	if (inBounds(circleX, circleY))
+		g.drawEllipse(circleX, circleY, 1, 1, 8);
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
@@ -734,28 +827,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 	}
 	audioProcessor.resetProcBlockCalled();
 }
-
-//void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex)
-//{
-//	if (count == 0) {  //prepping all existing rows
-//		for (int r = 0; r < rowSize; r++) {
-//			audioProcessor.prepSelection(numBins, rowSize, r);
-//		}
-//	}
-//
-//	else if (count > countPrev)
-//	{  //handling new row selection
-//		if (rowIndex > rowSize)
-//		{
-//			audioProcessor.prepSelection(numBins, rowSize, rowIndex);
-//		}
-//		else {
-//			return;
-//		}  //there is no selection made, return
-//	}
-//	countPrev = count;
-//	count++;
-//}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 {
@@ -962,13 +1033,27 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData) {
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 {
-	float minVal = -1000;
+	float minVal = indexToFreqMap[0];
 	float maxVal = 24000;
+	float yMaxVal = 0;
+	float yMinVal = -90;
 	juce::String temp = inputXmin.getText(false);
 	float val = std::atof(temp.toStdString().c_str());
-	if (val >= minVal && val <= maxVal)
-	{
-		xMin = val;
+	if (setToLog) {
+		if (val >= minVal && val <= maxVal)
+		{
+			if (val > 0) {
+				xMinFrequency = val;
+			}
+		}
+		else { inputXmin.setText(std::to_string((int)xMin), juce::dontSendNotification); }
+	}
+	else {
+		if (val >= minVal && val <= maxVal)
+		{
+			xMinFrequency = val;
+		}
+		else { inputXmin.setText(std::to_string((int)xMin), juce::dontSendNotification); }
 	}
 	else { inputXmin.setText(std::to_string(xMin), juce::dontSendNotification); }
 
@@ -976,32 +1061,34 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	val = std::atof(temp.toStdString().c_str());
 	if (val >= minVal && val <= maxVal)
 	{
-		xMax = val;
+		if (val != 0) {
+			xMaxFrequency = val;
+		}
 	}
-	else { inputXmax.setText(std::to_string(xMax), juce::dontSendNotification); }
+	else { inputXmax.setText(std::to_string((int)xMax), juce::dontSendNotification); }
 
 	temp = inputYmin.getText(false);
 	val = std::atof(temp.toStdString().c_str());
-	if (val >= minVal && val <= maxVal)
+	if (val >= yMinVal && val <= yMaxVal)
 	{
 		yMin = val;
 	}
-	else { inputYmin.setText(std::to_string(yMin), juce::dontSendNotification); }
+	else { inputYmin.setText(std::to_string((int)yMin), juce::dontSendNotification); }
 
 	temp = inputYmax.getText(false);
 	val = std::atof(temp.toStdString().c_str());
-	if (val >= minVal && val <= maxVal)
+	if (val >= yMinVal && val <= yMaxVal)
 	{
 		yMax = val;
 	}
-	else { inputYmax.setText(std::to_string(yMax), juce::dontSendNotification); }
+	else { inputYmax.setText(std::to_string((int)yMax), juce::dontSendNotification); }
 	repaint();
 }
 
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 {
-	audioProcessor.setRowIndex(plotIndex);
+	audioProcessor.setRowIndex(rowIndex);
 	if (plotIndex == 0)
 	{
 		buttonPlot1.setButtonText("Selected");
@@ -1214,77 +1301,124 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 }
 
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
-{
-	float graphWest = (getWidth() * 0.295) - 1;
-	float graphNorth = y_componentOffset;
-	float graphEast = (getWidth() - x_componentOffset) + 0.5;
-	float graphSouth = (getHeight() - 240) * 0.95;
+void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& event) {
 
 	cursorX = event.getMouseDownX();
-	float cursorY = event.getMouseDownY();
+	cursorY = event.getMouseDownY();
 	//invalid bounds
-	if (cursorX < graphWest || cursorX > graphEast || cursorY < graphNorth || cursorY > graphSouth || screenToGraph(cursorX) < 1) {
-		isGraph = false;
-		cursorPlot.setText("(0.0, 0.00)", juce::dontSendNotification);
+	if (!inBounds(cursorX, cursorY)) {
+		cursorPlot.setText("(0.0 Hz, 0.00 dB)", juce::dontSendNotification);
 	}
 	//valid bounds
 	else {
-		isGraph = true;
-		cursorX = screenToGraph(cursorX);
-		if (rowIndex == 1 && plotInfo[1].isVisible) {
-			cursorPlot.setText("(" + floatToStringPrecision(cursorX, 1) + ", " + floatToStringPrecision(getYCoord(1, setToLog, (int)cursorX), 2) + ")", juce::dontSendNotification);
+		if (audioProcessor.minBlockSize) {
+			//get index based on cursor
+			int i = 1;
+			while (calculateX(setToLog, i) < cursorX) {
+				i++;
+			}
+			cursorIndex = i;
+			
+			for (int i = 0; i < rowSize; i++) {
+				if (plotInfo[i].isVisible) {
+					if (setToLog) {
+						float xCoord = std::pow(10, screenToGraph(calculateX(setToLog, i)));
+						cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + " dB)", juce::dontSendNotification);
+					}
+					else {
+						float xCoord = screenToGraph(calculateX(setToLog, i));
+						cursorPlot.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(plotIndexSelection, setToLog, i), 2) + " dB)", juce::dontSendNotification);
+					}
+				}
+			}
 		}
-		if (rowIndex == 0 && plotInfo[0].isVisible) {
-			cursorPlot.setText("(" + floatToStringPrecision(cursorX, 1) + ", " + floatToStringPrecision(getYCoord(0, setToLog, (int)cursorX), 2) + ")", juce::dontSendNotification);
-		}
+		repaint();
 	}
-	repaint();
 }
 
-float FFTSpectrumAnalyzerAudioProcessorEditor::findPeak()
-{
-	int p = rowIndex;
+float FFTSpectrumAnalyzerAudioProcessorEditor::calculateX(bool log, int index) {
 
-	float maxValue = getYCoord(p, setToLog, 0);
-	for (size_t i = 1; i < binMag[p].size(); ++i) {
-		if (getYCoord(p, setToLog, i) > maxValue) {
-			maxValue = getYCoord(p, setToLog, i);
+	float start = getWidth() * 0.295 - 1;
+	float lengthAxis = getWidth() - x_componentOffset;
+	float range = xMax - xMin;
+	float ratio = lengthAxis / range;
+	float shift = -xMin * ratio;
+
+	if (log) {
+		return std::log10(indexToFreqMap[index]) * 0.702 * ratio + start + shift;
+	}
+	else {
+		return indexToFreqMap[index] * 0.702 * ratio + start + shift;
+	}
+}
+
+float FFTSpectrumAnalyzerAudioProcessorEditor::calculateY(int plotSelection, int index) {
+
+	float lengthAxis = (getHeight() - 240) * .95;
+	float range = yMax - yMin;
+	float ratio = -lengthAxis / range;
+	float shift = (range - 2.0f * yMax) * ratio / 2.0f;
+	float start = (y_componentOffset + lengthAxis + 12) / 2;
+
+	return std::log10(binMag[plotSelection][index]) * 40 * ratio + shift + start;
+}
+
+int FFTSpectrumAnalyzerAudioProcessorEditor::findPeak() {
+
+	int i = 0;
+	float maxValue = -10000;
+	float temp;
+	while (i < numBins - 1) {
+		temp = getYCoord(plotIndexSelection, setToLog, i);
+		if (temp > maxValue) {
+			maxValue = temp;
 			cursorPeak = i;
 		}
+		i++;
 	}
+	if (maxValue == -10000)
+		return 0;
 	return maxValue;
 }
 
+bool FFTSpectrumAnalyzerAudioProcessorEditor::inBounds(float x, float y) {
+
+	float graphWest = (getWidth() * 0.295) - 1;
+	float graphNorth = y_componentOffset;
+	float graphEast = (getWidth() - x_componentOffset) + 0.5;
+	float graphSouth = getHeight() - 240 - graphNorth;
+
+	if (x < graphWest || x > graphEast || y < graphNorth || y > graphSouth) {
+		return false;
+	}
+	return true;
+}
+
 float FFTSpectrumAnalyzerAudioProcessorEditor::getYCoord(int plotNumber, bool log, int index) {
-	//if (log) {
+	
 	return 40 * std::log10(binMag[plotNumber][index]);
-	//}
-	//else {
-	//	return binMag[plotNumber][index];
-	//}
 }
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::screenToGraph(float screenCoord) {
-	float graphWest = (getWidth() * 0.295) - 1;
-	float graphNorth = y_componentOffset;
-	float graphEast = (getWidth() - x_componentOffset) + 0.5;
-	float graphSouth = (getHeight() - 240) * 0.95;
 
-	screenCoord -= graphWest;
-	screenCoord = (screenCoord * (100)) / (graphEast - graphWest);
-	return screenCoord;
+	float start = getWidth() * 0.295 - 1;
+	float lengthAxis = getWidth() - x_componentOffset;
+	float range = xMax - xMin;
+	float ratio = lengthAxis / range;
+	float shift = -xMin * ratio;
+	
+	return (screenCoord + shift - start) / (ratio * 0.702);
 }
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::graphToScreen(int graphCoord) {
-	float graphWest = (getWidth() * 0.295) - 1;
-	float graphNorth = y_componentOffset;
-	float graphEast = (getWidth() - x_componentOffset) + 0.5;
-	float graphSouth = (getHeight() - 240) * 0.95;
 
-	graphCoord = (graphCoord * (graphEast - graphWest)) / (100);
-	graphCoord += graphWest;
-	return graphCoord;
+	float start = getWidth() * 0.295 - 1;
+	float lengthAxis = getWidth() - x_componentOffset;
+	float range = xMax - xMin;
+	float ratio = lengthAxis / range;
+	float shift = -xMin * ratio;
+
+	return (graphCoord * ratio * 0.702) + start - shift;
 }
 
 std::string FFTSpectrumAnalyzerAudioProcessorEditor::floatToStringPrecision(float f, int p)

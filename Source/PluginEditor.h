@@ -36,10 +36,13 @@ public:
     void zeroBinSelection();
 
     void mouseMove(const juce::MouseEvent& event) override;
-    float findPeak();
+    int findPeak();
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
+    float calculateX(bool log, int index);
+    float calculateY(int plotSelection, int index);
+    bool inBounds(float x, float y);
     void setFreqData(int fftData);
     juce::Colour setColor(int row);
     void initializeBinMag();
@@ -54,7 +57,6 @@ private:
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
     static bool isRunning;
-    static bool isGraph;
     juce::Label cursorPlot;
     juce::Label peakPlot;
 
@@ -113,14 +115,18 @@ private:
     static bool isVisiblePlot2;
     static float xMinPrev;
     static float xMin;
+    static float xMinFrequency;
     static float xMaxPrev;
     static float xMax;
+    static float xMaxFrequency;
     static float yMinPrev;
     static float yMin;
     static float yMaxPrev;
     static float yMax;
     static int plotIndexSelection;
     static float cursorX;
+    static float cursorY;
+    static int cursorIndex;
     static int cursorPeak;
     static float xMaxFrequency;
     static float xMinFrequency;
@@ -156,6 +162,7 @@ private:
     static plotItem plotInfo[7];
 
     static bool setToLog;
+    static int initialAxisState;
     static bool newSelection;
     static bool displayError;
     static bool conCall;
