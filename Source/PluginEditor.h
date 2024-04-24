@@ -128,8 +128,6 @@ private:
     static float cursorY;
     static int cursorIndex;
     static int cursorPeak;
-    static float xMaxFrequency;
-    static float xMinFrequency;
 
     static int windowWidth;
     static int windowHeight;
