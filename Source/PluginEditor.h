@@ -139,10 +139,12 @@ private:
     int const cornersizeCheckbox = 4;
     int const tickWidth = 4;
     int const zeroTickWidth = 10;
-    int const scaleTextOffset = 10;
+    int const scaleTextOffsetX = 10;
+    int const scaleTextOffsetY = 3;
 
     int const originPixel = 0;
     int const bufferExtraSmall = 2;
+    int const bufferMediumSmall = 4;
     int const bufferSmall = 6;  //rename as padding
     int const bufferMedium = 10;
     int const bufferMediumLarge = 25;
