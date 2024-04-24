@@ -29,17 +29,20 @@ public:
     void setVisibility(int plotId);
     void handleNewSelection(int numBins, int rowSize, int rowIndex);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
-    float calculateX(bool log, int index);
 
     //processBlock integration
     void processBuffer();
     void zeroBuffers();
     void zeroBinSelection();
+
     void mouseMove(const juce::MouseEvent& event) override;
     int findPeak();
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
+    float calculateX(bool log, int index);
+    float calculateY(int plotSelection, int index);
+    bool inBounds(float x, float y);
     void setFreqData(int fftData);
     void setWindowFunction();
     void setBlockSize();
@@ -56,6 +59,10 @@ private:
     static bool newSelection;
     static bool displayError;
 
+    static int windowWidth;
+    static int windowHeight;
+    static int windowMaxWidth;
+    static int windowMaxHeight;
     static int fftSize;
     static int numBins;
     // static int sampleRate;
@@ -67,7 +74,21 @@ private:
     static int stepSize;
     static int amountOfPlots;
     static int prevAmountOfPlots;
+ struct plotItem {
+        bool isVisible;
+        juce::Colour color;
+        juce::Path path;
+        int checkBoxPos;
+    };
+    
+    static plotItem plotInfo[7];
+
+    static bool setToLog;
     static int initialAxisState;
+    static bool newSelection;
+    static bool displayError;
+    static bool conCall;
+    static bool blockProcessed;
 
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;
@@ -108,9 +129,30 @@ private:
     juce::Label labelExport;
     juce::Label labelDropdownAxis;
     juce::Label labelDropdownSize;
-    juce::Label labelDropdownWindow;
+    juce::Label labelDropdownWindow;    
     juce::Label labelPlot1{ "Plot 1" };
     juce::Label labelPlot2{ "Plot 2" };
+    juce::Label labelPlot3{ "Plot 3" };
+    juce::Label labelPlot4{ "Plot 4" };
+    juce::Label labelPlot5{ "Plot 5" };
+    juce::Label labelPlot6{ "Plot 6" };
+    juce::Label labelPlot7{ "Plot 7" };
+   
+    juce::TextButton buttonPlot1{ "Selected" };
+    juce::TextButton buttonPlot2{ "Select" };
+    juce::TextButton buttonPlot3{ "Select" };
+    juce::TextButton buttonPlot4{ "Select" };
+    juce::TextButton buttonPlot5{ "Select" };
+    juce::TextButton buttonPlot6{ "Select" };
+    juce::TextButton buttonPlot7{ "Select" };
+    
+    juce::ToggleButton toggleButtonPlot1;
+    juce::ToggleButton toggleButtonPlot2;
+    juce::ToggleButton toggleButtonPlot3;
+    juce::ToggleButton toggleButtonPlot4;
+    juce::ToggleButton toggleButtonPlot5;
+    juce::ToggleButton toggleButtonPlot6;
+    juce::ToggleButton toggleButtonPlot7;
     juce::Label labelUpperBoundsX;
     juce::Label labelUpperBoundsY;
     juce::Label labelLowerBoundsX;
@@ -123,10 +165,6 @@ private:
     juce::ComboBox comboboxSizeSetting;
     juce::ComboBox comboboxWindowFunction;
     juce::TextButton buttonExport{ "Export .csv" };
-    juce::TextButton buttonSelectPlot1{ "Selected" };
-    juce::TextButton buttonSelectPlot2{ "Select" };
-    juce::ToggleButton toggleButtonPlot1;
-    juce::ToggleButton toggleButtonPlot2;
     // gui elements end
 
     const char* xAxisValueText = " Hz, ";
