@@ -413,7 +413,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder + tickWidth);
 			int xLabelNum = std::pow(logPower, i);
 			auto xLabelNumText = juce::String(xLabelNum);
-			g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffset, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+			g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffsetX, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
 		}
 		else {
 			// set to linear
@@ -425,7 +425,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				if (xDivLinear == 0) {
 					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder - tickWidth);
 					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder + tickWidth);
-					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffset, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffsetX, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
 				}
 			}
 			if (xDiff > 1000 && xDiff <= 4000) {
@@ -433,7 +433,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				if (xDivLinear == 0) {
 					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder - tickWidth);
 					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder + tickWidth);
-					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffset, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffsetX, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
 				}
 			}
 			else if (xDiff > 4000 && xDiff <= 9000) {
@@ -441,7 +441,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				if (xDivLinear == 0) {
 					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder - tickWidth);
 					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder + tickWidth);
-					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffset, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffsetX, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
 				}
 			}
 			else if (xDiff > 9000 && xDiff <= 16000) {
@@ -449,7 +449,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				if (xDivLinear == 0) {
 					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder - tickWidth);
 					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder + tickWidth);
-					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffset, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffsetX, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
 				}
 			}
 			else if (xDiff > 16000) {
@@ -457,7 +457,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				if (xDivLinear == 0) {
 					xAxisMarkers.startNewSubPath(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder - tickWidth);
 					xAxisMarkers.lineTo(xMarginXYAxis + (i * scaleX), yMarginDrawingWindowLowerBorder + tickWidth);
-					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffset, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+					g.drawText(xLabelNumText + labelTextX, juce::Rectangle<int>(xMarginXYAxis + (i * scaleX) - scaleTextOffsetX, yMarginDrawingWindowLowerBorder + bufferSmall, widthMediumWidget, heightSmallWidget), juce::Justification::centredLeft, true);
 				}
 			}
 		}
@@ -466,27 +466,74 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
 
 	// Plot Y Axis Markers
-	for (int i = 1; i <= yDiff; i++) {
-		int yDiv = i % 6;
+	int yTotal = 90;
+	for (int i = -yTotal; i < 0; i++) {
 		int yLabelNum = i;
-		auto yLabelNumText = "-" + juce::String(yLabelNum);
-		if (yDiv == 0) {
-			yAxisMarkersUp.startNewSubPath(xMarginXYAxis, yMarginStartPlot + (scaleY * i) + yShift);
-			yAxisMarkersUp.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot + (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-			yAxisMarkersDown.startNewSubPath(xMarginXYAxis, yMarginStartPlot - (scaleY * i) + yShift);
-			yAxisMarkersDown.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot - (scaleY * i) + yShift);  // drawing line markers moving up from midpoint
-			g.drawText(yLabelNumText + labelTextY, juce::Rectangle<int>(xMarginXYAxis - (widthMediumSmallWidget + bufferSmall), yMarginStartPlot + (scaleY * i), widthMediumSmallWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+		auto yLabelNumText = juce::String(yLabelNum);
+		if (yDiff <= 10) {
+			int yDiv = i % 1;
+			if (yDiv == 0) {
+				yAxisMarkersUp.startNewSubPath(xMarginXYAxis, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);
+				yAxisMarkersUp.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);  // drawing line markers moving up from midpoint
+				g.drawText(yLabelNumText + labelTextY, juce::Rectangle<int>(xMarginXYAxis - (widthMediumSmallWidget + bufferSmall), yMarginStartPlot + (scaleY * i) + yShift - scaleTextOffsetY, widthMediumSmallWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+			}
+		}
+		else if (yDiff > 10 && yDiff <= 29) {
+			int yDiv = i % 2;
+			if (yDiv == 0) {
+				yAxisMarkersUp.startNewSubPath(xMarginXYAxis, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);
+				yAxisMarkersUp.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);  // drawing line markers moving up from midpoint
+				g.drawText(yLabelNumText + labelTextY, juce::Rectangle<int>(xMarginXYAxis - (widthMediumSmallWidget + bufferSmall), yMarginStartPlot + (scaleY * i) + yShift - scaleTextOffsetY, widthMediumSmallWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+			}
+		}
+		else if (yDiff > 29 && yDiff <= 49) {
+			int yDiv = i % 6;
+			if (yDiv == 0) {
+				yAxisMarkersUp.startNewSubPath(xMarginXYAxis, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);
+				yAxisMarkersUp.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);  // drawing line markers moving up from midpoint
+				g.drawText(yLabelNumText + labelTextY, juce::Rectangle<int>(xMarginXYAxis - (widthMediumSmallWidget + bufferSmall), yMarginStartPlot + (scaleY * i) + yShift - scaleTextOffsetY, widthMediumSmallWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+			}
+		}
+		else if (yDiff > 49 && yDiff <= 69) {
+			int yDiv = i % 8;
+			if (yDiv == 0) {
+				yAxisMarkersUp.startNewSubPath(xMarginXYAxis, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);
+				yAxisMarkersUp.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);  // drawing line markers moving up from midpoint
+				g.drawText(yLabelNumText + labelTextY, juce::Rectangle<int>(xMarginXYAxis - (widthMediumSmallWidget + bufferSmall), yMarginStartPlot + (scaleY * i) + yShift - scaleTextOffsetY, widthMediumSmallWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+			}
+		}
+		else if (yDiff > 69 && yDiff <= 89) {
+			int yDiv = i % 10;
+			if (yDiv == 0) {
+				yAxisMarkersUp.startNewSubPath(xMarginXYAxis, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);
+				yAxisMarkersUp.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);  // drawing line markers moving up from midpoint
+				g.drawText(yLabelNumText + labelTextY, juce::Rectangle<int>(xMarginXYAxis - (widthMediumSmallWidget + bufferSmall), yMarginStartPlot + (scaleY * i) + yShift - scaleTextOffsetY, widthMediumSmallWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+			}
+		}
+		else {
+			int yDiv = i % 6;
+			if (yDiv == 0) {
+				yAxisMarkersUp.startNewSubPath(xMarginXYAxis, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);
+				yAxisMarkersUp.lineTo(xMarginXYAxis + tickWidth, yMarginStartPlot + (scaleY * i) + yShift + scaleTextOffsetY);  // drawing line markers moving up from midpoint
+				g.drawText(yLabelNumText + labelTextY, juce::Rectangle<int>(xMarginXYAxis - (widthMediumSmallWidget + bufferSmall), yMarginStartPlot + (scaleY * i) + yShift - scaleTextOffsetY, widthMediumSmallWidget, heightSmallWidget), juce::Justification::centredLeft, true);
+			}
 		}
 	}
 	g.setColour(juce::Colours::white);
 	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
 	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 
+	/*
 	//Plot zero on Y-axis
 	zeroTick.startNewSubPath(xMarginXYAxis, yMarginStartPlot + yShift);
 	zeroTick.lineTo(xMarginXYAxis + zeroTickWidth, yMarginStartPlot + yShift);
 	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
-
+	*/
+	
+	// Paint box to hide out of bounds y-axis labels
+	 
+	 
+	
 	// Peak 
 	float cursorYPeak = findPeak();
 	if (cursorYPeak != 0) {
@@ -514,12 +561,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::slategrey);
 	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
 
-	//** draw boxes to hide out of bound plots
-	//juce::Rectangle<int> leftPanel2(xMarginOrigin, xMarginOrigin, xMarginRightMenu, heightLeftRightBottomBox);
-	//juce::Rectangle<int> bottomPanel2(xMarginOrigin, yMarginBottomBox, widthRightTopBottomBox, scaleTextOffset);
-	//g.setColour(juce::Colours::red);
-	//g.fillRect(leftPanel2);
-	//g.fillRect(bottomPanel2);
+	//** draw boxes to hide out of bound y labels
+	//juce::Rectangle<int> topPanel2(originPixel, originPixel, getWidth(), bufferMediumSmall);
+	juce::Rectangle<int> bottomPanel2(xMarginOrigin, yMarginDrawingWindowLowerBorder + bufferSmall + heightSmallWidget, widthRightTopBottomBox, getHeight()); 
+	g.setColour(juce::Colours::black);
+	//g.fillRect(topPanel2);
+	g.fillRect(bottomPanel2);
 
 	//** line to separate left-side components and right-side components **/
 	juce::Rectangle<int> LeftRightMenuSeparator (xMarginRightMenu, xMarginOrigin, thicknessLine, heightWindowMax);
