@@ -36,7 +36,7 @@ public:
     void zeroBinSelection();
 
     void mouseMove(const juce::MouseEvent& event) override;
-    int findPeak();
+    int findPeak(int samples);
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
