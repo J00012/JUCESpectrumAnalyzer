@@ -25,8 +25,8 @@ public:
     void timerCallback() override;
     void getBounds();
     void setPlotIndex(int plotIndex);
-    void updateToggleState(int plotId);
-    void setVisibility(int plotId);
+   // void updateToggleState(int plotId);
+    void setPlotVisibility(int plotId);
     void handleNewSelection(int numBins, int rowSize, int rowIndex);
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
 
@@ -36,7 +36,7 @@ public:
     void zeroBinSelection();
 
     void mouseMove(const juce::MouseEvent& event) override;
-    int findPeak();
+    int findPeak(int samples);
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
     float getYCoord(int plotNumber, bool log, int index);
@@ -44,10 +44,13 @@ public:
     float calculateY(int plotSelection, int index);
     bool inBounds(float x, float y);
     void setFreqData(int fftData);
+    juce::Colour setColor(int row);
+    void initializeBinMag();
     void setWindowFunction();
     void setBlockSize();
     void setAxisType();
     std::string floatToStringPrecision(float f, int p);
+
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -92,7 +95,7 @@ private:
 
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;
-    static juce::dsp::WindowingFunction<float> editWindow;
+    static juce::dsp::WindowingFunction<float> window;
     static std::vector<float> bufferRight;
     static std::vector<float> bufferLeft;
     static std::vector<float> windowBufferRight;

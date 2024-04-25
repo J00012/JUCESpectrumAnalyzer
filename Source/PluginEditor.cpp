@@ -12,6 +12,8 @@
 #include <algorithm>
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::cursorX;
+float FFTSpectrumAnalyzerAudioProcessorEditor::cursorY;
+int FFTSpectrumAnalyzerAudioProcessorEditor::cursorIndex;
 int FFTSpectrumAnalyzerAudioProcessorEditor::cursorPeak = 0;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
@@ -25,7 +27,7 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::xMax = 8000;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMaxFrequency = 8000;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMinPrev = -90;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMin = -90;
-float FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 0;
+float FFTSpectrumAnalyzerAudioProcessorEditor::yMaxPrev = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::yMax = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::plotIndexSelection = 0;
 
@@ -80,7 +82,7 @@ std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferRight = 
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferLeft = { 0 };
 //juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessorEditor::editFFT(0);
 
-FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[7] = {
+FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[7] = { 
 	{false, juce::Colours::lightgreen, juce::Path(), 74},
 	{false, juce::Colours::cornflowerblue,juce::Path(), 120},
 	{false, juce::Colours::purple},
@@ -90,7 +92,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProces
 	{false, juce::Colours::slateblue}
 };
 
-juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessorEditor::window(0, juce::dsp::WindowingFunction<float>::hann);
+juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessorEditor::window(windowVar, juce::dsp::WindowingFunction<float>::hann);
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor(FFTSpectrumAnalyzerAudioProcessor& p)
@@ -1131,7 +1133,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 		}
 		repaint();
 	}
-	repaint();
 }
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::calculateX(bool log, int index) {
@@ -1162,22 +1163,18 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::calculateY(int plotSelection, int
 	return std::log10(binMag[plotSelection][index]) * 40 * ratio + shift + start;
 }
 
-int FFTSpectrumAnalyzerAudioProcessorEditor::findPeak() {
+int FFTSpectrumAnalyzerAudioProcessorEditor::findPeak(int samples) {
 
-	int i = 0;
-	float maxValue = -10000;
-	float temp;
-	while (i < numBins - 1) {
-		temp = getYCoord(plotIndexSelection, setToLog, i);
-		if (temp > maxValue) {
-			maxValue = temp;
-			cursorPeak = i;
+	int rightPeak = cursorIndex;
+
+	//check right
+	for (int i = cursorIndex + 1; i < std::min(cursorIndex + samples, fftSize / 2); ++i) {
+		if (getYCoord(rowIndex, setToLog, i) > getYCoord(rowIndex, setToLog, rightPeak)) {
+			rightPeak = i;
 		}
 		i++;
 	}
-	if (maxValue == -10000)
-		return 0;
-	return maxValue;
+	return rightPeak;
 }
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::inBounds(float x, float y) {
@@ -1198,11 +1195,11 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::getYCoord(int plotNumber, bool lo
 }
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::screenToGraph(float screenCoord) {
-	float start = xMarginXYAxis;
-	int widthDrawingWindow = getWidth() - (xMarginXYAxis + bufferLarge);
-	int lengthXAxis = widthDrawingWindow;
+
+	float start = getWidth() * 0.295 - 1;
+	float lengthAxis = getWidth() - x_componentOffset;
 	float range = xMax - xMin;
-	float ratio = lengthXAxis / range;
+	float ratio = lengthAxis / range;
 	float shift = -xMin * ratio;
 	
 	return (screenCoord + shift - start) / ratio;}
