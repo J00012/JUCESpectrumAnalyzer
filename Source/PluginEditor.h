@@ -143,7 +143,7 @@ private:
     static int fftCounter;
     static int stepSize;
 
-
+    static int windowVar;
 
     static int count;
     static int countPrev;
@@ -160,11 +160,11 @@ private:
     static plotItem plotInfo[7];
 
     static bool setToLog;
-    static int initialAxisState;
+    static int initialAxisState; 
     static bool newSelection;
-    static bool displayError;
-    static bool conCall;
-    static bool blockProcessed;
+    static bool displayError; 
+    static bool conCall;  
+    static bool blockProcessed; 
 
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;
