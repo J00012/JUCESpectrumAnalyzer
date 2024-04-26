@@ -88,7 +88,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 {
 	setOpaque(true);
 	startTimer(500);
-	
+
 	setSize(widthWindowMin, heightWindowMin);
 	setResizable(true, true);
 	setResizeLimits(widthWindowMin, heightWindowMin, widthWindowMax, heightWindowMax);
@@ -298,55 +298,81 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputUpperBoundsX.onTextChange = [this] { getBounds(); };
 	inputLowerBoundsY.onTextChange = [this] { getBounds(); };
 	inputUpperBoundsY.onTextChange = [this] { getBounds(); };
-	comboboxWindowFunction.onChange = [this] { setWindowFunction(); };
+	comboboxWindowFunction.onChange = [this] { setWindowFunction();
+	if (blockProcessed) {
+		int temp = rowIndex;
+		for (int i = 0; i < rowSize; i++) {
+			if (sampleSelections[i].size() != 0) {  //check if there is data in acc buffer
+				rowIndex = i;
+				processBuffer();
+			}
+		}
+		rowIndex = temp;
+	}
+	repaint(); 
+	};
 	comboboxAxisType.onChange = [this] { setAxisType(); };
-	comboboxSizeSetting.onChange = [this] { setBlockSize(); };
+	comboboxSizeSetting.onChange = [this] { setBlockSize(); zeroBuffers();
+	if (blockProcessed) {
+		int temp = rowIndex;
+		for (int i = 0; i < rowSize; i++) {
+			if (sampleSelections[i].size() != 0) {   //check if there is data in acc buffer
+				rowIndex = i;
+				processBuffer();
+			}
+		}
+		rowIndex = temp;
+	}
+	repaint();
+	};
 
-	toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
-	toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
-	toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
-	toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
-	toggleButtonPlot5.onClick = [this] { setPlotVisibility(4); };
-	toggleButtonPlot6.onClick = [this] { setPlotVisibility(5); };
-	toggleButtonPlot7.onClick = [this] { setPlotVisibility(6); };
 
-	buttonSelectPlot1.onClick = [&]() {
-		plotIndexSelection = 0;
-		setPlotIndex(0);
-		};
-	buttonSelectPlot2.onClick = [&]() {
-		plotIndexSelection = 1;
-		setPlotIndex(1);
-		};
+		toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
+		toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
+		toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
+		toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
+		toggleButtonPlot5.onClick = [this] { setPlotVisibility(4); };
+		toggleButtonPlot6.onClick = [this] { setPlotVisibility(5); };
+		toggleButtonPlot7.onClick = [this] { setPlotVisibility(6); };
 
-	if (plotInfo[0].isVisible == true)
-	{
-		toggleButtonPlot1.setToggleState(true, true);
-	}
-	if (plotInfo[1].isVisible == true)
-	{
-		toggleButtonPlot2.setToggleState(true, true);
-	}
-	if (plotInfo[2].isVisible == true)
-	{
-		toggleButtonPlot3.setToggleState(true, true);
-	}
-	if (plotInfo[3].isVisible == true)
-	{
-		toggleButtonPlot4.setToggleState(true, true);
-	}
-	if (plotInfo[4].isVisible == true)
-	{
-		toggleButtonPlot5.setToggleState(true, true);
-	}
-	if (plotInfo[5].isVisible == true)
-	{
-		toggleButtonPlot6.setToggleState(true, true);
-	}
-	if (plotInfo[6].isVisible == true)
-	{
-		toggleButtonPlot7.setToggleState(true, true);
-	}
+		buttonSelectPlot1.onClick = [&]() {
+			plotIndexSelection = 0;
+			setPlotIndex(0);
+			};
+		buttonSelectPlot2.onClick = [&]() {
+			plotIndexSelection = 1;
+			setPlotIndex(1);
+			};
+
+		if (plotInfo[0].isVisible == true)
+		{
+			toggleButtonPlot1.setToggleState(true, true);
+		}
+		if (plotInfo[1].isVisible == true)
+		{
+			toggleButtonPlot2.setToggleState(true, true);
+		}
+		if (plotInfo[2].isVisible == true)
+		{
+			toggleButtonPlot3.setToggleState(true, true);
+		}
+		if (plotInfo[3].isVisible == true)
+		{
+			toggleButtonPlot4.setToggleState(true, true);
+		}
+		if (plotInfo[4].isVisible == true)
+		{
+			toggleButtonPlot5.setToggleState(true, true);
+		}
+		if (plotInfo[5].isVisible == true)
+		{
+			toggleButtonPlot6.setToggleState(true, true);
+		}
+		if (plotInfo[6].isVisible == true)
+		{
+			toggleButtonPlot7.setToggleState(true, true);
+		}
+
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
