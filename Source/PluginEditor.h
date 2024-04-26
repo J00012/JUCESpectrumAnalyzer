@@ -56,27 +56,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
-    static bool isRunning;
-    static bool isGraph;
-    static bool setToLog;
-    static bool newSelection;
-    static bool displayError;
 
-    static int windowWidth;
-    static int windowHeight;
-    static int windowMaxWidth;
-    static int windowMaxHeight;
-    static int fftSize;
-    static int numBins;
-    // static int sampleRate;
-    static int maxFreq;
-    static int numFreqBins;
-    static int rowIndex;
-    static int rowSize;
-    static int fftCounter;
-    static int stepSize;
-    static int amountOfPlots;
-    static int prevAmountOfPlots;
  struct plotItem {
         bool isVisible;
         juce::Colour color;
@@ -86,16 +66,9 @@ private:
     
     static plotItem plotInfo[7];
 
-    static bool setToLog;
-    static int initialAxisState;
-    static bool newSelection;
-    static bool displayError;
-    static bool conCall;
-    static bool blockProcessed;
-
     //ProcessBlock 
     //static juce::dsp::FFT editFFT;
-    static juce::dsp::WindowingFunction<float> window;
+    static juce::dsp::WindowingFunction<float> windowData;
     static std::vector<float> bufferRight;
     static std::vector<float> bufferLeft;
     static std::vector<float> windowBufferRight;
@@ -113,11 +86,37 @@ private:
     static float yMin;
     static float yMaxPrev;
     static float yMax;
-    static int plotIndexSelection;
     static float cursorX;
-    static int cursorPeak;
+    static float cursorY;
     static float xMaxFrequency;
-    static float xMinFrequency;
+    static float xMinFrequency;    
+    static bool isRunning;
+    static bool isGraph;
+    static bool setToLog;
+    static int initialAxisState;
+    static bool newSelection;
+    static bool displayError;
+    static bool conCall;
+    static bool blockProcessed;
+    static int windowWidth;
+    static int windowHeight;
+    static int windowMaxWidth;
+    static int windowMaxHeight;
+    static int fftSize;
+    static int numBins;
+    // static int sampleRate;
+    static int maxFreq;
+    static int numFreqBins;
+    static int rowIndex;
+    static int rowSize;
+    static int fftCounter;
+    static int stepSize;
+    static int windowVar;
+    static int amountOfPlots;
+    static int prevAmountOfPlots;
+    static int cursorIndex;
+    static int cursorPeak;
+    static int plotIndexSelection;
 
     // gui elements start
     juce::Label labelCursor;
@@ -141,13 +140,13 @@ private:
     juce::Label labelPlot6{ "Plot 6" };
     juce::Label labelPlot7{ "Plot 7" };
    
-    juce::TextButton buttonPlot1{ "Selected" };
-    juce::TextButton buttonPlot2{ "Select" };
-    juce::TextButton buttonPlot3{ "Select" };
-    juce::TextButton buttonPlot4{ "Select" };
-    juce::TextButton buttonPlot5{ "Select" };
-    juce::TextButton buttonPlot6{ "Select" };
-    juce::TextButton buttonPlot7{ "Select" };
+    juce::TextButton buttonSelectPlot1{ "Selected" };
+    juce::TextButton buttonSelectPlot2{ "Select" };
+    juce::TextButton buttonSelectPlot3{ "Select" };
+    juce::TextButton buttonSelectPlot4{ "Select" };
+    juce::TextButton buttonSelectPlot5{ "Select" };
+    juce::TextButton buttonSelectPlot6{ "Select" };
+    juce::TextButton buttonSelectPlot7{ "Select" };
     
     juce::ToggleButton toggleButtonPlot1;
     juce::ToggleButton toggleButtonPlot2;
@@ -171,10 +170,12 @@ private:
     // gui elements end
 
     const char* xAxisValueText = " Hz, ";
-    const char* yAxisValueText = " dB)";
+    const char* yAxisValueText = " dB";
 
     int const logPower = 10;
     int const logScale = 40;
+    int const precisionValue1 = 1;
+    int const precisionValue2 = 2;
 
     int const cornerSizeSelectionBox = 3;
     int const cornersizeCheckbox = 4;
