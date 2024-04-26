@@ -4,6 +4,10 @@
               useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="tHM2vx" name="FFTSpectrumAnalyzer">
     <GROUP id="{596E72ED-6200-14F7-0E81-8A7097FA1A96}" name="Source">
+      <GROUP id="{2CEB07F5-83D0-6C59-F0AA-27C69154696A}" name="DataStructures">
+        <FILE id="klDbRK" name="RingBuffer.cpp" compile="1" resource="0" file="Source/RingBuffer.cpp"/>
+        <FILE id="Vgrk2a" name="RingBuffer.h" compile="0" resource="0" file="Source/RingBuffer.h"/>
+      </GROUP>
       <FILE id="Dk5eoA" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="OkISHO" name="PluginProcessor.h" compile="0" resource="0"
