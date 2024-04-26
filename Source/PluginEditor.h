@@ -39,9 +39,9 @@ public:
     int findPeak(int samples);
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
-    float getYCoord(int plotNumber, bool log, int index);
-    float calculateX(bool log, int index);
-    float calculateY(int plotSelection, int index);
+    float getYCoord(int index);
+    float calculateX(int index);
+    float calculateY(int index);
     bool inBounds(float x, float y);
     void setFreqData(int fftData);
     juce::Colour setColor(int row);
@@ -124,10 +124,7 @@ private:
     static float yMaxPrev;
     static float yMax;
     static int plotIndexSelection;
-    static float cursorX;
-    static float cursorY;
     static int cursorIndex;
-    static int cursorPeak;
 
     static int windowWidth;
     static int windowHeight;
