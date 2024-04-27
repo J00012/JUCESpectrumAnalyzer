@@ -227,19 +227,19 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
 	buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
 	buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
-	toggleButtonPlot1.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot1.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot1.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot2.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot2.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot2.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot3.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot3.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot3.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot4.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot5.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot5.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot5.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot6.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot6.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot6.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot7.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot7.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot1.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
 	inputLowerBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white);
 	inputLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::black);
@@ -327,52 +327,51 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	repaint();
 	};
 
+	toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
+	toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
+	toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
+	toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
+	toggleButtonPlot5.onClick = [this] { setPlotVisibility(4); };
+	toggleButtonPlot6.onClick = [this] { setPlotVisibility(5); };
+	toggleButtonPlot7.onClick = [this] { setPlotVisibility(6); };
 
-		toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
-		toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
-		toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
-		toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
-		toggleButtonPlot5.onClick = [this] { setPlotVisibility(4); };
-		toggleButtonPlot6.onClick = [this] { setPlotVisibility(5); };
-		toggleButtonPlot7.onClick = [this] { setPlotVisibility(6); };
+	buttonSelectPlot1.onClick = [&]() {
+		plotIndexSelection = 0;
+		setPlotIndex(0);
+		};
+	buttonSelectPlot2.onClick = [&]() {
+		plotIndexSelection = 1;
+		setPlotIndex(1);
+		};
 
-		buttonSelectPlot1.onClick = [&]() {
-			plotIndexSelection = 0;
-			setPlotIndex(0);
-			};
-		buttonSelectPlot2.onClick = [&]() {
-			plotIndexSelection = 1;
-			setPlotIndex(1);
-			};
-
-		if (plotInfo[0].isVisible == true)
-		{
-			toggleButtonPlot1.setToggleState(true, true);
-		}
-		if (plotInfo[1].isVisible == true)
-		{
-			toggleButtonPlot2.setToggleState(true, true);
-		}
-		if (plotInfo[2].isVisible == true)
-		{
-			toggleButtonPlot3.setToggleState(true, true);
-		}
-		if (plotInfo[3].isVisible == true)
-		{
-			toggleButtonPlot4.setToggleState(true, true);
-		}
-		if (plotInfo[4].isVisible == true)
-		{
-			toggleButtonPlot5.setToggleState(true, true);
-		}
-		if (plotInfo[5].isVisible == true)
-		{
-			toggleButtonPlot6.setToggleState(true, true);
-		}
-		if (plotInfo[6].isVisible == true)
-		{
-			toggleButtonPlot7.setToggleState(true, true);
-		}
+	if (plotInfo[0].isVisible == true)
+	{
+		toggleButtonPlot1.setToggleState(true, true);
+	}
+	if (plotInfo[1].isVisible == true)
+	{
+		toggleButtonPlot2.setToggleState(true, true);
+	}
+	if (plotInfo[2].isVisible == true)
+	{
+		toggleButtonPlot3.setToggleState(true, true);
+	}
+	if (plotInfo[3].isVisible == true)
+	{
+		toggleButtonPlot4.setToggleState(true, true);
+	}
+	if (plotInfo[4].isVisible == true)
+	{
+		toggleButtonPlot5.setToggleState(true, true);
+	}
+	if (plotInfo[5].isVisible == true)
+	{
+		toggleButtonPlot6.setToggleState(true, true);
+	}
+	if (plotInfo[6].isVisible == true)
+	{
+		toggleButtonPlot7.setToggleState(true, true);
+	}
 
 }
 
@@ -666,13 +665,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::white);
 	g.fillRoundedRectangle(paddingSmall, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox);
 
-	for (int i = 0; i < rowSize; i++) {
-		// fill in checkboxes
-		if (plotInfo[i].isVisible == true) {
-			g.setColour(juce::Colours::dodgerblue);
-			g.fillRoundedRectangle(xMarginFirstLeftMenuWidget, plotInfo[i].checkBoxPos, widthExtraSmallWidget, heightSmallWidget, cornersizeCheckbox);
-		}
-	}
+	//for (int i = 0; i < rowSize; i++) {
+	//	// fill in checkboxes
+	//	if (plotInfo[i].isVisible == true) {
+	//		g.setColour(juce::Colours::dodgerblue);
+	//		g.fillRoundedRectangle(xMarginFirstLeftMenuWidget, plotInfo[i].checkBoxPos, widthExtraSmallWidget, heightSmallWidget, cornersizeCheckbox);
+	//	}
+	//}
 
 	// draw line to separate plot selections
 	g.setColour(juce::Colours::lightgrey);
