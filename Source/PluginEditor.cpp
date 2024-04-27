@@ -68,7 +68,7 @@ std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferLeft = {
 std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::numPlots = {};
 std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::windowFunctionTypes = { "Blackman window","Blackman-Harris window", "Flatop window", "Hamming window", "Hann window", "Kaiser", "Rectangular window", "Triangular window" };
 std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::axisTypes = { "Linear Frequency", "Logarithmic Frequency"};
-std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::sizeOptions = { "128", "256", "512", "1024" };
+std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::sizeOptions = { "128", "256", "512", "1024", "2048", "4096", "8192", "16384"};
 //juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessorEditor::editFFT(0);			  
 																				  
 FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[7] = {
