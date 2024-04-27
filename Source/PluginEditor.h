@@ -123,7 +123,7 @@ private:
             int checkBoxPos;
         };
     
-    static plotItem plotInfo[7];
+    static plotItem plotInfo[4];
 
     //std::vector<std::string>plotToggleButtons = { 0 };
     //std::vector<std::string>plotSelectButtons = { 0 };
@@ -134,9 +134,7 @@ private:
     juce::Label labelPlot2{ "Plot 2" };
     juce::Label labelPlot3{ "Plot 3" };
     juce::Label labelPlot4{ "Plot 4" };
-    juce::Label labelPlot5{ "Plot 5" };
-    juce::Label labelPlot6{ "Plot 6" };
-    juce::Label labelPlot7{ "Plot 7" };
+
     juce::Label labelUpperBoundsX;
     juce::Label labelUpperBoundsY;
     juce::Label labelLowerBoundsX;
@@ -166,18 +164,14 @@ private:
     juce::TextButton buttonSelectPlot2{ textNotSelected };
     juce::TextButton buttonSelectPlot3{ textNotSelected };
     juce::TextButton buttonSelectPlot4{ textNotSelected };
-    juce::TextButton buttonSelectPlot5{ textNotSelected };
-    juce::TextButton buttonSelectPlot6{ textNotSelected };
-    juce::TextButton buttonSelectPlot7{ textNotSelected };
+ 
     juce::TextButton buttonExport{ "Export .csv" };
     
     juce::ToggleButton toggleButtonPlot1;
     juce::ToggleButton toggleButtonPlot2;
     juce::ToggleButton toggleButtonPlot3;
     juce::ToggleButton toggleButtonPlot4;
-    juce::ToggleButton toggleButtonPlot5;
-    juce::ToggleButton toggleButtonPlot6;
-    juce::ToggleButton toggleButtonPlot7;
+
 
     juce::ComboBox comboboxAxisType;
     juce::ComboBox comboboxSizeSetting;

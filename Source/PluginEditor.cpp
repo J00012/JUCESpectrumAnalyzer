@@ -71,14 +71,11 @@ std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::axisTypes = { 
 std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::sizeOptions = { "128", "256", "512", "1024", "2048", "4096", "8192", "16384"};
 //juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessorEditor::editFFT(0);			  
 																				  
-FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[7] = {
+FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[4] = {
 	{false, juce::Colours::lightgreen, juce::Path(), 74},
 	{false, juce::Colours::cornflowerblue,juce::Path(), 120},
 	{false, juce::Colours::purple},
-	{false, juce::Colours::cyan},
-	{false, juce::Colours::coral},
-	{false, juce::Colours::goldenrod},
-	{false, juce::Colours::slateblue}
+	{false, juce::Colours::cyan}	
 };
 
 juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowData(windowVar, juce::dsp::WindowingFunction<float>::hann);
@@ -147,16 +144,12 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(buttonSelectPlot2);
 	addAndMakeVisible(buttonSelectPlot3);
 	addAndMakeVisible(buttonSelectPlot4);
-	addAndMakeVisible(buttonSelectPlot5);
-	addAndMakeVisible(buttonSelectPlot6);
-	addAndMakeVisible(buttonSelectPlot7);
+
 	addAndMakeVisible(toggleButtonPlot1);
 	addAndMakeVisible(toggleButtonPlot2);
 	addAndMakeVisible(toggleButtonPlot3);
 	addAndMakeVisible(toggleButtonPlot4);
-	addAndMakeVisible(toggleButtonPlot5);
-	addAndMakeVisible(toggleButtonPlot6);
-	addAndMakeVisible(toggleButtonPlot7);
+
 
 	// Fonts
 	labelImportAudio.setFont(juce::Font("Arial", 18.0f, juce::Font::bold));
@@ -182,9 +175,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPlot2.setText("Plot 2", juce::dontSendNotification);
 	labelPlot3.setText("Plot 3", juce::dontSendNotification);
 	labelPlot4.setText("Plot 4", juce::dontSendNotification);
-	labelPlot5.setText("Plot 5", juce::dontSendNotification);
-	labelPlot6.setText("Plot 6", juce::dontSendNotification);
-	labelPlot7.setText("Plot 7", juce::dontSendNotification);
+
 	labelZoom.setText("Zoom", juce::dontSendNotification);
 	labelUpperBounds.setText("Upper", juce::dontSendNotification);
 	labelLowerBounds.setText("Lower", juce::dontSendNotification);
@@ -235,12 +226,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	toggleButtonPlot3.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
 	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
 	toggleButtonPlot4.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot5.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
-	toggleButtonPlot5.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot6.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
-	toggleButtonPlot6.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot7.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
-	toggleButtonPlot1.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
+
 	inputLowerBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white);
 	inputLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::black);
 	inputLowerBoundsX.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
@@ -282,17 +268,12 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonSelectPlot2.setClickingTogglesState(true);
 	buttonSelectPlot3.setClickingTogglesState(true);
 	buttonSelectPlot4.setClickingTogglesState(true);
-	buttonSelectPlot5.setClickingTogglesState(true);
-	buttonSelectPlot5.setClickingTogglesState(true);
-	buttonSelectPlot6.setClickingTogglesState(true);
-	buttonSelectPlot7.setClickingTogglesState(true);
+
 	toggleButtonPlot1.setClickingTogglesState(true);
 	toggleButtonPlot2.setClickingTogglesState(true);
 	toggleButtonPlot3.setClickingTogglesState(true);
 	toggleButtonPlot4.setClickingTogglesState(true);
-	toggleButtonPlot5.setClickingTogglesState(true);
-	toggleButtonPlot6.setClickingTogglesState(true);
-	toggleButtonPlot7.setClickingTogglesState(true);
+
 
 	// On user interaction
 	inputLowerBoundsX.onTextChange = [this] { getBounds(); };
@@ -310,8 +291,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 		}
 		rowIndex = temp;
 	}
-	repaint(); 
-	};
+	repaint();
+		};
 	comboboxAxisType.onChange = [this] { setAxisType(); };
 	comboboxSizeSetting.onChange = [this] { setBlockSize(); zeroBuffers();
 	if (blockProcessed) {
@@ -325,55 +306,40 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 		rowIndex = temp;
 	}
 	repaint();
-	};
+		};
 
 
-		toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
-		toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
-		toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
-		toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
-		toggleButtonPlot5.onClick = [this] { setPlotVisibility(4); };
-		toggleButtonPlot6.onClick = [this] { setPlotVisibility(5); };
-		toggleButtonPlot7.onClick = [this] { setPlotVisibility(6); };
+	toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
+	toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
+	toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
+	toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
 
-		buttonSelectPlot1.onClick = [&]() {
-			plotIndexSelection = 0;
-			setPlotIndex(0);
-			};
-		buttonSelectPlot2.onClick = [&]() {
-			plotIndexSelection = 1;
-			setPlotIndex(1);
-			};
 
-		if (plotInfo[0].isVisible == true)
-		{
-			toggleButtonPlot1.setToggleState(true, true);
-		}
-		if (plotInfo[1].isVisible == true)
-		{
-			toggleButtonPlot2.setToggleState(true, true);
-		}
-		if (plotInfo[2].isVisible == true)
-		{
-			toggleButtonPlot3.setToggleState(true, true);
-		}
-		if (plotInfo[3].isVisible == true)
-		{
-			toggleButtonPlot4.setToggleState(true, true);
-		}
-		if (plotInfo[4].isVisible == true)
-		{
-			toggleButtonPlot5.setToggleState(true, true);
-		}
-		if (plotInfo[5].isVisible == true)
-		{
-			toggleButtonPlot6.setToggleState(true, true);
-		}
-		if (plotInfo[6].isVisible == true)
-		{
-			toggleButtonPlot7.setToggleState(true, true);
-		}
+	buttonSelectPlot1.onClick = [&]() {
+		rowIndex = 0;
+		setPlotIndex(0);
+		};
+	buttonSelectPlot2.onClick = [&]() {
+		rowIndex = 1;
+		setPlotIndex(1);
+		};
 
+	if (plotInfo[0].isVisible == true)
+	{
+		toggleButtonPlot1.setToggleState(true, true);
+	}
+	if (plotInfo[1].isVisible == true)
+	{
+		toggleButtonPlot2.setToggleState(true, true);
+	}
+	if (plotInfo[2].isVisible == true)
+	{
+		toggleButtonPlot3.setToggleState(true, true);
+	}
+	if (plotInfo[3].isVisible == true)
+	{
+		toggleButtonPlot4.setToggleState(true, true);
+	}
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -478,7 +444,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	if (audioProcessor.minBlockSize) {
 		for (int i = 0; i < rowSize; i++) {
 
-			if (plotInfo[i].isVisible == true) {
+			if (plotInfo[i].isVisible) {
 				plotInfo[i].path.clear();
 				plotInfo[i].path.startNewSubPath(xMarginXYAxis + xShift, yMarginZeroTick + logScale * std::log10(binMag[i][0]) * scaleY + yShift);
 
@@ -880,9 +846,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 		buttonSelectPlot2.setButtonText(textNotSelected);
 		buttonSelectPlot3.setButtonText(textNotSelected);
 		buttonSelectPlot4.setButtonText(textNotSelected);
-		buttonSelectPlot5.setButtonText(textNotSelected);
-		buttonSelectPlot6.setButtonText(textNotSelected);
-		buttonSelectPlot7.setButtonText(textNotSelected);
 	}
 	else if (plotIndex == 1)
 	{
@@ -890,9 +853,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 		buttonSelectPlot2.setButtonText(textSelected);
 		buttonSelectPlot3.setButtonText(textNotSelected);
 		buttonSelectPlot4.setButtonText(textNotSelected);
-		buttonSelectPlot5.setButtonText(textNotSelected);
-		buttonSelectPlot6.setButtonText(textNotSelected);
-		buttonSelectPlot7.setButtonText(textNotSelected);
 	}
 	else if (plotIndex == 2)
 	{
@@ -900,9 +860,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 		buttonSelectPlot2.setButtonText(textNotSelected);
 		buttonSelectPlot3.setButtonText(textSelected);
 		buttonSelectPlot4.setButtonText(textNotSelected);
-		buttonSelectPlot5.setButtonText(textNotSelected);
-		buttonSelectPlot6.setButtonText(textNotSelected);
-		buttonSelectPlot7.setButtonText(textNotSelected);
 	}
 	else if (plotIndex == 3)
 	{
@@ -910,39 +867,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 		buttonSelectPlot2.setButtonText(textNotSelected);
 		buttonSelectPlot3.setButtonText(textNotSelected);
 		buttonSelectPlot4.setButtonText(textSelected);
-		buttonSelectPlot5.setButtonText(textNotSelected);
-		buttonSelectPlot6.setButtonText(textNotSelected);
-		buttonSelectPlot7.setButtonText(textNotSelected);
-	}
-	else if (plotIndex == 4)
-	{
-		buttonSelectPlot1.setButtonText(textNotSelected);
-		buttonSelectPlot2.setButtonText(textNotSelected);
-		buttonSelectPlot3.setButtonText(textNotSelected);
-		buttonSelectPlot4.setButtonText(textNotSelected);
-		buttonSelectPlot5.setButtonText(textSelected);
-		buttonSelectPlot6.setButtonText(textNotSelected);
-		buttonSelectPlot7.setButtonText(textNotSelected);
-	}
-	else if (plotIndex == 5)
-	{
-		buttonSelectPlot1.setButtonText(textNotSelected);
-		buttonSelectPlot2.setButtonText(textNotSelected);
-		buttonSelectPlot3.setButtonText(textNotSelected);
-		buttonSelectPlot4.setButtonText(textNotSelected);
-		buttonSelectPlot5.setButtonText(textNotSelected);
-		buttonSelectPlot6.setButtonText(textSelected);
-		buttonSelectPlot7.setButtonText(textNotSelected);
-	}
-	else if (plotIndex == 6)
-	{
-		buttonSelectPlot1.setButtonText(textNotSelected);
-		buttonSelectPlot2.setButtonText(textNotSelected);
-		buttonSelectPlot3.setButtonText(textNotSelected);
-		buttonSelectPlot4.setButtonText(textNotSelected);
-		buttonSelectPlot5.setButtonText(textNotSelected);
-		buttonSelectPlot6.setButtonText(textNotSelected);
-		buttonSelectPlot7.setButtonText(textSelected);
 	}
 }
 
