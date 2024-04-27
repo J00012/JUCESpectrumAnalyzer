@@ -306,7 +306,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 		rowIndex = temp;
 	}
 	repaint();
-		};
+	};
 
 
 	toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
@@ -632,13 +632,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::white);
 	g.fillRoundedRectangle(paddingSmall, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox);
 
-	for (int i = 0; i < rowSize; i++) {
-		// fill in checkboxes
-		if (plotInfo[i].isVisible == true) {
-			g.setColour(juce::Colours::dodgerblue);
-			g.fillRoundedRectangle(xMarginFirstLeftMenuWidget, plotInfo[i].checkBoxPos, widthExtraSmallWidget, heightSmallWidget, cornersizeCheckbox);
-		}
-	}
+	//for (int i = 0; i < rowSize; i++) {
+	//	// fill in checkboxes
+	//	if (plotInfo[i].isVisible == true) {
+	//		g.setColour(juce::Colours::dodgerblue);
+	//		g.fillRoundedRectangle(xMarginFirstLeftMenuWidget, plotInfo[i].checkBoxPos, widthExtraSmallWidget, heightSmallWidget, cornersizeCheckbox);
+	//	}
+	//}
 
 	// draw line to separate plot selections
 	g.setColour(juce::Colours::lightgrey);
