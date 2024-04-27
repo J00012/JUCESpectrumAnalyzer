@@ -114,6 +114,7 @@ private:
     static int cursorPeak;
     static int cursorY;
     static int initialAxisState;
+    static char axis;
 
      struct plotItem {
             bool isVisible;

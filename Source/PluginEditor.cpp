@@ -52,6 +52,7 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::stepSize = 512;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftCounter = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowVar = 0;
+char FFTSpectrumAnalyzerAudioProcessorEditor::axis = 'x';
 
 
 //Processor vectors
@@ -519,7 +520,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 
 	// Plot X Axis Markers
-	char axis = 'x';
+	axis = 'x';
 	g.setColour(juce::Colours::white);
 	g.setFont(axisFontSize);
 	for (int i = 1; i <= xDiff; i++) {
@@ -566,119 +567,120 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		}
 		g.setColour(juce::Colours::white);
 		g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
+	}
 
-		// Plot Y Axis Markers
-		char axis = 'y';
-		for (int i = yMinVal; i < 0; i++) {
-			float yMarginLabelBounds = yMarginZeroTick + (scaleY * i) + yShift;
-			auto yAxisLabelNumText = juce::String(i) + labelTextY;
-			if (yDiff <= 10) {
-				int yDiv = i % 1;
-				if (yDiv == 0) {
-					writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
-				}
-			}
-			else if (yDiff > 10 && yDiff <= 29) {
-				int yDiv = i % 2;
-				if (yDiv == 0) {
-					writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
-				}
-			}
-			else if (yDiff > 29 && yDiff <= 49) {
-				int yDiv = i % 6;
-				if (yDiv == 0) {
-					writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
-				}
-			}
-			else if (yDiff > 49 && yDiff <= 69) {
-				int yDiv = i % 8;
-				if (yDiv == 0) {
-					writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
-				}
-			}
-			else if (yDiff > 69 && yDiff <= 89) {
-				int yDiv = i % 10;
-				if (yDiv == 0) {
-					writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
-				}
-			}
-			else {
-				int yDiv = i % 6;
-				if (yDiv == 0) {
-					writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
-				}
+	// Plot Y Axis Markers
+	axis = 'y';
+	for (int i = yMinVal; i < 0; i++) {
+		float yMarginLabelBounds = yMarginZeroTick + (scaleY * i) + yShift;
+		auto yAxisLabelNumText = juce::String(i) + labelTextY;
+		if (yDiff <= 10) {
+			int yDiv = i % 1;
+			if (yDiv == 0) {
+				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
 			}
 		}
-		g.setColour(juce::Colours::white);
-		g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
-		g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
-
-		/*
-		//Plot zero on Y-axis
-		zeroTick.startNewSubPath(xMarginXYAxis, yMarginStartPlot + yShift);
-		zeroTick.lineTo(xMarginXYAxis + zeroTickWidth, yMarginStartPlot + yShift);
-		g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
-		*/
-
-		// Peak 
-		float cursorYPeak = findPeak(50);
-		if (cursorYPeak != 0) {
-			g.setColour(juce::Colours::red);
-			juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), yMarginDrawingWindowUpperBorder, thicknessLine, lengthYAxis - paddingMedium); //FIXME : peak extends too tall
-			g.fillRect(peakLine);
-			g.setColour(juce::Colours::white);
-			if (setToLog) {
-				if (isVisiblePlot1 || isVisiblePlot2)
-					labelPeakValue.setText("(" + floatToStringPrecision(std::pow(logPower, screenToGraph(calculateX(setToLog, cursorPeak))), precisionValue2) + xAxisValueText + floatToStringPrecision(cursorYPeak, precisionValue2) + yAxisValueText + ")", juce::dontSendNotification);
+		else if (yDiff > 10 && yDiff <= 29) {
+			int yDiv = i % 2;
+			if (yDiv == 0) {
+				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
 			}
-			else {
-				if (isVisiblePlot1 || isVisiblePlot2)
-					labelPeakValue.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), precisionValue2) + xAxisValueText + floatToStringPrecision(cursorYPeak, precisionValue2) + yAxisValueText + ")", juce::dontSendNotification);
+		}
+		else if (yDiff > 29 && yDiff <= 49) {
+			int yDiv = i % 6;
+			if (yDiv == 0) {
+				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
+			}
+		}
+		else if (yDiff > 49 && yDiff <= 69) {
+			int yDiv = i % 8;
+			if (yDiv == 0) {
+				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
+			}
+		}
+		else if (yDiff > 69 && yDiff <= 89) {
+			int yDiv = i % 10;
+			if (yDiv == 0) {
+				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
+			}
+		}
+		else {
+			int yDiv = i % 6;
+			if (yDiv == 0) {
+				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
 			}
 		}
 	}
+	g.setColour(juce::Colours::white);
+	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
+	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 
-		//** draw graph border **//
-		juce::Path graphBoundary;
-		graphBoundary.startNewSubPath(xMarginXYAxis, paddingSmall);
-		graphBoundary.lineTo(xMarginRightBox, paddingSmall);
-		graphBoundary.lineTo(xMarginRightBox, yMarginDrawingWindowLowerBorder);
-		graphBoundary.lineTo(xMarginXYAxis, yMarginDrawingWindowLowerBorder);
-		graphBoundary.lineTo(xMarginXYAxis, paddingSmall);
-		g.setColour(juce::Colours::slategrey);
-		g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
+	/*
+	//Plot zero on Y-axis
+	zeroTick.startNewSubPath(xMarginXYAxis, yMarginStartPlot + yShift);
+	zeroTick.lineTo(xMarginXYAxis + zeroTickWidth, yMarginStartPlot + yShift);
+	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
+	*/
 
-		//** draw boxes to hide out of bound y labels
-		//juce::Rectangle<int> topPanel2(originPixel, originPixel, getWidth(), paddingMediumSmall);
-		juce::Rectangle<int> bottomPanel2(xMarginOrigin, yMarginDrawingWindowLowerBorder + paddingSmall + heightSmallWidget, widthRightTopBottomBox, getHeight());
-		g.setColour(juce::Colours::black);
-		//g.fillRect(topPanel2);
-		g.fillRect(bottomPanel2);
-
-		//** line to separate left-side components and right-side components **/
-		juce::Rectangle<int> LeftRightMenuSeparator(xMarginRightMenu, xMarginOrigin, thicknessLine, heightWindowMax);
-		g.setColour(juce::Colours::darkgrey);
-		g.fillRect(LeftRightMenuSeparator);
-
-		// draw white box around selections
+	// Peak 
+	float cursorYPeak = findPeak(50);
+	if (cursorYPeak != 0) {
+		g.setColour(juce::Colours::red);
+		juce::Rectangle<int> peakLine(calculateX(setToLog, cursorPeak), yMarginDrawingWindowUpperBorder, thicknessLine, lengthYAxis - paddingMedium); //FIXME : peak extends too tall
+		g.fillRect(peakLine);
 		g.setColour(juce::Colours::white);
-		g.fillRoundedRectangle(paddingSmall, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox);
-
-		for (int i = 0; i < rowSize; i++) {
-			// fill in checkboxes
-			if (plotInfo[i].isVisible == true) {
-				g.setColour(juce::Colours::dodgerblue);
-				g.fillRoundedRectangle(xMarginFirstLeftMenuWidget, plotInfo[i].checkBoxPos, widthExtraSmallWidget, heightSmallWidget, cornersizeCheckbox);
-			}
+		if (setToLog) {
+			if (isVisiblePlot1 || isVisiblePlot2)
+				labelPeakValue.setText("(" + floatToStringPrecision(std::pow(logPower, screenToGraph(calculateX(setToLog, cursorPeak))), precisionValue2) + xAxisValueText + floatToStringPrecision(cursorYPeak, precisionValue2) + yAxisValueText + ")", juce::dontSendNotification);
 		}
+		else {
+			if (isVisiblePlot1 || isVisiblePlot2)
+				labelPeakValue.setText("(" + floatToStringPrecision(screenToGraph(calculateX(setToLog, cursorPeak)), precisionValue2) + xAxisValueText + floatToStringPrecision(cursorYPeak, precisionValue2) + yAxisValueText + ")", juce::dontSendNotification);
+		}
+	}
+	
 
-		// draw line to separate plot selections
-		g.setColour(juce::Colours::lightgrey);
-		g.fillRect(xMarginSelectionBoundary, yMarginSelectionBoundary, widthSelectionBoundary, thicknessLine);
+	//** draw graph border **//
+	juce::Path graphBoundary;
+	graphBoundary.startNewSubPath(xMarginXYAxis, paddingSmall);
+	graphBoundary.lineTo(xMarginRightBox, paddingSmall);
+	graphBoundary.lineTo(xMarginRightBox, yMarginDrawingWindowLowerBorder);
+	graphBoundary.lineTo(xMarginXYAxis, yMarginDrawingWindowLowerBorder);
+	graphBoundary.lineTo(xMarginXYAxis, paddingSmall);
+	g.setColour(juce::Colours::slategrey);
+	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
 
-		//** line to separate upper and lower x/y bounds in ZOOM **//
-		g.setColour(juce::Colours::darkgrey);
-		g.fillRect(xMarginZoomBoundary, yMarginZoomBoundary, widthZoomBoundary, thicknessLine);
+	//** draw boxes to hide out of bound y labels
+	//juce::Rectangle<int> topPanel2(originPixel, originPixel, getWidth(), paddingMediumSmall);
+	juce::Rectangle<int> bottomPanel2(xMarginOrigin, yMarginDrawingWindowLowerBorder + paddingSmall + heightSmallWidget, widthRightTopBottomBox, getHeight());
+	g.setColour(juce::Colours::black);
+	//g.fillRect(topPanel2);
+	g.fillRect(bottomPanel2);
+
+	//** line to separate left-side components and right-side components **/
+	juce::Rectangle<int> LeftRightMenuSeparator(xMarginRightMenu, xMarginOrigin, thicknessLine, heightWindowMax);
+	g.setColour(juce::Colours::darkgrey);
+	g.fillRect(LeftRightMenuSeparator);
+
+	// draw white box around selections
+	g.setColour(juce::Colours::white);
+	g.fillRoundedRectangle(paddingSmall, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox);
+
+	for (int i = 0; i < rowSize; i++) {
+		// fill in checkboxes
+		if (plotInfo[i].isVisible == true) {
+			g.setColour(juce::Colours::dodgerblue);
+			g.fillRoundedRectangle(xMarginFirstLeftMenuWidget, plotInfo[i].checkBoxPos, widthExtraSmallWidget, heightSmallWidget, cornersizeCheckbox);
+		}
+	}
+
+	// draw line to separate plot selections
+	g.setColour(juce::Colours::lightgrey);
+	g.fillRect(xMarginSelectionBoundary, yMarginSelectionBoundary, widthSelectionBoundary, thicknessLine);
+
+	//** line to separate upper and lower x/y bounds in ZOOM **//
+	g.setColour(juce::Colours::darkgrey);
+	g.fillRect(xMarginZoomBoundary, yMarginZoomBoundary, widthZoomBoundary, thicknessLine);
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::writeAxisLabels(juce::Graphics& g, juce::Path axisMarkers, juce::String text, float x, float y, int textOffset, char axis)
