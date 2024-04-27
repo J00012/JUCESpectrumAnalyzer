@@ -218,13 +218,13 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
 	buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
 	buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
-	toggleButtonPlot1.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot1.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot1.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot2.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot2.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot2.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot3.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot3.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot3.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::white);
+	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot4.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
 
 	inputLowerBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white);
