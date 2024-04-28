@@ -46,6 +46,7 @@ public:
     float getYCoord(int index);
     float calculateX(int index);
     float calculateY(int index);
+    int calculateIndex(float cursor);
 
     int findPeak(int samples);
     int getAxisLength(char axis);

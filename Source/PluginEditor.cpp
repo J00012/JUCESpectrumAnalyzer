@@ -493,6 +493,52 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillRect(topPanel);
 	g.fillRect(bottomPanel);
 
+	/* Condensed Code (if you want to use it) [delete if not needed]
+	// Plot X Axis Markers
+	axis = 'x';
+	g.setColour(juce::Colours::white);
+	g.setFont(axisFontSize);
+
+	for (int i = 1; i <= xDiff; ++i) {
+		float xMarginLabelBounds = xMarginXYAxis + (i * scaleX);
+		int xDivLinear = i;
+
+		if (!setToLog) {
+			if (xDiff <= 1000)			xDivLinear %= 100;
+			else if (xDiff <= 4000)		xDivLinear %= 500;
+			else if (xDiff <= 9000)		xDivLinear %= 1000;
+			else if (xDiff <= 16000)	xDivLinear %= 2000;
+			else						xDivLinear %= 5000;
+		}
+
+		if (xDivLinear == 0) {
+			int xLabelAxisNum = setToLog ? std::pow(logPower, i) : i;
+			auto xLabelAxisNumText = juce::String(xLabelAxisNum) + labelTextX;
+			writeAxisLabels(g, xAxisMarkers, xLabelAxisNumText, xMarginLabelBounds, yMarginDrawingWindowLowerBorder, scaleTextOffsetX, axis);
+		}
+	}
+
+	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
+
+	// Plot Y Axis Markers
+	axis = 'y';
+
+	for (int i = yMinVal; i < 0; ++i) {
+		float yMarginLabelBounds = yMarginZeroTick + (scaleY * i) + yShift;
+		int divisor = 0;
+
+		if (yDiff <= 10)      divisor = 1;
+		else if (yDiff <= 29) divisor = 2;
+		else if (yDiff <= 49) divisor = 6;
+		else if (yDiff <= 69) divisor = 8;
+		else if (yDiff <= 89) divisor = 10;
+		else                  divisor = 6;
+
+		if (i % divisor == 0) {
+			auto yAxisLabelNumText = juce::String(i) + labelTextY;
+			writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
+		}
+	} */
 
 	// Plot X Axis Markers
 	axis = 'x';
@@ -604,15 +650,10 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		int cursorPeakIndex = findPeak(25);
 		juce::Rectangle<int> peakLine(calculateX(cursorPeakIndex), paddingSmall, 1, getAxisLength('y'));
 		g.fillRect(peakLine);
-		float peakX;
-		if (setToLog) {
-			peakX = std::pow(10, screenToGraph(calculateX(cursorPeakIndex)));
-			labelPeakValue.setText("(" + floatToStringPrecision(peakX, 1) + " Hz, " + floatToStringPrecision(getYCoord(cursorPeakIndex), 2) + " dB)", juce::dontSendNotification);
-		}
-		else {
-			peakX = screenToGraph(calculateX(cursorPeakIndex));
-			labelPeakValue.setText("(" + floatToStringPrecision(peakX, 1) + " Hz, " + floatToStringPrecision(getYCoord(cursorPeakIndex), 2) + " dB)", juce::dontSendNotification);
-		}
+
+		//calculate x coordinate of peak
+		float peakX = setToLog ? std::pow(10, screenToGraph(calculateX(cursorPeakIndex))) : screenToGraph(calculateX(cursorPeakIndex));
+		labelPeakValue.setText("(" + floatToStringPrecision(peakX, 1) + " Hz, " + floatToStringPrecision(getYCoord(cursorPeakIndex), 2) + " dB)", juce::dontSendNotification);
 
 		//Graph Plot Marker
 		g.setColour(juce::Colours::white);
@@ -886,6 +927,21 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 		buttonSelectPlot3.setButtonText(textNotSelected);
 		buttonSelectPlot4.setButtonText(textSelected);
 	}
+
+	/* Condensed Code (if you want to use it) [delete if not needed]
+	audioProcessor.setRowIndex(rowIndex);
+
+	std::vector<TextButton*> button = {
+		&buttonSelectPlot1,
+		&buttonSelectPlot2,
+		&buttonSelectPlot3,
+		&buttonSelectPlot4
+	};
+
+	for (int i = 0; i < buttons.size(); ++i) {
+		buttons[i]->setButtonText(i == plotIndex ? textSelected : textNotSelected);
+	}
+	*/
 }
 
 
@@ -1022,30 +1078,23 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 {
 	float cursorX = event.getMouseDownX();
 	float cursorY = event.getMouseDownY();
+
 	//invalid bounds
-	if (!inBounds(cursorX, cursorY)) {
+	if (!inBounds(cursorX, cursorY) || !audioProcessor.minBlockSize) {
 		labelCursorValue.setText("(0.0 Hz, 0.00 dB)", juce::dontSendNotification);
-	}
-	//valid bounds
+	} //valid bounds
 	else {
-		if (audioProcessor.minBlockSize) {
-			//get index based on cursor
-			int i = 1;
-			while (calculateX(i) < cursorX) {
-				i++;
-			}
-			cursorIndex = i;
-			if (plotInfo[rowIndex].isVisible) {
-				if (setToLog) {
-					float xCoord = std::pow(10, screenToGraph(calculateX(i)));
-					labelCursorValue.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(i), 2) + " dB)", juce::dontSendNotification);
-				}
-				else {
-					float xCoord = screenToGraph(calculateX(i));
-					labelCursorValue.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(i), 2) + " dB)", juce::dontSendNotification);
-				}
-			}
+		//get index based on cursor
+		int i = calculateIndex(cursorX);
+		cursorIndex = i;
+
+		if (plotInfo[rowIndex].isVisible) {
+			//calculate x coordinate
+			float xCoord = setToLog ? std::pow(10, screenToGraph(calculateX(i))) : screenToGraph(calculateX(i));
+			//set label text
+			labelCursorValue.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(i), 2) + " dB)", juce::dontSendNotification);
 		}
+
 		repaint();
 	}
 }
@@ -1066,24 +1115,35 @@ float FFTSpectrumAnalyzerAudioProcessorEditor::calculateX(int index)
 
 float FFTSpectrumAnalyzerAudioProcessorEditor::calculateY(int index) 
 {
-	float ratio = -getAxisLength('y') / peakRange;
-	float shift = ((paddingSmall + getAxisLength('y')) / 2) + 
-				  ((peakRange - 2.0f * yMax) * ratio / 2.0f);
+	float range = yMax - yMin;
+	int axis = getAxisLength('y');
+	float ratio = -axis / range;
+	float shift = (range - 2.0f * yMax) * ratio / 2.0f;
+	int start = (paddingSmall + axis) / 2;
 	
-	return std::log10(binMag[rowIndex][index]) * logScale * ratio + shift;
+	return std::log10(binMag[rowIndex][index]) * logScale * ratio + start + shift;
+}
+
+int FFTSpectrumAnalyzerAudioProcessorEditor::calculateIndex(float cursor)
+{
+	int index = 1;
+	while (calculateX(index) < cursor) {
+		index++;
+	}
+	return index;
 }
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::findPeak(int samples) 
 {
-	int rightPeak = cursorIndex;
+	int peak = cursorIndex;
 
 	//check right
 	for (int i = cursorIndex + 1; i < std::min(cursorIndex + samples, fftSize / 2); ++i) {
-		if (getYCoord(i) > getYCoord(rightPeak)) {
-			rightPeak = i;
+		if (getYCoord(i) > getYCoord(peak)) {
+			peak = i;
 		}
 	}
-	return rightPeak;
+	return peak;
 }
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::inBounds(float x, float y) 
