@@ -244,7 +244,7 @@ private:
     int const xMarginSelectionBoundary = (widthSelectionBox - widthSelectionBoundary) - (widthSelectionBox - widthSelectionBoundary) / 4;
     int const xMarginZoomBoundary = xMarginSelectionBoundary;
     int const xMarginLabelPlots = xMarginFirstLeftMenuWidget + widthSmallWidget + paddingMedium;
-
+     
     int const yMarginOrigin = originPixel;
     int const yMarginFirstLeftMenuWidget = paddingMedium + heightMediumWidget;
     int const yMarginLabelSelectTrace = heightMediumWidget + paddingSmall;

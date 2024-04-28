@@ -279,32 +279,37 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputUpperBoundsX.onTextChange = [this] { getBounds(); };
 	inputLowerBoundsY.onTextChange = [this] { getBounds(); };
 	inputUpperBoundsY.onTextChange = [this] { getBounds(); };
-	comboboxWindowFunction.onChange = [this] { setWindowFunction();
-	if (blockProcessed) {
-		int temp = rowIndex;
-		for (int i = 0; i < rowSize; i++) {
-			if (sampleSelections[i].size() != 0) {  //check if there is data in acc buffer
-				rowIndex = i;
-				processBuffer();
+	comboboxWindowFunction.onChange = [this] {
+		setWindowFunction();
+		if (blockProcessed) {
+			int temp = rowIndex;
+			for (int i = 0; i < rowSize; i++) {
+				if (sampleSelections[i].size() != 0) {  //check if there is data in acc buffer
+					rowIndex = i;
+					processBuffer();
+				}
 			}
+			rowIndex = temp;
 		}
-		rowIndex = temp;
-	}
-	repaint();
-		};
+		repaint();
+	};
 	comboboxAxisType.onChange = [this] { setAxisType(); };
-	comboboxSizeSetting.onChange = [this] { setBlockSize(); zeroBuffers();
-	if (blockProcessed) {
-		int temp = rowIndex;
-		for (int i = 0; i < rowSize; i++) {
-			if (sampleSelections[i].size() != 0) {   //check if there is data in acc buffer
-				rowIndex = i;
-				processBuffer();
+
+	comboboxSizeSetting.onChange = [this] { 
+		setBlockSize();
+		setWindowFunction();
+		zeroBuffers();
+		if (blockProcessed) {
+			int temp = rowIndex;
+			for (int i = 0; i < rowSize; i++) {
+				if (sampleSelections[i].size() != 0) {   //check if there is data in acc buffer
+					rowIndex = i;
+					processBuffer();
+				}
 			}
+			rowIndex = temp;
 		}
-		rowIndex = temp;
-	}
-	repaint();
+		repaint();
 	};
 
 	setToLog = true;
@@ -801,7 +806,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 	float BoundsValueMin = indexToFreqMap[0];
 	float BoundsValueMax = 24000;
 	float yMaxVal = 0;
-	float yMinVal = -90;
+	float yMinVal = -200;
 	juce::String temp = inputLowerBoundsX.getText(false);
 	float val = std::atof(temp.toStdString().c_str());
 	if (setToLog) {
@@ -968,16 +973,18 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 	while (bufferShift <= sampleSelections[rowIndex].size() - stepSize) {
 		//while (buffSize >= numFreqBins) {
 
-		std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
-		std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
-		std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
+		//std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
+		//std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
+		std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferRight.begin());
 
-		std::copy(sampleSelections[rowIndex].begin() + bufferShift, sampleSelections[rowIndex].begin() + (bufferShift + stepSize), bufferRight.begin());
+		std::copy(sampleSelections[rowIndex].begin() + bufferShift, sampleSelections[rowIndex].begin() + (bufferShift + stepSize), bufferRight.begin() + stepSize);
+
+		//std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
 		//buffer.read(bufferRight.data(), numFreqBins);
 		std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
-		windowBufferLeft = bufferLeft;
+		//windowBufferLeft = bufferLeft;
 		windowData.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
-		windowData.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
+		//windowData.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
 		forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
 		fftCounter++;
 
