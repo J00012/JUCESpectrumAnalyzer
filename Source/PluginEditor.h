@@ -43,9 +43,9 @@ public:
     
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
-    float getYCoord(int plotNumber, bool log, int index);
-    float calculateX(bool log, int index);
-    float calculateY(int plotSelection, int index);
+    float getYCoord(int index);
+    float calculateX(int index);
+    float calculateY(int index);
 
     int findPeak(int samples);
     int getAxisLength(char axis);
@@ -73,7 +73,6 @@ private:
     static std::vector<std::string> axisTypes;
     static std::vector<std::string> sizeOptions;
     static bool isRunning;
-    static bool isGraph;
     static bool setToLog;
     static bool newSelection;
     static bool displayError;
@@ -81,7 +80,6 @@ private:
     static bool blockProcessed;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
-    static float cursorX;
     static float xMinPrev;
     static float xMin;
     static float xMaxPrev;
@@ -110,9 +108,7 @@ private:
     static int amountOfPlots;
     static int prevAmountOfPlots;
     static int windowVar;
-    static int plotIndexSelection;
-    static int cursorPeak;
-    static int cursorY;
+    static int cursorIndex;
     static int initialAxisState;
     static char axis;
 
