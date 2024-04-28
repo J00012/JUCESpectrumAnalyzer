@@ -15,7 +15,7 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
-bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::conCall = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::blockProcessed = false;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 1;
@@ -50,6 +50,7 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::stepSize = 512;
 int FFTSpectrumAnalyzerAudioProcessorEditor::numFreqBins = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftCounter = 0;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowVar = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::initialAxisState;
 char FFTSpectrumAnalyzerAudioProcessorEditor::axis = 'x';
 
 
@@ -260,7 +261,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 
 	// Set Selections / Toggle State
 	comboboxWindowFunction.setSelectedId(5);
-	comboboxAxisType.setSelectedId(2);
+	comboboxAxisType.setSelectedId(1);
 	comboboxSizeSetting.setSelectedId(4);
 	buttonSelectPlot1.setClickingTogglesState(true);
 	buttonSelectPlot2.setClickingTogglesState(true);
@@ -306,12 +307,13 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	repaint();
 	};
 
+	setToLog = true;
+	initialAxisState = 1;
 
 	toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
 	toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
 	toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
 	toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
-
 
 	buttonSelectPlot1.onClick = [&]() {
 		rowIndex = 0;
@@ -383,12 +385,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	int yMarginDrawingWindowLowerBorder = lengthYAxis + paddingSmall;
 
 	if (newSelection == true) {
+		if (initialAxisState == 1) {
+			setToLog = false;
+		}
 		audioProcessor.setStepSize(stepSize);                             //this needs to be changed when the size is changed
 		sampleSelections[rowIndex] = audioProcessor.getAccumulationBuffer();
 		audioProcessor.clearAccumulationBuffer();
 		processBuffer();
 		newSelection = false;
 	}
+	initialAxisState = 0;
 
 	if (setToLog) {
 		xMax = std::log10(xMaxFrequency);
@@ -515,17 +521,17 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				if (xDivLinear == 0) {
 					writeAxisLabels(g, xAxisMarkers, xLabelAxisNumText, xMarginLabelBounds, yMarginDrawingWindowLowerBorder, scaleTextOffsetX, axis);
 				}
-				else if (xDiff > 9000 && xDiff <= 16000) {
-					xDivLinear = i % 2000;
-					if (xDivLinear == 0) {
-						writeAxisLabels(g, xAxisMarkers, xLabelAxisNumText, xMarginLabelBounds, yMarginDrawingWindowLowerBorder, scaleTextOffsetX, axis);
-					}
+			}
+			else if (xDiff > 9000 && xDiff <= 16000) {
+				xDivLinear = i % 2000;
+				if (xDivLinear == 0) {
+					writeAxisLabels(g, xAxisMarkers, xLabelAxisNumText, xMarginLabelBounds, yMarginDrawingWindowLowerBorder, scaleTextOffsetX, axis);
 				}
-				else if (xDiff > 16000) {
-					xDivLinear = i % 5000;
-					if (xDivLinear == 0) {
-						writeAxisLabels(g, xAxisMarkers, xLabelAxisNumText, xMarginLabelBounds, yMarginDrawingWindowLowerBorder, scaleTextOffsetX, axis);
-					}
+			}
+			else if (xDiff > 16000) {
+				xDivLinear = i % 5000;
+				if (xDivLinear == 0) {
+					writeAxisLabels(g, xAxisMarkers, xLabelAxisNumText, xMarginLabelBounds, yMarginDrawingWindowLowerBorder, scaleTextOffsetX, axis);
 				}
 			}
 		}
