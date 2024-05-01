@@ -1206,7 +1206,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setAxisType() {
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::initializeBinMag() {
-	binMag.resize(2, std::vector<float>(numBins, std::numeric_limits<float>::epsilon()));
+	std::fill(binMag[rowIndex].begin(), binMag[rowIndex].end(), std::numeric_limits<float>::epsilon());
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {
@@ -1217,7 +1217,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setWindow(juce::dsp::WindowingFunc
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 
-	zeroBuffers();
+	initializeBinMag();
 
 	int bufferShift = 0;
 
@@ -1271,12 +1271,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 	std::fill(windowBufferRight.begin(), windowBufferRight.end(), 0.0f);
 	windowBufferLeft.resize(fftSize);
 	std::fill(windowBufferLeft.begin(), windowBufferLeft.end(), 0.0f);
+
+
+
 	for (int i = 0; i < rowSize; i++) {
 		binMag[i].resize(numBins);
 		std::fill(binMag[i].begin(), binMag[i].end(), std::numeric_limits<float>::epsilon());
 	}
 
-	//binMag.resize(rowSize, std::vector<float>(numBins, std::numeric_limits<float>::epsilon()));
+	
 	indexToFreqMap.resize(numBins);
 	std::fill(indexToFreqMap.begin(), indexToFreqMap.end(), 0.0f);
 	fftCounter = 0;
