@@ -38,7 +38,6 @@ public:
     //processBlock integration
     void processBuffer();
     void zeroBuffers();
-    void zeroBinSelection();
     void setFreqData(int fftData);
     
     float screenToGraph(float screenCoord);
@@ -48,10 +47,11 @@ public:
     float calculateY(int index);
     int calculateIndex(float cursor);
 
+ 
+
     int findPeak(int samples);
     int getAxisLength(char axis);
 
-    juce::Colour setColor(int row);
     std::string floatToStringPrecision(float f, int p);
 
 private:
@@ -112,12 +112,12 @@ private:
     static int cursorIndex;
     static int initialAxisState;
     static char axis;
+    static bool initialLambda;
 
      struct plotItem {
             bool isVisible;
             juce::Colour color;
             juce::Path path;
-            int checkBoxPos;
         };
     
     static plotItem plotInfo[4];

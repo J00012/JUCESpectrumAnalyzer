@@ -33,12 +33,12 @@ public:
 
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
-    void zeroSelection(int selectionIndex);
-    void zeroAllSelections(int newBinSize, int selectionSize);
-    void removeSelection(int selectionIndex);
-    void clearAllSelections();
-    void prepSelection(int binMagSize, int selectionSize, int selectionIndex);
-    void prepBuffers(int fftSize);
+    //void zeroSelection(int selectionIndex);
+    //void zeroAllSelections(int newBinSize, int selectionSize);
+    //void removeSelection(int selectionIndex);
+    //void clearAllSelections();
+    //void prepSelection(int binMagSize, int selectionSize, int selectionIndex);
+    //void prepBuffers(int fftSize);
     void setStepSize(int stepS);
     void setInitialBlock();
     void setInitialAccBuffer() const;
@@ -46,15 +46,15 @@ public:
     void setFFTSize(int newFFTSize);
     void clearRingBuffer();
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
-    void processBinMag(std::vector<std::vector<float>>& binMagSet);
+    //void processBinMag(std::vector<std::vector<float>>& binMagSet);
     int getStepSize() const;
     int getFFTCounter() const;
     int getBlockSampleRate() const;
     void clearAccumulationBuffer();
     std::vector<float> getAccumulationBuffer() const;
     RingBuffer<float> getSampleBuffer() const;
-    std::vector<float> getBinMag() const;
-    std::vector<std::vector<float>> getBinSet() const;
+    //std::vector<float> getBinMag() const;
+    //std::vector<std::vector<float>> getBinSet() const;
 
 
 
@@ -106,13 +106,13 @@ private:
     static int channel;
     static int rowSize;
 
-    static float ringTest[10000];
+    //static float ringTest[10000];
 
-    static std::vector<float> bufferRight;
-    static std::vector<float> bufferLeft;
-    static std::vector<float> windowBufferRight;
-    static std::vector<float> windowBufferLeft;
-    static std::vector<std::vector<float>> binMag;
+    //static std::vector<float> bufferRight;
+    //static std::vector<float> bufferLeft;
+    //static std::vector<float> windowBufferRight;
+    //static std::vector<float> windowBufferLeft;
+    //static std::vector<std::vector<float>> binMag;
 
     static std::vector<float> accumulationBuffer;
 

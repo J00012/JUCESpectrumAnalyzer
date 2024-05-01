@@ -13,11 +13,10 @@
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::isRunning = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::newSelection = false;
-bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot1 = true;
-bool FFTSpectrumAnalyzerAudioProcessorEditor::isVisiblePlot2 = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::conCall = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::blockProcessed = false;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::initialLambda = true;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinFrequency = 1;
@@ -71,10 +70,10 @@ std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::sizeOptions = 
 //juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessorEditor::editFFT(0);			  
 																				  
 FFTSpectrumAnalyzerAudioProcessorEditor::plotItem FFTSpectrumAnalyzerAudioProcessorEditor::plotInfo[4] = {
-	{false, juce::Colours::lightgreen, juce::Path(), 74},
-	{false, juce::Colours::cornflowerblue,juce::Path(), 120},
-	{false, juce::Colours::purple},
-	{false, juce::Colours::cyan}	
+	{true, juce::Colours::lightgreen, juce::Path()},
+	{true, juce::Colours::cornflowerblue,juce::Path()},
+	{true, juce::Colours::purple,juce::Path()},
+	{true, juce::Colours::cyan, juce::Path()}
 };
 
 juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowData(windowVar, juce::dsp::WindowingFunction<float>::hann);
@@ -170,10 +169,10 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	// Text
 	labelImportAudio.setText("Import Audio", juce::dontSendNotification);
 	labelSelectTrace.setText("Selected Traces", juce::dontSendNotification);
-	labelPlot1.setText("Plot 1", juce::dontSendNotification);
-	labelPlot2.setText("Plot 2", juce::dontSendNotification);
-	labelPlot3.setText("Plot 3", juce::dontSendNotification);
-	labelPlot4.setText("Plot 4", juce::dontSendNotification);
+	labelPlot1.setText("Trace 1", juce::dontSendNotification);
+	labelPlot2.setText("Trace 2", juce::dontSendNotification);
+	labelPlot3.setText("Trace 3", juce::dontSendNotification);
+	labelPlot4.setText("Trace 4", juce::dontSendNotification);
 
 	labelZoom.setText("Zoom", juce::dontSendNotification);
 	labelUpperBounds.setText("Upper", juce::dontSendNotification);
@@ -315,10 +314,18 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	setToLog = true;
 	initialAxisState = 1;
 
-	toggleButtonPlot1.onClick = [this] { setPlotVisibility(0); };
-	toggleButtonPlot2.onClick = [this] { setPlotVisibility(1); };
-	toggleButtonPlot3.onClick = [this] { setPlotVisibility(2); };
-	toggleButtonPlot4.onClick = [this] { setPlotVisibility(3); };
+	initialLambda = true;
+	toggleButtonPlot1.onClick = [this] {  if (!initialLambda) {
+		plotInfo[0].isVisible = toggleButtonPlot1.getToggleState(); repaint();} };
+	toggleButtonPlot2.onClick = [this] {  if (!initialLambda) {  
+		plotInfo[1].isVisible = toggleButtonPlot2.getToggleState(); repaint();} };
+	toggleButtonPlot3.onClick = [this] {  if (!initialLambda) {  
+		plotInfo[2].isVisible = toggleButtonPlot3.getToggleState(); repaint();} };
+	toggleButtonPlot4.onClick = [this] {  if (!initialLambda) {  
+		plotInfo[3].isVisible = toggleButtonPlot4.getToggleState(); repaint();}
+	else { initialLambda = false; }};
+
+	
 
 	buttonSelectPlot1.onClick = [&]() {
 		rowIndex = 0;
@@ -328,23 +335,19 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 		rowIndex = 1;
 		setPlotIndex(1);
 		};
+	buttonSelectPlot3.onClick = [&]() {
+		rowIndex = 2;
+		setPlotIndex(2);
+		};
+	buttonSelectPlot4.onClick = [&]() {
+		rowIndex = 3;
+		setPlotIndex(3);
+		};
 
-	if (plotInfo[0].isVisible == true)
-	{
-		toggleButtonPlot1.setToggleState(true, true);
-	}
-	if (plotInfo[1].isVisible == true)
-	{
-		toggleButtonPlot2.setToggleState(true, true);
-	}
-	if (plotInfo[2].isVisible == true)
-	{
-		toggleButtonPlot3.setToggleState(true, true);
-	}
-	if (plotInfo[3].isVisible == true)
-	{
-		toggleButtonPlot4.setToggleState(true, true);
-	}
+	toggleButtonPlot1.setToggleState(plotInfo[0].isVisible, true);
+	toggleButtonPlot2.setToggleState(plotInfo[1].isVisible, true);
+	toggleButtonPlot3.setToggleState(plotInfo[2].isVisible, true);
+	toggleButtonPlot4.setToggleState(plotInfo[3].isVisible, true);
 }
 
 FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEditor()
@@ -748,27 +751,27 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::timerCallback()
 	audioProcessor.resetProcBlockCalled();
 }
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex)
-{
-	if (amountOfPlots == 0) {  //prepping all existing rows
-		for (int r = 0; r < rowSize; r++) {
-			audioProcessor.prepSelection(numBins, rowSize, r);
-		}
-	}
-
-	else if (amountOfPlots > prevAmountOfPlots)
-	{  //handling new row selection
-		if (rowIndex > rowSize)
-		{
-			audioProcessor.prepSelection(numBins, rowSize, rowIndex);
-		}
-		else {
-			return;
-		}  //there is no selection made, return
-	}
-	prevAmountOfPlots = amountOfPlots;
-	amountOfPlots++;
-}
+//void FFTSpectrumAnalyzerAudioProcessorEditor::handleNewSelection(int numBins, int rowSize, int rowIndex)
+//{
+//	if (amountOfPlots == 0) {  //prepping all existing rows
+//		for (int r = 0; r < rowSize; r++) {
+//			audioProcessor.prepSelection(numBins, rowSize, r);
+//		}
+//	}
+//
+//	else if (amountOfPlots > prevAmountOfPlots)
+//	{  //handling new row selection
+//		if (rowIndex > rowSize)
+//		{
+//			audioProcessor.prepSelection(numBins, rowSize, rowIndex);
+//		}
+//		else {
+//			return;
+//		}  //there is no selection made, return
+//	}
+//	prevAmountOfPlots = amountOfPlots;
+//	amountOfPlots++;
+//}
 
  //make getaxis width a a function 
 
@@ -945,15 +948,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 }
 
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotVisibility(int plotId)
-{
-	plotInfo[plotId].isVisible = !plotInfo[plotId].isVisible;
-	repaint();
-}
+//void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotVisibility(int plotId)
+//{
+//	plotInfo[plotId].isVisible = !plotInfo[plotId].isVisible;
+//	repaint();
+//}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setWindowFunction() {
-	//juce::dsp::WindowingFunction<float>window(1024, juce::dsp::WindowingFunction<float>::hamming);
-	//juce::dsp::WindowingFunction<float>::fillWindowingTables(fftSize, juce::dsp::WindowingFunction<float>::hamming);
 	juce::dsp::WindowingFunction<float>::WindowingMethod newWindow;
 
 	switch (comboboxWindowFunction.getSelectedId())
@@ -1009,6 +1010,14 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setWindow(juce::dsp::WindowingFunc
 	//juce::dsp::WindowingFunction<float> windowData(fftSize, type);
 	//windowData.fillWindowingTables(fftSize, type);
 }
+
+//void FFTSpectrumAnalyzerAudioProcessorEditor::checkBoxToggle() {
+//
+//	toggleButtonPlot1.setToggleState(plotInfo[0].isVisible, true);
+//	toggleButtonPlot2.setToggleState(plotInfo[1].isVisible, true);
+//	toggleButtonPlot3.setToggleState(plotInfo[2].isVisible, true);
+//	toggleButtonPlot4.setToggleState(plotInfo[3].isVisible, true);
+//}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 
