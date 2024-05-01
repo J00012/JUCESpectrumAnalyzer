@@ -17,6 +17,7 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::conCall = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::blockProcessed = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::initialLambda = true;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::darkMode = true;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinFrequency = 1;
@@ -142,11 +143,13 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(buttonSelectPlot2);
 	addAndMakeVisible(buttonSelectPlot3);
 	addAndMakeVisible(buttonSelectPlot4);
+	addAndMakeVisible(labelAppearanceMode); 
 
 	addAndMakeVisible(toggleButtonPlot1);
 	addAndMakeVisible(toggleButtonPlot2);
 	addAndMakeVisible(toggleButtonPlot3);
 	addAndMakeVisible(toggleButtonPlot4);
+	addAndMakeVisible(togglePluginAppearance);
 
 
 	// Fonts
@@ -165,6 +168,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelDropdownWindow.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
 	labelDropdownAxis.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
 	labelDropdownSize.setFont(juce::Font("Arial", 14.0f, juce::Font::bold));
+	labelAppearanceMode.setFont(juce::Font("Arial", 12.0f, juce::Font::plain));
 
 	// Text
 	labelImportAudio.setText("Import Audio", juce::dontSendNotification);
@@ -173,6 +177,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPlot2.setText("Trace 2", juce::dontSendNotification);
 	labelPlot3.setText("Trace 3", juce::dontSendNotification);
 	labelPlot4.setText("Trace 4", juce::dontSendNotification);
+	labelAppearanceMode.setText("Enable light mode", juce::dontSendNotification); 
 
 	labelZoom.setText("Zoom", juce::dontSendNotification);
 	labelUpperBounds.setText("Upper", juce::dontSendNotification);
@@ -183,7 +188,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelLowerBoundsY.setText("Y", juce::dontSendNotification);
 	labelExport.setText("Export", juce::dontSendNotification);
 	labelCursor.setText("Cursor", juce::dontSendNotification);
-	labelCursorValue.setText("(0.0, 0.00)", juce::dontSendNotification);
+	labelCursorValue.setText("(0.0 Hz, 0.00 dB)", juce::dontSendNotification);
 	labelPeak.setText("Peak", juce::dontSendNotification);
 	labelDropdownWindow.setText("Function", juce::dontSendNotification);
 	labelDropdownSize.setText("Size", juce::dontSendNotification);
@@ -194,16 +199,60 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputUpperBoundsY.setText(std::to_string((int)yMax), juce::dontSendNotification);
 
 	// Colour
+	if (darkMode) {
+		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+		labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+		labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+
+		labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelCursor.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelPeak.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
+
+		buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
+		buttonExport.setColour(juce::TextButton::buttonOnColourId, juce::Colours::white);
+		buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+		buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+	}
+	/*
+	else {
+		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+		labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+		labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+
+		labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelCursor.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelPeak.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::black); 
+		labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::black);
+
+		buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::darkgrey);
+		buttonExport.setColour(juce::TextButton::buttonOnColourId, juce::Colours::darkgrey); 
+		buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+		buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+
+		inputLowerBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputLowerBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputUpperBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputLowerBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputUpperBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+	}
+	*/
+
 	labelPlot1.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
 	labelPlot2.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-	labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
-	labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
-	labelCursor.setColour(juce::Label::textColourId, juce::Colours::white);
-	labelPeak.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
-	labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
 	comboboxWindowFunction.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	comboboxWindowFunction.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	comboboxWindowFunction.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
@@ -224,8 +273,10 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	toggleButtonPlot3.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
 	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot4.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
+	togglePluginAppearance.setColour(juce::ToggleButton::tickColourId, juce::Colours::darkgrey); 
+	togglePluginAppearance.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey); 
 
-	inputLowerBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white);
+	inputLowerBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white); 
 	inputLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::black);
 	inputLowerBoundsX.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
 	inputUpperBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white);
@@ -270,8 +321,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	toggleButtonPlot1.setClickingTogglesState(true);
 	toggleButtonPlot2.setClickingTogglesState(true);
 	toggleButtonPlot3.setClickingTogglesState(true);
-	toggleButtonPlot4.setClickingTogglesState(true);
-
+	toggleButtonPlot4.setClickingTogglesState(true); 
+	togglePluginAppearance.setClickingTogglesState(true);
 
 	// On user interaction
 	inputLowerBoundsX.onTextChange = [this] { getBounds(); };
@@ -314,6 +365,13 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	setToLog = true;
 	initialAxisState = 1;
 
+	if (darkMode == true) {
+		togglePluginAppearance.setToggleState(false, true); 
+	}
+	else {
+		togglePluginAppearance.setToggleState(true, true);
+	}
+
 	initialLambda = true;
 	toggleButtonPlot1.onClick = [this] {  if (!initialLambda) {
 		plotInfo[0].isVisible = toggleButtonPlot1.getToggleState(); repaint();} };
@@ -324,8 +382,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	toggleButtonPlot4.onClick = [this] {  if (!initialLambda) {  
 		plotInfo[3].isVisible = toggleButtonPlot4.getToggleState(); repaint();}
 	else { initialLambda = false; }};
-
-	
 
 	buttonSelectPlot1.onClick = [&]() {
 		rowIndex = 0;
@@ -344,6 +400,16 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 		setPlotIndex(3);
 		};
 
+	togglePluginAppearance.onClick = [&]() {
+		if (darkMode) {
+			darkMode = false;
+		}
+		else {
+			darkMode = true;
+		}
+		repaint();
+		};
+
 	toggleButtonPlot1.setToggleState(plotInfo[0].isVisible, true);
 	toggleButtonPlot2.setToggleState(plotInfo[1].isVisible, true);
 	toggleButtonPlot3.setToggleState(plotInfo[2].isVisible, true);
@@ -357,9 +423,80 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 //==============================================================================
 void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 {
-	g.fillAll(juce::Colours::black);
+	if (darkMode == true) {
+		g.fillAll(juce::Colours::black);
+	}
+	else {
+		g.fillAll(juce::Colours::white);
+	}
 	g.setOpacity(1.0f);
 	g.setColour(juce::Colours::white);
+
+	//** label color when set to light mode **//
+	if (darkMode) {
+		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+		labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+		labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+
+		labelUpperBounds.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelLowerBounds.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelUpperBoundsX.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelUpperBoundsY.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelLowerBoundsY.setColour(juce::Label::textColourId, juce::Colours::white);
+
+		inputLowerBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::black);
+		inputUpperBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::black);
+		inputLowerBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::black);
+		inputUpperBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::black);
+
+		labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelCursor.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelPeak.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
+
+		buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
+		buttonExport.setColour(juce::TextButton::buttonOnColourId, juce::Colours::white);
+		buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+		buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+	}
+	else {
+		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+		labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+		labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+
+		labelUpperBounds.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelLowerBounds.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelUpperBoundsX.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelUpperBoundsY.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelLowerBoundsY.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+
+		inputLowerBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputUpperBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputLowerBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputUpperBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+
+		labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelCursor.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelPeak.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+
+		buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::whitesmoke);
+		buttonExport.setColour(juce::TextButton::buttonOnColourId, juce::Colours::whitesmoke);
+		buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::darkgrey);
+		buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::darkgrey);
+	}
 
 	juce::Path plot1;
 	juce::Path plot2;
@@ -490,7 +627,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	juce::Rectangle<int> rightPanel(xMarginRightBox, xMarginOrigin, widthRightTopBottomBox, heightLeftRightBottomBox);
 	juce::Rectangle<int> topPanel(xMarginOrigin, xMarginOrigin, widthRightTopBottomBox, paddingSmall);
 	juce::Rectangle<int> bottomPanel(xMarginOrigin, yMarginDrawingWindowLowerBorder, widthRightTopBottomBox, heightLeftRightBottomBox);
-	g.setColour(juce::Colours::black);
+	if (darkMode) {
+		g.setColour(juce::Colours::black);
+	}
+	else {
+		g.setColour(juce::Colours::white);
+	}
 	g.fillRect(leftPanel);
 	g.fillRect(rightPanel);
 	g.fillRect(topPanel);
@@ -545,7 +687,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// Plot X Axis Markers
 	axis = 'x';
-	g.setColour(juce::Colours::white);
+	if (darkMode) {
+		g.setColour(juce::Colours::white);
+	}
+	else {
+		g.setColour(juce::Colours::black);
+	}
 	g.setFont(axisFontSize);
 	for (int i = 1; i <= xDiff; i++) {
 		float xMarginLabelBounds = xMarginXYAxis + (i * scaleX);
@@ -589,7 +736,13 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 				}
 			}
 		}
-		g.setColour(juce::Colours::white);
+		//g.setColour(juce::Colours::white);
+		if (darkMode) {
+			g.setColour(juce::Colours::white); 
+		}
+		else {
+			g.setColour(juce::Colours::black); 
+		} 
 		g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
 	}
 
@@ -627,15 +780,33 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			if (yDiv == 0) {
 				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
 			}
-		}
-		else {
+		} 
+		else if (yDiff == 90) {
 			int yDiv = i % 6;
 			if (yDiv == 0) {
 				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
 			}
 		}
+		else if (yDiff > 90 && yDiff <= 150) {
+			int yDiv = i % 10;
+			if (yDiv == 0) {
+				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
+			}
+		}
+		else {
+			int yDiv = i % 20;
+			if (yDiv == 0) {
+				writeAxisLabels(g, yAxisMarkersUp, yAxisLabelNumText, xMarginXYAxis, yMarginLabelBounds, scaleTextOffsetY, axis);
+			}
+		}
 	}
-	g.setColour(juce::Colours::white);
+	//g.setColour(juce::Colours::white);
+	if (darkMode) {
+		g.setColour(juce::Colours::white);
+	}
+	else {
+		g.setColour(juce::Colours::black);
+	}
 	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
 	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
 
@@ -654,12 +825,18 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		juce::Rectangle<int> peakLine(calculateX(cursorPeakIndex), paddingSmall, 1, getAxisLength('y'));
 		g.fillRect(peakLine);
 
-		//calculate x coordinate of peak
+		//calculate x and y coordinate of peak
 		float peakX = setToLog ? std::pow(10, screenToGraph(calculateX(cursorPeakIndex))) : screenToGraph(calculateX(cursorPeakIndex));
 		labelPeakValue.setText("(" + floatToStringPrecision(peakX, 1) + " Hz, " + floatToStringPrecision(getYCoord(cursorPeakIndex), 2) + " dB)", juce::dontSendNotification);
 
 		//Graph Plot Marker
-		g.setColour(juce::Colours::white);
+		//g.setColour(juce::Colours::white);
+		if (darkMode) {
+			g.setColour(juce::Colours::white);
+		}
+		else {
+			g.setColour(juce::Colours::red);
+		}
 		float circleX = calculateX(cursorIndex);
 		float circleY = calculateY(cursorIndex);
 		if (inBounds(circleX, circleY)) {
@@ -667,7 +844,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		}
 	}
 	
-
 	//** draw graph border **//
 	juce::Path graphBoundary;
 	graphBoundary.startNewSubPath(xMarginXYAxis, paddingSmall);
@@ -675,24 +851,39 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	graphBoundary.lineTo(xMarginRightBox, yMarginDrawingWindowLowerBorder);
 	graphBoundary.lineTo(xMarginXYAxis, yMarginDrawingWindowLowerBorder);
 	graphBoundary.lineTo(xMarginXYAxis, paddingSmall);
-	g.setColour(juce::Colours::slategrey);
+	g.setColour(juce::Colours::darkgrey);
 	g.strokePath(graphBoundary, juce::PathStrokeType(1.0f));
 
 	//** draw boxes to hide out of bound y labels
 	//juce::Rectangle<int> topPanel2(originPixel, originPixel, getWidth(), paddingMediumSmall);
-	juce::Rectangle<int> bottomPanel2(xMarginOrigin, yMarginDrawingWindowLowerBorder + paddingSmall + heightSmallWidget, widthRightTopBottomBox, getHeight());
-	g.setColour(juce::Colours::black);
+	juce::Rectangle<int> bottomPanel2(xMarginOrigin, yMarginDrawingWindowLowerBorder + paddingSmall, xMarginXYAxis, getHeight());
+	if (darkMode) {
+		g.setColour(juce::Colours::black);
+	}
+	else {
+		g.setColour(juce::Colours::white);
+	}
 	//g.fillRect(topPanel2);
 	g.fillRect(bottomPanel2);
 
 	//** line to separate left-side components and right-side components **/
 	juce::Rectangle<int> LeftRightMenuSeparator(xMarginRightMenu, xMarginOrigin, thicknessLine, heightWindowMax);
-	g.setColour(juce::Colours::darkgrey);
+	if (darkMode) {
+		g.setColour(juce::Colours::darkgrey);
+	}
+	else {
+		g.setColour(juce::Colours::grey);
+	}
 	g.fillRect(LeftRightMenuSeparator);
 
 	// draw white box around selections
 	g.setColour(juce::Colours::white);
 	g.fillRoundedRectangle(paddingSmall, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox);
+
+	if (!darkMode) {
+		g.setColour(juce::Colours::darkgrey);
+		g.drawRoundedRectangle(paddingSmall, yMarginSelectionBox, widthSelectionBox, heightSelectionBox, cornerSizeSelectionBox, borderSizeSelectionBox);
+	}
 
 	//for (int i = 0; i < rowSize; i++) {
 	//	// fill in checkboxes
@@ -788,6 +979,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int xMarginDropdownAxis = xMarginBottomMenuGuiElements + paddingMedium + widthExtraLargeWidget + paddingMedium;
 	int xMarginDropdownSize = xMarginDropdownAxis + paddingMedium + widthExtraLargeWidget + paddingMedium;
 
+	int xMarginToggleAppearance = paddingMedium;
+	int xMarginLabelApperance = xMarginToggleAppearance + widthSmallWidget;
+
 	int yMarginToggleButtonPlot2 = yMarginRowPlot2;
 	int yMarginLabelExport = yMarginLabelZoom + heightMediumWidget + heightZoomWindow;
 	int yMarginButtonExport = yMarginLabelExport + heightMediumWidget + paddingMedium;
@@ -800,6 +994,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int yMarginLabelBottomMenuRow2 = yMarginLabelBottomMenuRow1 + paddingMediumLarge;
 	int yMarginLabelBottomMenuRow3 = yMarginLabelBottomMenuRow2 + paddingLarge;
 	int yMarginLabelBottomMenuRow4 = yMarginLabelBottomMenuRow3 + paddingMediumLarge;
+
+	int yMarginToggleAppearance = getHeight() - (heightMediumWidget + paddingSmall);
+	int yMarginLabelAppearance = yMarginToggleAppearance - paddingMediumSmall;
 	
 	labelPlot1.setBounds(xMarginLabelPlots, yMarginRowPlot1, widthLargeWidget, heightMediumWidget);
 	labelPlot2.setBounds(xMarginLabelPlots, yMarginRowPlot2, widthLargeWidget, heightMediumWidget);
@@ -820,6 +1017,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	labelDropdownWindow.setBounds(xMarginBottomMenuGuiElements, yMarginLabelBottomMenuRow3, widthSecondaryLabel, heightMediumWidget);
 	labelDropdownAxis.setBounds(xMarginDropdownAxis, yMarginLabelBottomMenuRow3, widthSecondaryLabel, heightMediumWidget);
 	labelDropdownSize.setBounds(xMarginDropdownSize, yMarginLabelBottomMenuRow3, widthSecondaryLabel, heightMediumWidget);
+	labelAppearanceMode.setBounds(xMarginLabelApperance, yMarginLabelAppearance, widthLargeWidget, heightMediumWidget);
 	comboboxWindowFunction.setBounds(xMarginBottomMenuGuiElements, yMarginLabelBottomMenuRow4, widthExtraLargeWidget, heightLargeWidget);
 	comboboxAxisType.setBounds(xMarginDropdownAxis, yMarginLabelBottomMenuRow4, widthExtraLargeWidget, heightLargeWidget);
 	comboboxSizeSetting.setBounds(xMarginDropdownSize, yMarginLabelBottomMenuRow4, widthExtraLargeWidget, heightLargeWidget);
@@ -834,6 +1032,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	buttonSelectPlot2.setBounds(xMarginButtonSelectPlots, yMarginRowPlot2, widthLargeWidget, heightMediumWidget);
 	toggleButtonPlot1.setBounds(xMarginFirstLeftMenuWidget, yMarginRowPlot1, widthSmallWidget, heightMediumWidget);
 	toggleButtonPlot2.setBounds(xMarginFirstLeftMenuWidget, yMarginRowPlot2, widthSmallWidget, heightMediumWidget);
+	togglePluginAppearance.setBounds(xMarginToggleAppearance, yMarginToggleAppearance, widthSmallWidget, heightSmallWidget);
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setFreqData(int fftData) {
@@ -1101,6 +1300,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 			//calculate x coordinate
 			float xCoord = setToLog ? std::pow(10, screenToGraph(calculateX(i))) : screenToGraph(calculateX(i));
 			//set label text
+			if (darkMode) {
+				labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::white);
+			}
+			else {
+				labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::black);
+			}
 			labelCursorValue.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(i), 2) + " dB)", juce::dontSendNotification);
 		}
 

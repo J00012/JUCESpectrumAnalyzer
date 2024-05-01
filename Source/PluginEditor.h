@@ -38,7 +38,7 @@ public:
     //processBlock integration
     void processBuffer();
     void zeroBuffers();
-    void setFreqData(int fftData);
+    void setFreqData(int fftData); 
     
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
@@ -81,6 +81,7 @@ private:
     static bool blockProcessed;
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
+    static bool darkMode;
     static float xMinPrev;
     static float xMin;
     static float xMaxPrev;
@@ -153,6 +154,7 @@ private:
     juce::Label labelDropdownAxis;
     juce::Label labelDropdownSize;
     juce::Label labelDropdownWindow;  
+    juce::Label labelAppearanceMode;
 
     const char* textSelected = "Selected";
     const char* textNotSelected = "Select";
@@ -169,6 +171,7 @@ private:
     juce::ToggleButton toggleButtonPlot3;
     juce::ToggleButton toggleButtonPlot4;
 
+    juce::ToggleButton togglePluginAppearance;
 
     juce::ComboBox comboboxAxisType;
     juce::ComboBox comboboxSizeSetting;
@@ -180,12 +183,13 @@ private:
 
     int const logPower = 10;
     int const logScale = 40;
-    int const yMinVal = -90;
+    int const yMinVal = -200;
 
     int const precisionValue1 = 1;
     int const precisionValue2 = 2;
 
     int const cornerSizeSelectionBox = 3;
+    float const borderSizeSelectionBox = 1;
     int const cornersizeCheckbox = 4;
     int const tickWidth = 4;
     int const zeroTickWidth = 10;
