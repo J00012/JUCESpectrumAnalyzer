@@ -1210,13 +1210,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setWindow(juce::dsp::WindowingFunc
 	//windowData.fillWindowingTables(fftSize, type);
 }
 
-//void FFTSpectrumAnalyzerAudioProcessorEditor::checkBoxToggle() {
-//
-//	toggleButtonPlot1.setToggleState(plotInfo[0].isVisible, true);
-//	toggleButtonPlot2.setToggleState(plotInfo[1].isVisible, true);
-//	toggleButtonPlot3.setToggleState(plotInfo[2].isVisible, true);
-//	toggleButtonPlot4.setToggleState(plotInfo[3].isVisible, true);
-//}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 
@@ -1274,8 +1267,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 	std::fill(windowBufferRight.begin(), windowBufferRight.end(), 0.0f);
 	windowBufferLeft.resize(fftSize);
 	std::fill(windowBufferLeft.begin(), windowBufferLeft.end(), 0.0f);
-	binMag[rowIndex].resize(numBins);
-	std::fill(binMag[rowIndex].begin(), binMag[rowIndex].end(), 0.0f);
+	for (int i = 0; i < rowSize; i++) {
+		binMag[i].resize(numBins);
+		std::fill(binMag[i].begin(), binMag[i].end(), std::numeric_limits<float>::epsilon());
+	}
+
+	//binMag.resize(rowSize, std::vector<float>(numBins, std::numeric_limits<float>::epsilon()));
 	indexToFreqMap.resize(numBins);
 	std::fill(indexToFreqMap.begin(), indexToFreqMap.end(), 0.0f);
 	fftCounter = 0;
