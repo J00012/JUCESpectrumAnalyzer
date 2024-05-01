@@ -819,28 +819,32 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// Peak 
 	if (plotInfo[rowIndex].isVisible) {
-
-		g.setColour(juce::Colours::red);
-		int cursorPeakIndex = findPeak(25);
-		juce::Rectangle<int> peakLine(calculateX(cursorPeakIndex), paddingSmall, 1, getAxisLength('y'));
-		g.fillRect(peakLine);
-
-		//calculate x and y coordinate of peak
-		float peakX = setToLog ? std::pow(10, screenToGraph(calculateX(cursorPeakIndex))) : screenToGraph(calculateX(cursorPeakIndex));
-		labelPeakValue.setText("(" + floatToStringPrecision(peakX, 1) + " Hz, " + floatToStringPrecision(getYCoord(cursorPeakIndex), 2) + " dB)", juce::dontSendNotification);
-
-		//Graph Plot Marker
-		//g.setColour(juce::Colours::white);
-		if (darkMode) {
-			g.setColour(juce::Colours::white);
+		//no trace selected
+		if (!audioProcessor.minBlockSize) {
+			labelPeakValue.setText("(0.0 Hz, 0.00 dB)", juce::dontSendNotification);
 		}
 		else {
+			int cursorPeakIndex = findPeak((int)(stepSize * .1));
 			g.setColour(juce::Colours::red);
-		}
-		float circleX = calculateX(cursorIndex);
-		float circleY = calculateY(cursorIndex);
-		if (inBounds(circleX, circleY)) {
-			g.drawEllipse(circleX, circleY, 1, 1, 8);
+			juce::Rectangle<int> peakLine(calculateX(cursorPeakIndex), paddingSmall, 1, getAxisLength('y'));
+			g.fillRect(peakLine);
+
+			//calculate x and y coordinate of peak
+			float peakX = setToLog ? std::pow(10, screenToGraph(calculateX(cursorPeakIndex))) : screenToGraph(calculateX(cursorPeakIndex));
+			labelPeakValue.setText("(" + floatToStringPrecision(peakX, 1) + " Hz, " + floatToStringPrecision(getYCoord(cursorPeakIndex), 2) + " dB)", juce::dontSendNotification);
+
+			//Graph Plot Marker
+			if (darkMode) {
+				g.setColour(juce::Colours::white);
+			}
+			else {
+				g.setColour(juce::Colours::red);
+			}
+			float circleX = calculateX(cursorIndex);
+			float circleY = calculateY(cursorIndex);
+			if (inBounds(circleX, circleY)) {
+				g.drawEllipse(circleX, circleY, 1, 1, 8);
+			}
 		}
 	}
 	
