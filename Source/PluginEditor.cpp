@@ -17,6 +17,7 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::setToLog;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::conCall = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::blockProcessed = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::initialLambda = true;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::selectionSizeError = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::darkMode = true;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 1;
@@ -492,7 +493,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 
 	// Graph plots
-	if (audioProcessor.minBlockSize) {
+	if (selectionSizeValid()) {
 		for (int i = 0; i < rowSize; i++) {
 
 			if (plotInfo[i].isVisible) {
@@ -1183,52 +1184,67 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setAppearance() {
 	}
 }
 
+bool FFTSpectrumAnalyzerAudioProcessorEditor::selectionSizeValid() {
+	if (selectionSizeError || !audioProcessor.minBlockSize) {
+		return false;
+	}
+	return true;
+}
+
 void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 
-	initializeBinMag();
-
-	int bufferShift = 0;
-
-	juce::dsp::FFT forwardFFT(std::log2(fftSize));
-
-	int sampleRate = audioProcessor.getBlockSampleRate();
-
-	maxFreq = sampleRate / 2;
-	//x variable for labeling
-	for (int i = 0; i < numBins; i++) {
-		indexToFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
+	if (sampleSelections[rowIndex].size() < stepSize) {
+		selectionSizeError = true;
 	}
+	else {
 
-	while (bufferShift <= sampleSelections[rowIndex].size() - stepSize) {
-		//while (buffSize >= numFreqBins) {
+		initializeBinMag();
 
-		//std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
-		//std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
-		std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferRight.begin());
+		int bufferShift = 0;
 
-		std::copy(sampleSelections[rowIndex].begin() + bufferShift, sampleSelections[rowIndex].begin() + (bufferShift + stepSize), bufferRight.begin() + stepSize);
+		juce::dsp::FFT forwardFFT(std::log2(fftSize));
 
-		//std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
-		//buffer.read(bufferRight.data(), numFreqBins);
-		std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
-		//windowBufferLeft = bufferLeft;
-		windowData.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
-		//windowData.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
-		forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
-		fftCounter++;
+		int sampleRate = audioProcessor.getBlockSampleRate();
 
+		maxFreq = sampleRate / 2;
+		//x variable for labeling
 		for (int i = 0; i < numBins; i++) {
-			binMag[rowIndex][i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+			indexToFreqMap[i] = i * ((float)maxFreq / (float)numFreqBins);
 		}
-		bufferShift += numFreqBins;
-	}
-	if (fftCounter != 0)
-	{
-		for (int i = 0; i < numBins; i++) {
-			binMag[rowIndex][i] /= fftCounter;
+
+		while (bufferShift <= sampleSelections[rowIndex].size() - stepSize) {
+			//while (buffSize >= numFreqBins) {
+
+			//std::copy(bufferLeft.begin(), bufferLeft.begin() + stepSize, bufferLeft.begin() + stepSize);
+			//std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferLeft.begin());
+			std::copy(bufferRight.begin() + stepSize, bufferRight.end(), bufferRight.begin());
+
+			std::copy(sampleSelections[rowIndex].begin() + bufferShift, sampleSelections[rowIndex].begin() + (bufferShift + stepSize), bufferRight.begin() + stepSize);
+
+			//std::copy(bufferRight.begin(), bufferRight.begin() + stepSize, bufferRight.begin() + stepSize);
+			//buffer.read(bufferRight.data(), numFreqBins);
+			std::copy(bufferRight.begin(), bufferRight.end(), windowBufferRight.begin());
+			//windowBufferLeft = bufferLeft;
+			windowData.multiplyWithWindowingTable(windowBufferRight.data(), fftSize);
+			//windowData.multiplyWithWindowingTable(windowBufferLeft.data(), fftSize);
+			forwardFFT.performRealOnlyForwardTransform(windowBufferRight.data(), true);
+			fftCounter++;
+
+			for (int i = 0; i < numBins; i++) {
+				binMag[rowIndex][i] += sqrt(pow(windowBufferRight[2 * i], 2) + pow(windowBufferRight[2 * i + 1], 2)) / numFreqBins;
+			}
+			bufferShift += numFreqBins;
 		}
+		if (fftCounter != 0)
+		{
+			for (int i = 0; i < numBins; i++) {
+				binMag[rowIndex][i] /= fftCounter;
+			}
+		}
+		selectionSizeError = false;
 	}
 }
+
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 	bufferLeft.resize(fftSize);
