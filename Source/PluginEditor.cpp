@@ -323,6 +323,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 			}
 			rowIndex = temp;
 		}
+		cursorIndex = 1;
 		repaint();
 	};
 
