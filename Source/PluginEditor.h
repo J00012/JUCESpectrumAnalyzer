@@ -30,12 +30,12 @@ public:
     void initializeBinMag();
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type); 
     void mouseMove(const juce::MouseEvent& event) override;
-    void setWindowFunction();
+    void setWindowFunction(); 
     void setBlockSize();
     void setAxisType();
     void writeAxisLabels(juce::Graphics& g, juce::Path axisMarkers, juce::String text, float x, float y, int textOffset, char axis);
-    void checkTheme();
-
+    void setAppearance();
+   
     //processBlock integration
     void processBuffer();
     void zeroBuffers();

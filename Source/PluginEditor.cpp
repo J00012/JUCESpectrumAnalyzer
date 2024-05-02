@@ -110,7 +110,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	//	juce::ToggleButton plotToggleButtons[i];
 	//}
 
-
 	// Make visible GUI Elements
 	addAndMakeVisible(labelImportAudio);
 	addAndMakeVisible(labelSelectTrace);
@@ -199,11 +198,24 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputUpperBoundsY.setText(std::to_string((int)yMax), juce::dontSendNotification);
 
 	// Colour
+	labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+	labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+	labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+	labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelCursor.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelPeak.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
+	labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelPlot1.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
 	labelPlot2.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
 	labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
+
 	comboboxWindowFunction.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	comboboxWindowFunction.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	comboboxWindowFunction.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
@@ -213,21 +225,23 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	comboboxSizeSetting.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	comboboxSizeSetting.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	comboboxSizeSetting.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
+
 	buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
-	buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+	buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black); 
 	buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 	toggleButtonPlot1.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot1.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
 	toggleButtonPlot2.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
 	toggleButtonPlot2.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
 	toggleButtonPlot3.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
-	toggleButtonPlot3.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
-	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
-	toggleButtonPlot4.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey);
+	toggleButtonPlot3.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey); 
+	toggleButtonPlot4.setColour(juce::ToggleButton::tickColourId, juce::Colours::black); 
+	toggleButtonPlot4.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey); 
 	togglePluginAppearance.setColour(juce::ToggleButton::tickColourId, juce::Colours::darkgrey); 
 	togglePluginAppearance.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey); 
+
 	inputLowerBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white); 
-	inputLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::black);
+	inputLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::black); 
 	inputLowerBoundsX.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
 	inputUpperBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white);
 	inputUpperBoundsX.setColour(juce::Label::textColourId, juce::Colours::black);
@@ -373,6 +387,18 @@ FFTSpectrumAnalyzerAudioProcessorEditor::~FFTSpectrumAnalyzerAudioProcessorEdito
 //==============================================================================
 void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 {
+	if (darkMode == true) {
+		g.fillAll(juce::Colours::black);
+	}
+	else {
+		g.fillAll(juce::Colours::white);
+	}
+	g.setOpacity(1.0f);
+	g.setColour(juce::Colours::white);
+
+	// label color when set to light mode
+	setAppearance();
+
 	juce::Path plot1;
 	juce::Path plot2;
 	juce::Path xAxis;
@@ -403,17 +429,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	int yMarginZeroTick = (paddingSmall + lengthYAxis) / 2;
 	int yMarginDrawingWindowUpperBorder = paddingSmall + paddingExtraSmall;
 	int yMarginDrawingWindowLowerBorder = lengthYAxis + paddingSmall;
-
-	if (darkMode == true) {
-		g.fillAll(juce::Colours::black);
-	}
-	else {
-		g.fillAll(juce::Colours::white);
-	}
-	g.setOpacity(1.0f);
-	g.setColour(juce::Colours::white);
-
-	checkTheme();
 
 	if (newSelection == true) {
 		if (initialAxisState == 1) {
@@ -792,74 +807,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillRect(xMarginZoomBoundary, yMarginZoomBoundary, widthZoomBoundary, thicknessLine);
 }
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::checkTheme()
-{
-	if (darkMode) {
-		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
-		labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
-		labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
-
-		labelUpperBounds.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelLowerBounds.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelUpperBoundsX.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelUpperBoundsY.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelLowerBoundsY.setColour(juce::Label::textColourId, juce::Colours::white);
-
-		inputLowerBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::black);
-		inputUpperBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::black);
-		inputLowerBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::black);
-		inputUpperBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::black);
-
-		labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelCursor.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelPeak.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
-		labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
-
-		buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
-		buttonExport.setColour(juce::TextButton::buttonOnColourId, juce::Colours::white);
-		buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
-		buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
-	}
-	else {
-		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
-		labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
-		labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
-
-		labelUpperBounds.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelLowerBounds.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelUpperBoundsX.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelUpperBoundsY.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelLowerBoundsY.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-
-		inputLowerBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
-		inputUpperBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
-		inputLowerBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
-		inputUpperBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
-
-		labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelCursor.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelPeak.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::black);
-		labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::black);
-		labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-		labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
-
-		buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::whitesmoke);
-		buttonExport.setColour(juce::TextButton::buttonOnColourId, juce::Colours::whitesmoke);
-		buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::darkgrey);
-		buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::darkgrey);
-	}
-}
-
 void FFTSpectrumAnalyzerAudioProcessorEditor::writeAxisLabels(juce::Graphics& g, juce::Path axisMarkers, juce::String text, float x, float y, int textOffset, char axis)
 {
 	if (axis == 'x') {
@@ -1160,7 +1107,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setAxisType() {
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::initializeBinMag() {
-	binMag.resize(2, std::vector<float>(numBins, std::numeric_limits<float>::epsilon()));
+	std::fill(binMag[rowIndex].begin(), binMag[rowIndex].end(), std::numeric_limits<float>::epsilon());
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {
@@ -1168,10 +1115,76 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setWindow(juce::dsp::WindowingFunc
 	//windowData.fillWindowingTables(fftSize, type);
 }
 
+void FFTSpectrumAnalyzerAudioProcessorEditor::setAppearance() {
+	if (darkMode) {
+		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+		labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+		labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
+
+		labelUpperBounds.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelLowerBounds.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelUpperBoundsX.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelUpperBoundsY.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelLowerBoundsY.setColour(juce::Label::textColourId, juce::Colours::white);
+
+		inputLowerBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::black);
+		inputUpperBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::black);
+		inputLowerBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::black);
+		inputUpperBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::black);
+
+		labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelCursor.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelPeak.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
+		labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
+
+		buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
+		buttonExport.setColour(juce::TextButton::buttonOnColourId, juce::Colours::white);
+		buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+		buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+	}
+	else {
+		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+		labelZoom.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+		labelExport.setColour(juce::Label::backgroundColourId, juce::Colours::grey);
+
+		labelUpperBounds.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelLowerBounds.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelUpperBoundsX.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelUpperBoundsY.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelLowerBoundsY.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+
+		inputLowerBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputUpperBoundsX.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputLowerBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+		inputUpperBoundsY.setColour(juce::Label::outlineColourId, juce::Colours::darkgrey);
+
+		labelSelectTrace.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelAppearanceMode.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelCursor.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelPeak.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelPeakValue.setColour(juce::Label::textColourId, juce::Colours::black);
+		labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+		labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+
+		buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::whitesmoke);
+		buttonExport.setColour(juce::TextButton::buttonOnColourId, juce::Colours::whitesmoke);
+		buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::darkgrey);
+		buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::darkgrey);
+	}
+}
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 
-	zeroBuffers();
+	initializeBinMag();
 
 	int bufferShift = 0;
 
@@ -1225,12 +1238,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 	std::fill(windowBufferRight.begin(), windowBufferRight.end(), 0.0f);
 	windowBufferLeft.resize(fftSize);
 	std::fill(windowBufferLeft.begin(), windowBufferLeft.end(), 0.0f);
+
+
+
 	for (int i = 0; i < rowSize; i++) {
 		binMag[i].resize(numBins);
 		std::fill(binMag[i].begin(), binMag[i].end(), std::numeric_limits<float>::epsilon());
 	}
 
-	//binMag.resize(rowSize, std::vector<float>(numBins, std::numeric_limits<float>::epsilon()));
+	
 	indexToFreqMap.resize(numBins);
 	std::fill(indexToFreqMap.begin(), indexToFreqMap.end(), 0.0f);
 	fftCounter = 0;
