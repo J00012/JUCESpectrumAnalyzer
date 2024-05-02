@@ -649,7 +649,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// Plot Y Axis Markers
 	axis = 'y';
-	for (int i = yMinVal; i < 0; i++) {
+	for (int i = (yMin + yMax); i < 0; i++) {
 		float yMarginLabelBounds = yMarginZeroTick + (scaleY * i) + yShift;
 		auto yAxisLabelNumText = juce::String(i) + labelTextY;
 		if (yDiff <= 10) {
