@@ -37,10 +37,10 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxWidth = 2160;
 int FFTSpectrumAnalyzerAudioProcessorEditor::windowMaxHeight = 1080;
 
 //ROW INDEX STUFF!!!
-int FFTSpectrumAnalyzerAudioProcessorEditor::rowSize = 2;
-int FFTSpectrumAnalyzerAudioProcessorEditor::rowIndex = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::rowSize = 4;
+int FFTSpectrumAnalyzerAudioProcessorEditor::rowIndex = 0;/*
 int FFTSpectrumAnalyzerAudioProcessorEditor::amountOfPlots = 0;
-int FFTSpectrumAnalyzerAudioProcessorEditor::prevAmountOfPlots = 0;
+int FFTSpectrumAnalyzerAudioProcessorEditor::prevAmountOfPlots = 0;*/
 
 //Processor statics
 int FFTSpectrumAnalyzerAudioProcessorEditor::fftSize = 1024;
@@ -123,6 +123,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(labelExport);
 	addAndMakeVisible(labelPlot1);
 	addAndMakeVisible(labelPlot2);
+	addAndMakeVisible(labelPlot3);
+	addAndMakeVisible(labelPlot4);
 	addAndMakeVisible(labelCursor);
 	addAndMakeVisible(labelCursorValue);
 	addAndMakeVisible(labelPeak);
@@ -143,7 +145,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	addAndMakeVisible(buttonSelectPlot3);
 	addAndMakeVisible(buttonSelectPlot4);
 	addAndMakeVisible(labelAppearanceMode); 
-
 	addAndMakeVisible(toggleButtonPlot1);
 	addAndMakeVisible(toggleButtonPlot2);
 	addAndMakeVisible(toggleButtonPlot3);
@@ -177,7 +178,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelPlot3.setText("Trace 3", juce::dontSendNotification);
 	labelPlot4.setText("Trace 4", juce::dontSendNotification);
 	labelAppearanceMode.setText("Enable light mode", juce::dontSendNotification); 
-
 	labelZoom.setText("Zoom", juce::dontSendNotification);
 	labelUpperBounds.setText("Upper", juce::dontSendNotification);
 	labelLowerBounds.setText("Lower", juce::dontSendNotification);
@@ -212,10 +212,11 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelPlot1.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
 	labelPlot2.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+	labelPlot3.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+	labelPlot4.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
 	labelDropdownWindow.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownAxis.setColour(juce::Label::textColourId, juce::Colours::white);
 	labelDropdownSize.setColour(juce::Label::textColourId, juce::Colours::white);
-
 	comboboxWindowFunction.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	comboboxWindowFunction.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	comboboxWindowFunction.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
@@ -225,7 +226,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	comboboxSizeSetting.setColour(juce::ComboBox::backgroundColourId, juce::Colours::white);
 	comboboxSizeSetting.setColour(juce::ComboBox::textColourId, juce::Colours::black);
 	comboboxSizeSetting.setColour(juce::ComboBox::arrowColourId, juce::Colours::darkgrey);
-
 	buttonExport.setColour(juce::TextButton::buttonColourId, juce::Colours::white);
 	buttonExport.setColour(juce::TextButton::textColourOnId, juce::Colours::black); 
 	buttonExport.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
@@ -239,7 +239,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	toggleButtonPlot4.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey); 
 	togglePluginAppearance.setColour(juce::ToggleButton::tickColourId, juce::Colours::darkgrey); 
 	togglePluginAppearance.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::lightgrey); 
-
 	inputLowerBoundsX.setColour(juce::Label::backgroundColourId, juce::Colours::white); 
 	inputLowerBoundsX.setColour(juce::Label::textColourId, juce::Colours::black); 
 	inputLowerBoundsX.setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
@@ -261,6 +260,8 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputUpperBoundsY.setEditable(true);
 	labelPlot1.setEditable(false);
 	labelPlot2.setEditable(false);
+	labelPlot3.setEditable(false);
+	labelPlot4.setEditable(false);
 
 	// Combobox Items
 	for (int i = 0; i < windowFunctionTypes.size(); i++) {
@@ -281,7 +282,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	buttonSelectPlot2.setClickingTogglesState(true);
 	buttonSelectPlot3.setClickingTogglesState(true);
 	buttonSelectPlot4.setClickingTogglesState(true);
-
 	toggleButtonPlot1.setClickingTogglesState(true);
 	toggleButtonPlot2.setClickingTogglesState(true);
 	toggleButtonPlot3.setClickingTogglesState(true);
@@ -798,9 +798,15 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	//	}
 	//}
 
-	// draw line to separate plot selections
+	// draw line to separate plot selections - FIXME needs to be more condensed
 	g.setColour(juce::Colours::lightgrey);
-	g.fillRect(xMarginSelectionBoundary, yMarginSelectionBoundary, widthSelectionBoundary, thicknessLine);
+	g.fillRect(xMarginSelectionBoundary, yMarginSelectionBoundary1, widthSelectionBoundary, thicknessLine);
+
+	g.setColour(juce::Colours::lightgrey);
+	g.fillRect(xMarginSelectionBoundary, yMarginSelectionBoundary2, widthSelectionBoundary, thicknessLine);
+
+	g.setColour(juce::Colours::lightgrey);
+	g.fillRect(xMarginSelectionBoundary, yMarginSelectionBoundary3, widthSelectionBoundary, thicknessLine);
 
 	//** line to separate upper and lower x/y bounds in ZOOM **//
 	g.setColour(juce::Colours::darkgrey);
@@ -887,7 +893,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	int xMarginToggleAppearance = paddingMedium;
 	int xMarginLabelApperance = xMarginToggleAppearance + widthSmallWidget;
 
-	int yMarginToggleButtonPlot2 = yMarginRowPlot2;
 	int yMarginLabelExport = yMarginLabelZoom + heightMediumWidget + heightZoomWindow;
 	int yMarginButtonExport = yMarginLabelExport + heightMediumWidget + paddingMedium;
 	int yMarginLabelUpperBounds = yMarginLabelZoom + heightMediumWidget + paddingMedium;
@@ -905,6 +910,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	
 	labelPlot1.setBounds(xMarginLabelPlots, yMarginRowPlot1, widthLargeWidget, heightMediumWidget);
 	labelPlot2.setBounds(xMarginLabelPlots, yMarginRowPlot2, widthLargeWidget, heightMediumWidget);
+	labelPlot3.setBounds(xMarginLabelPlots, yMarginRowPlot3, widthLargeWidget, heightMediumWidget);
+	labelPlot4.setBounds(xMarginLabelPlots, yMarginRowPlot4, widthLargeWidget, heightMediumWidget);
 	labelUpperBounds.setBounds(xMarginOrigin, yMarginLabelUpperBounds, widthLargeWidget, heightMediumWidget);
 	labelLowerBounds.setBounds(xMarginOrigin, yMarginLabelLowerBounds, widthLargeWidget, heightMediumWidget);
 	labelUpperBoundsX.setBounds(xMarginLabelBoundsLetterX, yMarginLabelUpperBoundsLetter, widthLargeWidget, heightMediumWidget);
@@ -935,8 +942,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::resized()
 	buttonExport.setBounds(xMarginFirstLeftMenuWidget, yMarginButtonExport, widthLargeWidget, heightLargeWidget);
 	buttonSelectPlot1.setBounds(xMarginButtonSelectPlots, yMarginRowPlot1, widthLargeWidget, heightMediumWidget);
 	buttonSelectPlot2.setBounds(xMarginButtonSelectPlots, yMarginRowPlot2, widthLargeWidget, heightMediumWidget);
+	buttonSelectPlot3.setBounds(xMarginButtonSelectPlots, yMarginRowPlot3, widthLargeWidget, heightMediumWidget);
+	buttonSelectPlot4.setBounds(xMarginButtonSelectPlots, yMarginRowPlot4, widthLargeWidget, heightMediumWidget);
 	toggleButtonPlot1.setBounds(xMarginFirstLeftMenuWidget, yMarginRowPlot1, widthSmallWidget, heightMediumWidget);
 	toggleButtonPlot2.setBounds(xMarginFirstLeftMenuWidget, yMarginRowPlot2, widthSmallWidget, heightMediumWidget);
+	toggleButtonPlot3.setBounds(xMarginFirstLeftMenuWidget, yMarginRowPlot3, widthSmallWidget, heightMediumWidget);
+	toggleButtonPlot4.setBounds(xMarginFirstLeftMenuWidget, yMarginRowPlot4, widthSmallWidget, heightMediumWidget);
 	togglePluginAppearance.setBounds(xMarginToggleAppearance, yMarginToggleAppearance, widthSmallWidget, heightSmallWidget);
 }
 
