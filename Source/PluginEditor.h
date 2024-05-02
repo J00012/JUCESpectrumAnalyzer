@@ -40,6 +40,7 @@ public:
     void processBuffer();
     void zeroBuffers();
     void setFreqData(int fftData); 
+    bool selectionSizeValid();
     
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
@@ -115,6 +116,7 @@ private:
     static int initialAxisState;
     static char axis;
     static bool initialLambda;
+    static bool selectionSizeError;
 
      struct plotItem {
             bool isVisible;
