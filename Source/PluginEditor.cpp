@@ -294,6 +294,7 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	inputUpperBoundsY.onTextChange = [this] { getBounds(); };
 	comboboxWindowFunction.onChange = [this] {
 		setWindowFunction();
+		zeroBuffers();
 		if (blockProcessed) {
 			int temp = rowIndex;
 			for (int i = 0; i < rowSize; i++) {
