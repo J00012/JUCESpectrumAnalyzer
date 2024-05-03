@@ -20,6 +20,7 @@ bool FFTSpectrumAnalyzerAudioProcessorEditor::initialLambda = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::selectionSizeError = false;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::darkMode = true;
 bool FFTSpectrumAnalyzerAudioProcessorEditor::gridOff = true;
+bool FFTSpectrumAnalyzerAudioProcessorEditor::procBuff = false;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinPrev = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMin = 1;
 float FFTSpectrumAnalyzerAudioProcessorEditor::xMinFrequency = 1;
@@ -91,7 +92,6 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 	sampleSelections.resize(4);
 	setPlotIndex(rowIndex);
 	setFreqData(fftSize);
-	initializeBinMag();
 	zeroBuffers();
 
 	// Make visible GUI Elements
@@ -979,10 +979,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setAxisType() {
 	repaint();
 }
 
-void FFTSpectrumAnalyzerAudioProcessorEditor::initializeBinMag() {
-	std::fill(binMag[rowIndex].begin(), binMag[rowIndex].end(), std::numeric_limits<float>::epsilon());
-}
-
 void FFTSpectrumAnalyzerAudioProcessorEditor::setAppearance() {
 	if (darkMode) {
 		labelImportAudio.setColour(juce::Label::backgroundColourId, juce::Colours::darkgrey);
@@ -1057,8 +1053,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::processBuffer() {
 		selectionSizeError = true;
 	}
 	else {
-
-		initializeBinMag();
+		procBuff = true;
+		zeroBuffers();
 
 		int bufferShift = 0;
 
@@ -1105,11 +1101,16 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::zeroBuffers() {
 	windowBufferLeft.resize(fftSize);
 	std::fill(windowBufferLeft.begin(), windowBufferLeft.end(), 0.0f);
 
-	for (int i = 0; i < rowSize; i++) {
-		binMag[i].resize(numBins);
-		std::fill(binMag[i].begin(), binMag[i].end(), std::numeric_limits<float>::epsilon());
+	if (procBuff) {
+		std::fill(binMag[rowIndex].begin(), binMag[rowIndex].end(), std::numeric_limits<float>::epsilon());
+		procBuff = false;
 	}
-
+	else {
+		for (int i = 0; i < rowSize; i++) {
+			binMag[i].resize(numBins);
+			std::fill(binMag[i].begin(), binMag[i].end(), std::numeric_limits<float>::epsilon());
+		}
+	}
 	indexToFreqMap.resize(numBins);
 	std::fill(indexToFreqMap.begin(), indexToFreqMap.end(), 0.0f);
 	fftCounter = 0;

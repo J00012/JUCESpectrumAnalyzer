@@ -27,7 +27,7 @@ public:
     void setPlotIndex(int plotIndex);
     void setPlotVisibility(int plotId);
     void handleNewSelection(int numBins, int rowSize, int rowIndex);
-    void initializeBinMag();
+    //void initProcBuff();
     void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type); 
     void mouseMove(const juce::MouseEvent& event) override;
     void setWindowFunction(); 
@@ -41,6 +41,7 @@ public:
     void zeroBuffers();
     void setFreqData(int fftData); 
     bool selectionSizeValid();
+  
     
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
@@ -81,12 +82,11 @@ private:
     static bool displayError;
     static bool conCall;
     static bool blockProcessed;
-    static bool isVisiblePlot1;
-    static bool isVisiblePlot2;
     static bool darkMode;
     static bool gridOff;
     static bool initialLambda;
     static bool selectionSizeError;
+    static bool procBuff;
     static float xMinPrev;
     static float xMin;
     static float xMaxPrev;
