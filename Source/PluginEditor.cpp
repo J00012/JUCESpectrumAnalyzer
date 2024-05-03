@@ -688,6 +688,21 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	g.fillRect(xMarginSelectionBoundary, yMarginSelectionBoundary2, widthSelectionBoundary, thicknessLine);
 	g.fillRect(xMarginSelectionBoundary, yMarginSelectionBoundary3, widthSelectionBoundary, thicknessLine);
 
+	//draw circles that have color of plot
+	g.setColour(juce::Colours::lightgrey);
+	g.drawEllipse(xMarginPlotColorID, yMarginRowPlotColorID1, widthExtraSmallWidget, heightSmallWidget, thicknessLine);
+	g.drawEllipse(xMarginPlotColorID, yMarginRowPlotColorID2, widthExtraSmallWidget, heightSmallWidget, thicknessLine);
+	g.drawEllipse(xMarginPlotColorID, yMarginRowPlotColorID3, widthExtraSmallWidget, heightSmallWidget, thicknessLine);
+	g.drawEllipse(xMarginPlotColorID, yMarginRowPlotColorID4, widthExtraSmallWidget, heightSmallWidget, thicknessLine);
+	g.setColour(juce::Colours::lightgreen);
+	g.fillEllipse(xMarginPlotColorID, yMarginRowPlotColorID1, widthExtraSmallWidget, heightSmallWidget);
+	g.setColour(juce::Colours::cornflowerblue);
+	g.fillEllipse(xMarginPlotColorID, yMarginRowPlotColorID2, widthExtraSmallWidget, heightSmallWidget);
+	g.setColour(juce::Colours::purple);
+	g.fillEllipse(xMarginPlotColorID, yMarginRowPlotColorID3, widthExtraSmallWidget, heightSmallWidget);
+	g.setColour(juce::Colours::darkorange);
+	g.fillEllipse(xMarginPlotColorID, yMarginRowPlotColorID4, widthExtraSmallWidget, heightSmallWidget);
+
 	//** line to separate upper and lower x/y bounds in ZOOM **//
 	g.setColour(juce::Colours::darkgrey);
 	g.fillRect(xMarginZoomBoundary, yMarginZoomBoundary, widthZoomBoundary, thicknessLine);
@@ -916,21 +931,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 		buttonSelectPlot3.setButtonText(textNotSelected);
 		buttonSelectPlot4.setButtonText(textSelected);
 	}
-
-	/* Condensed Code (if you want to use it) [delete if not needed]
-	audioProcessor.setRowIndex(rowIndex);
-
-	std::vector<TextButton*> button = {
-		&buttonSelectPlot1,
-		&buttonSelectPlot2,
-		&buttonSelectPlot3,
-		&buttonSelectPlot4
-	};
-
-	for (int i = 0; i < buttons.size(); ++i) {
-		buttons[i]->setButtonText(i == plotIndex ? textSelected : textNotSelected);
-	}
-	*/
 }
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setWindowFunction() {

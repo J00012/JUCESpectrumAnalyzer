@@ -232,6 +232,7 @@ private:
     int const widthInputTextbox = widthMediumWidget;
 
     int const thicknessLine = 1;
+    int const heightExtraSmallWidget = 8;
     int const heightSmallWidget = 16;
     int const heightMediumWidget = 24;
     int const heightLargeWidget = 30;
@@ -256,6 +257,7 @@ private:
     int const xMarginSelectionBoundary = (widthSelectionBox - widthSelectionBoundary) - (widthSelectionBox - widthSelectionBoundary) / 4;
     int const xMarginZoomBoundary = xMarginSelectionBoundary;
     int const xMarginLabelPlots = xMarginFirstLeftMenuWidget + widthSmallWidget + paddingMedium;
+    int const xMarginPlotColorID = xMarginLabelPlots + widthMediumWidget + paddingMedium;
      
     int const yMarginOrigin = originPixel;
     int const yMarginFirstLeftMenuWidget = paddingMedium + heightMediumWidget;
@@ -270,6 +272,10 @@ private:
     int const yMarginRowPlot2 = yMarginSelectionBoundary1 + paddingMedium;
     int const yMarginRowPlot3 = yMarginSelectionBoundary3 - (paddingMedium + heightMediumWidget);
     int const yMarginRowPlot4 = yMarginSelectionBoundary3 + paddingMedium;
+    int const yMarginRowPlotColorID1 = yMarginRowPlot1 + heightMediumWidget / 5;
+    int const yMarginRowPlotColorID2 = yMarginRowPlot2 + heightMediumWidget / 5;
+    int const yMarginRowPlotColorID3 = yMarginRowPlot3 + heightMediumWidget / 5;
+    int const yMarginRowPlotColorID4 = yMarginRowPlot4 + heightMediumWidget / 5;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
 };
