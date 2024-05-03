@@ -85,6 +85,8 @@ private:
     static bool isVisiblePlot2;
     static bool darkMode;
     static bool gridOff;
+    static bool initialLambda;
+    static bool selectionSizeError;
     static float xMinPrev;
     static float xMin;
     static float xMaxPrev;
@@ -110,14 +112,12 @@ private:
     static int rowSize;
     static int fftCounter;
     static int stepSize;
-    /*static int amountOfPlots;
-    static int prevAmountOfPlots;*/
+    static int amountOfPlots;
+    static int prevAmountOfPlots;
     static int windowVar;
     static int cursorIndex;
     static int initialAxisState;
     static char axis;
-    static bool initialLambda;
-    static bool selectionSizeError;
 
      struct plotItem {
             bool isVisible;
@@ -235,13 +235,14 @@ private:
     int const heightSmallWidget = 16;
     int const heightMediumWidget = 24;
     int const heightLargeWidget = 30;
-    int const heightSmallWindow = 180;
-    int const heightMediumWindow = 240; 
-    int const heightBottomMenu = heightMediumWindow;
+    int const heightSmallWindow = 90;
+    int const heightMediumWindow = 180;
+    int const heightLargeWindow = 240; 
+    int const heightBottomMenu = heightLargeWindow;
     int const heightImportAudioWindow = paddingSmall + heightMediumWidget + paddingSmall + heightSelectionBox + paddingSmall;
     int const heightZoomWindow = heightSmallWindow;
     int const heightExportWindow = heightBottomMenu;
-    int const heightSelectionBox = heightSmallWindow;
+    int const heightSelectionBox = heightMediumWindow;
 
     int const heightWindowMin = 550 + 2;
     int const heightWindowMax = 1080;
