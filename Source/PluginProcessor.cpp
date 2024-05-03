@@ -27,14 +27,6 @@ int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
 bool FFTSpectrumAnalyzerAudioProcessor::initialBlock = true;
 bool FFTSpectrumAnalyzerAudioProcessor::minBlockSize = false;
 
-//juce::dsp::FFT FFTSpectrumAnalyzerAudioProcessor::forwardFFT(0);
-
-// Define static member variables
-//std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferRight = { 0 };
-//std::vector<float> FFTSpectrumAnalyzerAudioProcessor::bufferLeft = { 0 };
-//std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferRight = { 0 };
-//std::vector<float> FFTSpectrumAnalyzerAudioProcessor::windowBufferLeft = { 0 };
-//std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::binMag;
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::accumulationBuffer;
 
 juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessor::window(0, juce::dsp::WindowingFunction<float>::blackman);
@@ -162,44 +154,6 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported(const BusesLayout
 }
 #endif
 
-//void FFTSpectrumAnalyzerAudioProcessor::zeroSelection(int selectionIndex) {
-//    std::fill(binMag[selectionIndex].begin(), binMag[selectionIndex].end(), 0.0f);
-//    fftCounter = 0;
-//}
-//
-////based on index value
-//void FFTSpectrumAnalyzerAudioProcessor::removeSelection(int selectionIndex) {
-//    binMag.erase(binMag.begin() + selectionIndex);
-//}
-//
-//void FFTSpectrumAnalyzerAudioProcessor::clearAllSelections() {
-//    binMag.clear();
-//}
-//
-//void FFTSpectrumAnalyzerAudioProcessor::zeroAllSelections(int binMagSize, int selectionSize) {
-//    binMag.resize(selectionSize, std::vector<float>(binMagSize, 0));
-//}
-//
-//void FFTSpectrumAnalyzerAudioProcessor::prepSelection(int binMagSize, int selectionSize, int selectionIndex) {
-//    binMag.resize(selectionSize, std::vector<float>(binMagSize));
-//    zeroSelection(selectionIndex);
-//    bufferLeft.resize(fftSize, 0.0f);
-//    bufferRight.resize(fftSize, 0.0f);
-//    windowBufferRight.resize(fftDataSize, 0.0f);
-//    windowBufferLeft.resize(fftSize, 0.0f);
-//}
-//
-//void FFTSpectrumAnalyzerAudioProcessor::prepBuffers(int fftSize) {
-//    bufferLeft.resize(fftSize);
-//    std::fill(bufferLeft.begin(), bufferLeft.end(), 0.0f);
-//    bufferRight.resize(fftSize);
-//    std::fill(bufferRight.begin(), bufferRight.end(), 0.0f);
-//    windowBufferRight.resize(fftSize * 2);
-//    std::fill(windowBufferRight.begin(), windowBufferRight.end(), 0.0f);
-//    windowBufferLeft.resize(fftSize);
-//    std::fill(windowBufferLeft.begin(), windowBufferLeft.end(), 0.0f);
-//}
-
 void FFTSpectrumAnalyzerAudioProcessor::clearAccumulationBuffer() {
     accumulationBuffer.clear();
 }
@@ -297,17 +251,6 @@ int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
 {
     return fftCounter;
 }
-
-//std::vector<float> FFTSpectrumAnalyzerAudioProcessor::getBinMag() const
-//{
-//    return binMag[rowIndex];
-//}
-//
-//std::vector<std::vector<float>> FFTSpectrumAnalyzerAudioProcessor::getBinSet() const
-//{
-//    return binMag;
-//}
-
 
 //==============================================================================
 bool FFTSpectrumAnalyzerAudioProcessor::hasEditor() const
