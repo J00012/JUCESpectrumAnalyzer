@@ -621,12 +621,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		else {
 			int cursorPeakIndex = findPeak((int)(stepSize * .1));
 			g.setColour(juce::Colours::red);
-			juce::Rectangle<int> peakLine(calculateX(cursorPeakIndex), paddingSmall, 1, getAxisLength('y'));
+			juce::Rectangle<int> peakLine(calculateX(cursorPeakIndex), paddingSmall, thicknessLine, getAxisLength('y'));
 			g.fillRect(peakLine);
 
 			//calculate x and y coordinate of peak
-			float peakX = setToLog ? std::pow(10, screenToGraph(calculateX(cursorPeakIndex))) : screenToGraph(calculateX(cursorPeakIndex));
-			labelPeakValue.setText("(" + floatToStringPrecision(peakX, 1) + " Hz, " + floatToStringPrecision(getYCoord(cursorPeakIndex), 2) + " dB)", juce::dontSendNotification);
+			float peakX = setToLog ? std::pow(logPower, screenToGraph(calculateX(cursorPeakIndex))) : screenToGraph(calculateX(cursorPeakIndex));
+			labelPeakValue.setText("(" + floatToStringPrecision(peakX, precisionValue1) + xAxisValueText + floatToStringPrecision(getYCoord(cursorPeakIndex), precisionValue2) + yAxisValueText + ")", juce::dontSendNotification);
 
 			//Graph Plot Marker
 			if (darkMode) {
@@ -638,7 +638,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 			float circleX = calculateX(cursorIndex);
 			float circleY = calculateY(cursorIndex);
 			if (inBounds(circleX, circleY)) {
-				g.drawEllipse(circleX, circleY, 1, 1, 8);
+				g.drawEllipse(circleX, circleY, thicknessLine, thicknessLine, heightExtraSmallWidget);
 			}
 		}
 	}
@@ -1134,7 +1134,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 
 		if (plotInfo[rowIndex].isVisible) {
 			//calculate x coordinate
-			float xCoord = setToLog ? std::pow(10, screenToGraph(calculateX(i))) : screenToGraph(calculateX(i));
+			float xCoord = setToLog ? std::pow(logPower, screenToGraph(calculateX(i))) : screenToGraph(calculateX(i));
 			//set label text
 			if (darkMode) {
 				labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::white);
@@ -1142,7 +1142,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::mouseMove(const juce::MouseEvent& 
 			else {
 				labelCursorValue.setColour(juce::Label::textColourId, juce::Colours::black);
 			}
-			labelCursorValue.setText("(" + floatToStringPrecision(xCoord, 1) + " Hz, " + floatToStringPrecision(getYCoord(i), 2) + " dB)", juce::dontSendNotification);
+			labelCursorValue.setText("(" + floatToStringPrecision(xCoord, precisionValue1) + xAxisValueText + floatToStringPrecision(getYCoord(i), precisionValue2) + yAxisValueText + ")", juce::dontSendNotification);
 		}
 		repaint();
 	}
