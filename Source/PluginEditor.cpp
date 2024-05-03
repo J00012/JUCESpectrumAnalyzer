@@ -551,7 +551,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	// Plot X Axis Markers
 	axis = 'x';
-	g.setColour(juce::Colours::white);
+	if (darkMode) {
+		g.setColour(juce::Colours::whitesmoke);
+	}
+	else {
+		g.setColour(juce::Colours::black);
+	}
 	g.setFont(axisFontSize);
 
 	for (int i = 1; i <= xDiff; ++i) {
@@ -573,6 +578,12 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		}
 	}
 
+	if (darkMode) {
+		g.setColour(juce::Colours::whitesmoke);
+	}
+	else {
+		g.setColour(juce::Colours::black);
+	}
 	g.strokePath(xAxisMarkers, juce::PathStrokeType(2.0f));
 
 	// Plot Y Axis Markers
