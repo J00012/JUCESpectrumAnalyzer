@@ -40,6 +40,7 @@ public:
     void processBuffer();
     void zeroBuffers();
     void setFreqData(int fftData); 
+    bool selectionSizeValid();
     
     float screenToGraph(float screenCoord);
     float graphToScreen(int graphCoord);
@@ -83,6 +84,7 @@ private:
     static bool isVisiblePlot1;
     static bool isVisiblePlot2;
     static bool darkMode;
+    static bool gridOff;
     static float xMinPrev;
     static float xMin;
     static float xMaxPrev;
@@ -115,6 +117,7 @@ private:
     static int initialAxisState;
     static char axis;
     static bool initialLambda;
+    static bool selectionSizeError;
 
      struct plotItem {
             bool isVisible;
@@ -156,6 +159,7 @@ private:
     juce::Label labelDropdownSize;
     juce::Label labelDropdownWindow;  
     juce::Label labelAppearanceMode;
+    juce::Label labelGrid;
 
     const char* textSelected = "Selected";
     const char* textNotSelected = "Select";
@@ -173,6 +177,7 @@ private:
     juce::ToggleButton toggleButtonPlot4;
 
     juce::ToggleButton togglePluginAppearance;
+    juce::ToggleButton toggleGrid;
 
     juce::ComboBox comboboxAxisType;
     juce::ComboBox comboboxSizeSetting;
