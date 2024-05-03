@@ -85,6 +85,8 @@ private:
     static bool isVisiblePlot2;
     static bool darkMode;
     static bool gridOff;
+    static bool initialLambda;
+    static bool selectionSizeError;
     static float xMinPrev;
     static float xMin;
     static float xMaxPrev;
@@ -116,8 +118,6 @@ private:
     static int cursorIndex;
     static int initialAxisState;
     static char axis;
-    static bool initialLambda;
-    static bool selectionSizeError;
 
      struct plotItem {
             bool isVisible;
@@ -132,10 +132,10 @@ private:
     //std::vector<std::string>plotLabels = { 0 };
 
 
-    juce::Label labelPlot1{ "Plot 1" };
-    juce::Label labelPlot2{ "Plot 2" };
-    juce::Label labelPlot3{ "Plot 3" };
-    juce::Label labelPlot4{ "Plot 4" };
+    juce::Label labelPlot1{ "Trace 1" };
+    juce::Label labelPlot2{ "Trace 2" };
+    juce::Label labelPlot3{ "Trace 3" };
+    juce::Label labelPlot4{ "Trace 4" };
 
     juce::Label labelUpperBoundsX;
     juce::Label labelUpperBoundsY;
@@ -195,7 +195,7 @@ private:
     int const precisionValue2 = 2;
 
     int const cornerSizeSelectionBox = 3;
-    float const borderSizeSelectionBox = 1;
+    int const borderSizeSelectionBox = 1;
     int const cornersizeCheckbox = 4;
     int const tickWidth = 4;
     int const zeroTickWidth = 10;
@@ -236,12 +236,13 @@ private:
     int const heightMediumWidget = 24;
     int const heightLargeWidget = 30;
     int const heightSmallWindow = 90;
-    int const heightMediumWindow = 240; 
-    int const heightBottomMenu = heightMediumWindow;
+    int const heightMediumWindow = 180;
+    int const heightLargeWindow = 240; 
+    int const heightBottomMenu = heightLargeWindow;
     int const heightImportAudioWindow = paddingSmall + heightMediumWidget + paddingSmall + heightSelectionBox + paddingSmall;
     int const heightZoomWindow = heightSmallWindow;
     int const heightExportWindow = heightBottomMenu;
-    int const heightSelectionBox = heightSmallWindow;
+    int const heightSelectionBox = heightMediumWindow;
 
     int const heightWindowMin = 550 + 2;
     int const heightWindowMax = 1080;
@@ -262,9 +263,13 @@ private:
     int const yMarginLabelZoom = yMarginLabelSelectTrace + heightMediumWidget + paddingMedium + heightSelectionBox + paddingSmall;
     int const yMarginZoomBoundary = yMarginLabelZoom + heightMediumWidget + heightZoomWindow / 2;
     int const yMarginSelectionBox = yMarginLabelSelectTrace + heightMediumWidget + paddingSmall;
-    int const yMarginSelectionBoundary = yMarginSelectionBox + heightSelectionBox / 2;
-    int const yMarginRowPlot1 = yMarginSelectionBoundary - (paddingMedium + heightMediumWidget);
-    int const yMarginRowPlot2 = yMarginSelectionBoundary + paddingMedium;
+    int const yMarginSelectionBoundary1 = yMarginSelectionBox + heightSelectionBox * 1/4;
+    int const yMarginSelectionBoundary2 = yMarginSelectionBox + heightSelectionBox * 2/4;
+    int const yMarginSelectionBoundary3 = yMarginSelectionBox + heightSelectionBox * 3/4;
+    int const yMarginRowPlot1 = yMarginSelectionBoundary1 - (paddingMedium + heightMediumWidget);
+    int const yMarginRowPlot2 = yMarginSelectionBoundary1 + paddingMedium;
+    int const yMarginRowPlot3 = yMarginSelectionBoundary3 - (paddingMedium + heightMediumWidget);
+    int const yMarginRowPlot4 = yMarginSelectionBoundary3 + paddingMedium;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessorEditor)
 };
