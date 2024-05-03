@@ -586,7 +586,9 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		else if (yDiff <= 49) divisor = 6;
 		else if (yDiff <= 69) divisor = 8;
 		else if (yDiff <= 89) divisor = 10;
-		else                  divisor = 6;
+		else if (yDiff == 90) divisor = 6;
+		else if (yDiff <= 150) divisor = 10;
+		else                  divisor = 15;
 
 		if (i % divisor == 0) {
 			auto yAxisLabelNumText = juce::String(i) + labelTextY;
