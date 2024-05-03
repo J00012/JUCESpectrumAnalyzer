@@ -35,6 +35,7 @@ public:
     void setAxisType();
     void writeAxisLabels(juce::Graphics& g, juce::Path axisMarkers, juce::String text, float x, float y, int textOffset, char axis);
     void setAppearance();
+    void exportDataToCSV();
    
     //processBlock integration
     void processBuffer();

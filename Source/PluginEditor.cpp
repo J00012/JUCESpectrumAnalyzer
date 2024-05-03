@@ -384,6 +384,10 @@ FFTSpectrumAnalyzerAudioProcessorEditor::FFTSpectrumAnalyzerAudioProcessorEditor
 		repaint();
 		};
 
+	buttonExport.onClick = [&]() {
+		exportDataToCSV();
+		};
+
 	toggleButtonPlot1.setToggleState(plotInfo[0].isVisible, true);
 	toggleButtonPlot2.setToggleState(plotInfo[1].isVisible, true);
 	toggleButtonPlot3.setToggleState(plotInfo[2].isVisible, true);
@@ -1053,6 +1057,35 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::setAppearance() {
 	}
 }
 
+void FFTSpectrumAnalyzerAudioProcessorEditor::exportDataToCSV()
+{
+	juce::FileChooser chooser("Select a location to save the CSV file",
+		juce::File::getSpecialLocation(juce::File::userDesktopDirectory),
+		"*.csv");
+
+	if (chooser.browseForFileToSave(true)) {
+		juce::File fileToSave(chooser.getResult());
+		juce::FileOutputStream outputStream(fileToSave);
+
+		if (outputStream.openedOk()) {
+			//write data to .csv
+			for (const auto& row : binMag) {
+				for (size_t i = 0; i < row.size(); ++i) {
+					outputStream << row[i];
+					if (i < row.size() - 1)
+						outputStream << ",";
+				}
+				outputStream << "\n";
+			}
+		}
+		else {
+			juce::AlertWindow::showMessageBox(juce::AlertWindow::WarningIcon,
+				"Error",
+				"Failed to open file for writing.");
+		}
+	}
+}
+
 bool FFTSpectrumAnalyzerAudioProcessorEditor::selectionSizeValid() {
 	if (selectionSizeError || !audioProcessor.minBlockSize) {
 		return false;
@@ -1195,16 +1228,40 @@ int FFTSpectrumAnalyzerAudioProcessorEditor::calculateIndex(float cursor)
 
 int FFTSpectrumAnalyzerAudioProcessorEditor::findPeak(int samples) 
 {
-	int peak = cursorIndex;
+	int leftPeak, rightPeak;
+	leftPeak = rightPeak = cursorIndex;
 
 	//check right
 	for (int i = cursorIndex + 1; i < std::min(cursorIndex + samples, fftSize / 2); ++i) {
-		if (getYCoord(i) > getYCoord(peak)) {
-			peak = i;
+		if (getYCoord(i) > getYCoord(rightPeak)) {
+			rightPeak = i;
 		}
 	}
-	return peak;
+	//check left
+	if (cursorIndex > 0) {
+		for (int i = cursorIndex - 1; i > std::max(cursorIndex - (samples / 2), 0); --i) {
+			if (getYCoord(i) > getYCoord(leftPeak)) {
+				leftPeak = i;
+			}
+		}
+	}
+	//calculate distance from cursor
+	int leftDistance = std::abs(cursorIndex - leftPeak);
+	int rightDistance = std::abs(rightPeak - cursorIndex);
+
+	//if at peak
+	if (cursorIndex == leftPeak)
+		return rightPeak;
+	if (cursorIndex == rightPeak)
+		return leftPeak;
+
+	//return closest peak
+	if (leftDistance < rightDistance)
+		return leftPeak;
+	else
+		return rightPeak;
 }
+
 
 bool FFTSpectrumAnalyzerAudioProcessorEditor::inBounds(float x, float y) 
 {
