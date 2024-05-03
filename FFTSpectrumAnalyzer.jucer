@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="HSv6xm" name="FFTSpectrumAnalyzer" projectType="audioplug"
-              useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1"
+              pluginName="FFT Spectrum Analyzer" pluginManufacturer="Spectrograph Team"
+              pluginDesc="Plot and analyze multiple audio traces in the same plugin instance">
   <MAINGROUP id="tHM2vx" name="FFTSpectrumAnalyzer">
     <GROUP id="{596E72ED-6200-14F7-0E81-8A7097FA1A96}" name="Source">
       <GROUP id="{2CEB07F5-83D0-6C59-F0AA-27C69154696A}" name="DataStructures">
