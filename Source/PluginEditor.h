@@ -25,10 +25,10 @@ public:
     void timerCallback() override;
     void getBounds();
     void setPlotIndex(int plotIndex);
-    void setPlotVisibility(int plotId);
-    void handleNewSelection(int numBins, int rowSize, int rowIndex);
+    //void setPlotVisibility(int plotId);
+    //void handleNewSelection(int numBins, int rowSize, int rowIndex);
     //void initProcBuff();
-    void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type); 
+    //void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type); 
     void mouseMove(const juce::MouseEvent& event) override;
     void setWindowFunction(); 
     void setBlockSize();

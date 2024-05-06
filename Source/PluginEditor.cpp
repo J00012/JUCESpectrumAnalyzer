@@ -917,7 +917,7 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::getBounds()
 
 void FFTSpectrumAnalyzerAudioProcessorEditor::setPlotIndex(int plotIndex)
 {
-	audioProcessor.setRowIndex(rowIndex);
+	//audioProcessor.setRowIndex(rowIndex);
 	if (plotIndex == 0)
 	{
 		buttonSelectPlot1.setButtonText(textSelected);

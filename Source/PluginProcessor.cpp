@@ -13,25 +13,13 @@
 
 //zero the static variables
 int FFTSpectrumAnalyzerAudioProcessor::sampleRate = 0;
-int FFTSpectrumAnalyzerAudioProcessor::fftCounter = 0;
-
 int FFTSpectrumAnalyzerAudioProcessor::channel = 0;
-int FFTSpectrumAnalyzerAudioProcessor::rowIndex = 0;
-int FFTSpectrumAnalyzerAudioProcessor::rowSize = 0;
 int FFTSpectrumAnalyzerAudioProcessor::fftSize = 1024;
 int FFTSpectrumAnalyzerAudioProcessor::stepSize = 512;
-int FFTSpectrumAnalyzerAudioProcessor::numBins = 0;
-int FFTSpectrumAnalyzerAudioProcessor::numFreqBins = 0;
-int FFTSpectrumAnalyzerAudioProcessor::fftDataSize = 0;
-
 bool FFTSpectrumAnalyzerAudioProcessor::initialBlock = true;
 bool FFTSpectrumAnalyzerAudioProcessor::minBlockSize = false;
 
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::accumulationBuffer;
-
-//juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessor::window(0, juce::dsp::WindowingFunction<float>::blackman);
-
-//float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
 
 //==============================================================================
 FFTSpectrumAnalyzerAudioProcessor::FFTSpectrumAnalyzerAudioProcessor()
@@ -154,33 +142,6 @@ bool FFTSpectrumAnalyzerAudioProcessor::isBusesLayoutSupported(const BusesLayout
 }
 #endif
 
-void FFTSpectrumAnalyzerAudioProcessor::clearAccumulationBuffer() {
-    accumulationBuffer.clear();
-}
-
-
-void FFTSpectrumAnalyzerAudioProcessor::setRowIndex(int plotIndex) {
-    rowIndex = plotIndex;
-}
-
-void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {
-    fftSize = newFFTSize;
-    stepSize = fftSize / 2;
-    numBins = fftSize / 2 + 1;
-    numFreqBins = fftSize / 2;
-    fftDataSize = 2 * fftSize;
-    //forwardFFT = juce::dsp::FFT(std::log2(fftSize));
-}
-
-void FFTSpectrumAnalyzerAudioProcessor::setStepSize(int stepS) {
-    stepSize = stepS;
-}
-
-//void FFTSpectrumAnalyzerAudioProcessor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {
-//    juce::dsp::WindowingFunction<float> window(fftSize, type);
-//    window.fillWindowingTables(fftSize, type);
-//}
-
 //================================================PROCESS BLOCK====================================================================//
 void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -189,7 +150,7 @@ void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     }
     else {
         minBlockSize = true;
-        sampleRate = getSampleRate();  //get the Sample Rate of Buffer
+        sampleRate = getSampleRate();  
 
         juce::ScopedNoDenormals noDenormals;
         auto totalNumInputChannels = getTotalNumInputChannels();
@@ -214,10 +175,9 @@ void FFTSpectrumAnalyzerAudioProcessor::setInitialAccBuffer() const {
     accumulationBuffer.resize(fftSize, 0.0f);
 }
 
-//RingBuffer<float> FFTSpectrumAnalyzerAudioProcessor::getSampleBuffer() const
-//{
-//    return ringBuffer;
-//}
+void FFTSpectrumAnalyzerAudioProcessor::clearAccumulationBuffer() {
+    accumulationBuffer.clear();
+}
 
 void FFTSpectrumAnalyzerAudioProcessor::setInitialBlock() {
     initialBlock = true;
@@ -227,10 +187,6 @@ void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
 {
     procBlockCalled = false;
 }
-
-//void FFTSpectrumAnalyzerAudioProcessor::clearRingBuffer() {
-//    ringBuffer.clear();
-//}
 
 bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
 {
@@ -242,14 +198,14 @@ int FFTSpectrumAnalyzerAudioProcessor::getBlockSampleRate() const
     return sampleRate;
 }
 
-//int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
-//{
-//    return stepSize;
-//}
 
-int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
-{
-    return fftCounter;
+void FFTSpectrumAnalyzerAudioProcessor::setFFTSize(int newFFTSize) {
+    fftSize = newFFTSize;
+    stepSize = fftSize / 2;
+}
+
+void FFTSpectrumAnalyzerAudioProcessor::setStepSize(int stepS) {
+    stepSize = stepS;
 }
 
 //==============================================================================

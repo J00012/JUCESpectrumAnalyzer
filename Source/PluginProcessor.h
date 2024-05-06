@@ -34,18 +34,11 @@ public:
     void setStepSize(int stepS);
     void setInitialBlock();
     void setInitialAccBuffer() const;
-    void setRowIndex(int plotIndex);
+    //void setRowIndex(int plotIndex);
     void setFFTSize(int newFFTSize);
-    void clearRingBuffer();
-    void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type);
-    int getStepSize() const;
-    int getFFTCounter() const;
     int getBlockSampleRate() const;
     void clearAccumulationBuffer();
     std::vector<float> getAccumulationBuffer() const;
-    //RingBuffer<float> getSampleBuffer() const;
-
-
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
@@ -73,19 +66,12 @@ public:
     static bool minBlockSize;
 
 private:
-    //RingBuffer<float> ringBuffer{ 10000 };
-    //static juce::dsp::WindowingFunction<float> window;
-    static int fftCounter;
+  
     static int sampleRate;
     static int fftSize;
     static int stepSize;
-    static int numBins;
-    static int numFreqBins;
-    static int fftDataSize;
-    static int rowIndex;
     static bool initialBlock;
     static int channel;
-    static int rowSize;
     static std::vector<float> accumulationBuffer;
     bool procBlockCalled = false;
 
