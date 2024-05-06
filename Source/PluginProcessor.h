@@ -34,7 +34,6 @@ public:
     void setStepSize(int stepS);
     void setInitialBlock();
     void setInitialAccBuffer() const;
-    //void setRowIndex(int plotIndex);
     void setFFTSize(int newFFTSize);
     int getBlockSampleRate() const;
     void clearAccumulationBuffer();
