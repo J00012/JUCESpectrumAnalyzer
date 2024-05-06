@@ -8,7 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "RingBuffer.h"
+
 
 
 //zero the static variables
@@ -29,7 +29,7 @@ bool FFTSpectrumAnalyzerAudioProcessor::minBlockSize = false;
 
 std::vector<float> FFTSpectrumAnalyzerAudioProcessor::accumulationBuffer;
 
-juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessor::window(0, juce::dsp::WindowingFunction<float>::blackman);
+//juce::dsp::WindowingFunction<float> FFTSpectrumAnalyzerAudioProcessor::window(0, juce::dsp::WindowingFunction<float>::blackman);
 
 //float FFTSpectrumAnalyzerAudioProcessor::ringTest[] = { 0 };
 
@@ -176,10 +176,10 @@ void FFTSpectrumAnalyzerAudioProcessor::setStepSize(int stepS) {
     stepSize = stepS;
 }
 
-void FFTSpectrumAnalyzerAudioProcessor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {
-    juce::dsp::WindowingFunction<float> window(fftSize, type);
-    window.fillWindowingTables(fftSize, type);
-}
+//void FFTSpectrumAnalyzerAudioProcessor::setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type) {
+//    juce::dsp::WindowingFunction<float> window(fftSize, type);
+//    window.fillWindowingTables(fftSize, type);
+//}
 
 //================================================PROCESS BLOCK====================================================================//
 void FFTSpectrumAnalyzerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -214,10 +214,10 @@ void FFTSpectrumAnalyzerAudioProcessor::setInitialAccBuffer() const {
     accumulationBuffer.resize(fftSize, 0.0f);
 }
 
-RingBuffer<float> FFTSpectrumAnalyzerAudioProcessor::getSampleBuffer() const
-{
-    return ringBuffer;
-}
+//RingBuffer<float> FFTSpectrumAnalyzerAudioProcessor::getSampleBuffer() const
+//{
+//    return ringBuffer;
+//}
 
 void FFTSpectrumAnalyzerAudioProcessor::setInitialBlock() {
     initialBlock = true;
@@ -228,9 +228,9 @@ void FFTSpectrumAnalyzerAudioProcessor::resetProcBlockCalled()
     procBlockCalled = false;
 }
 
-void FFTSpectrumAnalyzerAudioProcessor::clearRingBuffer() {
-    ringBuffer.clear();
-}
+//void FFTSpectrumAnalyzerAudioProcessor::clearRingBuffer() {
+//    ringBuffer.clear();
+//}
 
 bool FFTSpectrumAnalyzerAudioProcessor::getProcBlockCalled()
 {
@@ -242,10 +242,10 @@ int FFTSpectrumAnalyzerAudioProcessor::getBlockSampleRate() const
     return sampleRate;
 }
 
-int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
-{
-    return stepSize;
-}
+//int FFTSpectrumAnalyzerAudioProcessor::getStepSize() const
+//{
+//    return stepSize;
+//}
 
 int FFTSpectrumAnalyzerAudioProcessor::getFFTCounter() const
 {

@@ -9,7 +9,6 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "RingBuffer.h"
 //==============================================================================
 class FFTSpectrumAnalyzerAudioProcessor : public juce::AudioProcessor
 {
@@ -44,7 +43,7 @@ public:
     int getBlockSampleRate() const;
     void clearAccumulationBuffer();
     std::vector<float> getAccumulationBuffer() const;
-    RingBuffer<float> getSampleBuffer() const;
+    //RingBuffer<float> getSampleBuffer() const;
 
 
 
@@ -74,8 +73,8 @@ public:
     static bool minBlockSize;
 
 private:
-    RingBuffer<float> ringBuffer{ 10000 };
-    static juce::dsp::WindowingFunction<float> window;
+    //RingBuffer<float> ringBuffer{ 10000 };
+    //static juce::dsp::WindowingFunction<float> window;
     static int fftCounter;
     static int sampleRate;
     static int fftSize;
