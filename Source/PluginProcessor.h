@@ -9,45 +9,35 @@
 #pragma once
 
 #include <JuceHeader.h>
-
 //==============================================================================
-/**
-*/
-class FFTSpectrumAnalyzerAudioProcessor  : public juce::AudioProcessor
+class FFTSpectrumAnalyzerAudioProcessor : public juce::AudioProcessor
 {
-
-    enum
-    {
-        fftOrder = 11,             // [1]
-        fftSize = 1 << fftOrder,  // [2]
-        scopeSize = 512             // [3]	   //this will probably need to change since it is the "SIZE"
-    };
 
 
 public:
     //==============================================================================
     FFTSpectrumAnalyzerAudioProcessor();
-    ~FFTSpectrumAnalyzerAudioProcessor() override
-;
+    ~FFTSpectrumAnalyzerAudioProcessor() override;
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+#ifndef JucePlugin_PreferredChannelConfigurations
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+#endif
 
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-    void drawNextFrameOfSpectrum(float* channelData, int numSample);
-    
+    bool getProcBlockCalled();
+    void resetProcBlockCalled();
 
-
-    int getScopeSize() const;
-    const float* getScopeData() const;
-    const double* getArray() const;
-    const float* getFFT() const;
-
+    void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void setStepSize(int stepS);
+    void setInitialBlock();
+    void setInitialAccBuffer() const;
+    void setFFTSize(int newFFTSize);
+    int getBlockSampleRate() const;
+    void clearAccumulationBuffer();
+    std::vector<float> getAccumulationBuffer() const;
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
@@ -64,30 +54,26 @@ public:
     //==============================================================================
     int getNumPrograms() override;
     int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    void setCurrentProgram(int index) override;
+    const juce::String getProgramName(int index) override;
+    void changeProgramName(int index, const juce::String& newName) override;
 
     //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    void getStateInformation(juce::MemoryBlock& destData) override;
+    void setStateInformation(const void* data, int sizeInBytes) override;
 
-
-   
+    static bool minBlockSize;
 
 private:
-    juce::dsp::FFT forwardFFT;                      // [4]      //THIS IS IT THE FFT class
-    juce::dsp::WindowingFunction<float> window;     // [5]	//HERE IS THE WINDOW DECLARATION
+  
+    static int sampleRate;
+    static int fftSize;
+    static int stepSize;
+    static bool initialBlock;
+    static int channel;
+    static std::vector<float> accumulationBuffer;
+    bool procBlockCalled = false;
 
-    float fftArray[fftSize] = {0};
-    float fftData[2 * fftSize] = { 0 };                    // [7]	//NEED
-
-    int fftArrayIndex = 0;
-   
-    bool nextFFTBlockReady = false;                 // [9]	//DONT NEED
-    float scopeData[scopeSize] = { 0 };                    // [10]	
-   // double array[6] = { 0,0,0,0,0,0};
-    
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FFTSpectrumAnalyzerAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTSpectrumAnalyzerAudioProcessor)
 };
