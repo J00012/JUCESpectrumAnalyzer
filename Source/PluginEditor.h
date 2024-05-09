@@ -25,10 +25,6 @@ public:
     void timerCallback() override;
     void getBounds();
     void setPlotIndex(int plotIndex);
-    //void setPlotVisibility(int plotId);
-    //void handleNewSelection(int numBins, int rowSize, int rowIndex);
-    //void initProcBuff();
-    //void setWindow(juce::dsp::WindowingFunction<float>::WindowingMethod type); 
     void mouseMove(const juce::MouseEvent& event) override;
     void setWindowFunction(); 
     void setBlockSize();
@@ -64,7 +60,6 @@ private:
     FFTSpectrumAnalyzerAudioProcessor& audioProcessor;
 
     //ProcessBlock 
-    //static juce::dsp::FFT editFFT;
     static juce::dsp::WindowingFunction<float> windowData;
     static std::vector<float> bufferRight;
     static std::vector<float> bufferLeft;
@@ -106,7 +101,6 @@ private:
     static int windowMaxHeight;
     static int fftSize;
     static int numBins;
-    // static int sampleRate;
     static int maxFreq;
     static int numFreqBins;
     static int rowIndex;
@@ -127,11 +121,6 @@ private:
         };
     
     static plotItem plotInfo[4];
-
-    //std::vector<std::string>plotToggleButtons = { 0 };
-    //std::vector<std::string>plotSelectButtons = { 0 };
-    //std::vector<std::string>plotLabels = { 0 };
-
 
     juce::Label labelPlot1{ "Trace 1" };
     juce::Label labelPlot2{ "Trace 2" };

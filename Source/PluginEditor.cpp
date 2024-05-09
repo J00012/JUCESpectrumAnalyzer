@@ -64,7 +64,6 @@ std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::bufferLeft = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferRight = { 0 };
 std::vector<float> FFTSpectrumAnalyzerAudioProcessorEditor::windowBufferLeft = { 0 };
-std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::numPlots = {};
 std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::windowFunctionTypes = { "Blackman window","Blackman-Harris window", "Flatop window", "Hamming window", "Hann window", "Kaiser", "Rectangular window", "Triangular window" };
 std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::axisTypes = { "Linear Frequency", "Logarithmic Frequency"};
 std::vector<std::string> FFTSpectrumAnalyzerAudioProcessorEditor::sizeOptions = { "128", "256", "512", "1024", "2048", "4096", "8192", "16384"};		  
@@ -568,7 +567,8 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 		int xDivLinear = i;
 
 		if (!setToLog) {
-			if (xDiff <= 1000)			xDivLinear %= 100;
+			if (xDiff <= 100)			xDivLinear %= 10;
+			else if (xDiff <= 1000)		xDivLinear %= 100;
 			else if (xDiff <= 4000)		xDivLinear %= 500;
 			else if (xDiff <= 9000)		xDivLinear %= 1000;
 			else if (xDiff <= 16000)	xDivLinear %= 2000;
@@ -619,13 +619,6 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 	}
 	g.strokePath(yAxisMarkersUp, juce::PathStrokeType(2.0f));
 	g.strokePath(yAxisMarkersDown, juce::PathStrokeType(2.0f));
-
-	/*
-	//Plot zero on Y-axis
-	zeroTick.startNewSubPath(xMarginXYAxis, yMarginStartPlot + yShift);
-	zeroTick.lineTo(xMarginXYAxis + zeroTickWidth, yMarginStartPlot + yShift);
-	g.strokePath(zeroTick, juce::PathStrokeType(3.0f));
-	*/
 
 	// Peak 
 	if (plotInfo[rowIndex].isVisible) {
