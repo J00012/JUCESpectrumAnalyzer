@@ -564,6 +564,11 @@ void FFTSpectrumAnalyzerAudioProcessorEditor::paint(juce::Graphics& g)
 
 	for (int i = 1; i <= xDiff; ++i) {
 		float xMarginLabelBounds = xMarginXYAxis + (i * scaleX);
+		if (setToLog) {
+			int xLabelAxisNum = std::pow(logPower, i);
+			auto xLabelAxisNumText = juce::String(xLabelAxisNum) + labelTextX;
+			writeAxisLabels(g, xAxisMarkers, xLabelAxisNumText, xMarginLabelBounds, yMarginDrawingWindowLowerBorder, scaleTextOffsetX, axis);
+		}
 		int xDivLinear = i;
 
 		if (!setToLog) {
